@@ -12,6 +12,7 @@ class AdminController extends Controller
     {
         $pesertaKKN = Mahasiswa::where('kegiatan', 'KKN')
         ->with('penempatankkn.lokasikkn') // Pastikan relasi sesuai dengan nama method di model
+        ->orderBy('kecamatan', 'asc')
         ->get();
         return view('admin.kkn', compact('pesertaKKN'));
     }
@@ -20,6 +21,7 @@ class AdminController extends Controller
     {
         $pesertaPPL = Mahasiswa::where('kegiatan', 'PPL')
         ->with('penempatanppl.lokasippl') // Pastikan relasi sesuai dengan nama method di model
+        ->orderBy('kecamatan', 'asc')
         ->get();
     
     return view('admin.ppl', compact('pesertaPPL'));

@@ -55,7 +55,9 @@
                 <div id="collapsePages1" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar" style="">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('dosen.index') }}">Tambah Dosen</a>
-                        <a class="collapse-item" href="{{ route('assign.dosen') }}">Atur Dospem</a>
+                        <a class="collapse-item" href="{{ route('assign.dosenkkn') }}">Atur Dospem KKN</a>
+                        <a class="collapse-item" href="{{ route('assign.dosenppl') }}">Atur Dospem PPL</a>
+                        <a class="collapse-item" href="{{ route('assign.dosenpkl') }}">Atur Dospem PKL</a>
                     </div>
                 </div>
             </li>
@@ -72,6 +74,7 @@
                         <a class="collapse-item" href="{{ route('assign.lokasikkn') }}">Penempatan KKN</a>
                         <a class="collapse-item" href="{{ route('lokasippl.index') }}">Tambah Sekolah PPL</a>
                         <a class="collapse-item" href="{{ route('assign.lokasippl') }}">Penempatan PPL</a>
+                        <a class="collapse-item" href="{{ route( 'pengajuanpkl.adminindex') }}">Penempatan Pkl</a>
                     </div>
                 </div>
             </li>
@@ -111,5 +114,16 @@
     <script src="{{ asset('template/vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('template/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('template/js/sb-admin-2.min.js') }}"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+
+    <script>
+        $(document).ready(function() {
+            $('#kknTable').DataTable();
+            $('#pplTable').DataTable();
+            $('#pklTable').DataTable();
+        });
+    </script>
 </body>
 </html>

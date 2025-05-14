@@ -13,12 +13,18 @@ class PengajuanLokasiPKLController extends Controller
     public function index()
     {
         $pengajuan = PengajuanLokasiPKL::where('nim', Auth::user()->nim)->get();
-        return view('mahasiswa.pengajuan_pkl.index', compact('pengajuan'));
+        return view('mahasiswa.pengajuanpkl.index', compact('pengajuan'));
     }
+    public function adminindex()
+    {
+        $pengajuan = PengajuanLokasiPKL::with('mahasiswa')->get();
+        return view('admin.pengajuanpkl', compact('pengajuan'));
+    }
+
 
     public function create()
     {
-        return view('mahasiswa.pengajuan_pkl.create');
+        return view('mahasiswa.pengajuanpkl.create');
     }
 
     public function store(Request $request)
@@ -37,7 +43,7 @@ class PengajuanLokasiPKLController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('pengajuan_pkl.index')->with('success', 'Pengajuan Lokasi PKL berhasil dikirim!');
+        return redirect()->route('pengajuanpkl.index')->with('success', 'Pengajuan Lokasi PKL berhasil dikirim!');
     }
 
     public function approve($id)

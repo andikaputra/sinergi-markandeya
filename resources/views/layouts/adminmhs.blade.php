@@ -46,7 +46,7 @@
             </li>
             @if(Auth::user()->kegiatan  == 'PKL')
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('publikasi.index') }}">
+                <a class="nav-link" href="{{ route('pengajuanpkl.index') }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Pengajuan Lokasi PKL</span>
                 </a>

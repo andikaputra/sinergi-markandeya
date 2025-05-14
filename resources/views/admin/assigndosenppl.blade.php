@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2>Assign Dosen Pembimbing</h2>
+    <h2>Assign Dosen Pembimbing PPL</h2>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -18,7 +18,7 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="nims[]" value="{{ $mahasiswa->nim }}" id="mahasiswa{{ $mahasiswa->nim }}">
                             <label class="form-check-label" for="mahasiswa{{ $mahasiswa->nim }}">
-                                {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }})
+                                {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }}) ({{ $mahasiswa->penempatanppl?->lokasippl?->Sekolah ?? 'Belum Ditentukan' }})
                             </label>
                         </div>
                     @endforeach
@@ -42,7 +42,7 @@
     </form>
 
     <h3 class="mt-4">Daftar Dosen Pembimbing</h3>
-    <table class="table table-bordered mt-2">
+    <table class="table table-bordered mt-2" id="pplTable">
         <thead>
             <tr>
                 <th>Mahasiswa</th>

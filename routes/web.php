@@ -6,7 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JurnalController;
 use App\Models\Mahasiswa;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\DosenPembimbingController;
+use App\Http\Controllers\DosenpembimbingController;
 use App\Http\Controllers\LokasiKKNController;
 use App\Http\Controllers\LokasiPPLController;
 use App\Http\Controllers\PublikasiController;
@@ -51,9 +51,12 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/dosen/create', [AdminController::class, 'createdosen'])->name('dosen.create');
     Route::post('/dosen/store', [AdminController::class, 'storedosen'])->name('dosen.store');
 
-    Route::get('/assign-dosen', [DosenPembimbingController::class, 'index'])->name('assign.dosen');
-    Route::post('/assign-dosen', [DosenPembimbingController::class, 'assign'])->name('assign.dosen.store');
-    Route::delete('/assign-dosen/{id}', [DosenPembimbingController::class, 'delete'])->name('assign.dosen.delete');
+    Route::get('/assign-dosenkkn', [DosenpembimbingController::class, 'index'])->name('assign.dosenkkn');
+    Route::get('/assign-dosenppl', [DosenpembimbingController::class, 'indexppl'])->name('assign.dosenppl');
+    Route::get('/assign-dosenpkl', [DosenpembimbingController::class, 'indexpkl'])->name('assign.dosenpkl');
+    Route::post('/assign-dosenikkn', [DosenpembimbingController::class, 'assign'])->name('assign.dosen.store');
+    Route::delete('/assign-dosen/{id}', [DosenpembimbingController::class, 'delete'])->name('assign.dosen.delete');
+
     //KKN
     Route::get('/lokasikkn', [LokasiKKNController::class, 'indexlokasikkn'])->name('lokasikkn.index');
     Route::get('/lokasikkn/create', [LokasiKKNController::class, 'createlokasikkn'])->name('lokasikkn.create');
@@ -77,9 +80,9 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/assign-lokasippl', [LokasiPPLController::class, 'assign'])->name('assign.lokasippl.store');
     Route::delete('/assign-lokasippl/{id}', [LokasiPPLController::class, 'deletelokasippl'])->name('assign.lokasippl.delete');
 
-
-    Route::post('/pengajuan-pkl/{id}/approve', [PengajuanLokasiPKLController::class, 'approve'])->name('pengajuan_pkl.approve');
-    Route::post('/pengajuan-pkl/{id}/reject', [PengajuanLokasiPKLController::class, 'reject'])->name('pengajuan_pkl.reject');
+    Route::get('/pengajuan-pkladmin', [PengajuanLokasiPKLController::class, 'adminindex'])->name('pengajuanpkl.adminindex');
+    Route::post('/pengajuan-pkl/{id}/approve', [PengajuanLokasiPKLController::class, 'approve'])->name('pengajuanpkl.approve');
+    Route::post('/pengajuan-pkl/{id}/reject', [PengajuanLokasiPKLController::class, 'reject'])->name('pengajuanpkl.reject');
 
 
 });
@@ -110,9 +113,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/publikasi/{id}', [PublikasiController::class, 'destroy'])->name('publikasi.destroy');
 
 
-    Route::get('/pengajuan-pkl', [PengajuanLokasiPKLController::class, 'index'])->name('pengajuan_pkl.index');
-    Route::get('/pengajuan-pkl/create', [PengajuanLokasiPKLController::class, 'create'])->name('pengajuan_pkl.create');
-    Route::post('/pengajuan-pkl', [PengajuanLokasiPKLController::class, 'store'])->name('pengajuan_pkl.store');
+    Route::get('/pengajuan-pkl', [PengajuanLokasiPKLController::class, 'index'])->name('pengajuanpkl.index');
+    Route::get('/pengajuan-pkl/create', [PengajuanLokasiPKLController::class, 'create'])->name('pengajuanpkl.create');
+    Route::post('/pengajuan-pkl', [PengajuanLokasiPKLController::class, 'store'])->name('pengajuanpkl.store');
 });
 
 

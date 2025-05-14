@@ -11,10 +11,33 @@ class DosenPembimbingController extends Controller
 {
     public function index()
     {
-        $mahasiswas = Mahasiswa::whereDoesntHave('dosenPembimbing')->get();
+$mahasiswas = Mahasiswa::where('kegiatan', 'KKN')
+                        ->whereDoesntHave('dosenPembimbing')
+                        ->orderBy('kecamatan', 'asc') // Change 'nama' to your desired column and 'asc' to 'desc' if needed
+                        ->get();
         $dosens = Dosen::all();
         $assignments = DosenPembimbing::with(['mahasiswa', 'dosen'])->get();
-        return view('admin.assigndosen', compact('mahasiswas', 'dosens', 'assignments'));
+        return view('admin.assigndosenkkn', compact('mahasiswas', 'dosens', 'assignments'));
+    }
+    public function indexppl()
+    {
+$mahasiswas = Mahasiswa::where('kegiatan', 'PPL')
+                        ->whereDoesntHave('dosenPembimbing')
+                        ->orderBy('kecamatan', 'asc') // Change 'nama' to your desired column and 'asc' to 'desc' if needed
+                        ->get();
+        $dosens = Dosen::all();
+        $assignments = DosenPembimbing::with(['mahasiswa', 'dosen'])->get();
+        return view('admin.assigndosenppl', compact('mahasiswas', 'dosens', 'assignments'));
+    }
+
+    public function indexpkl()
+    {
+$mahasiswas = Mahasiswa::where('kegiatan', 'PKL')
+                        ->whereDoesntHave('dosenPembimbing')
+                        ->get();
+        $dosens = Dosen::all();
+        $assignments = DosenPembimbing::with(['mahasiswa', 'dosen'])->get();
+        return view('admin.assigndosenppl', compact('mahasiswas', 'dosens', 'assignments'));
     }
 
     public function assign(Request $request)

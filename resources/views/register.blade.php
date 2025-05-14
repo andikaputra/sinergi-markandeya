@@ -42,7 +42,7 @@
                             <select name="kegiatan" class="form-select" required>
                                 <option selected >--Pilih Kegiatan--</option>
                                 <option value="KKN">KKN</option>
-                                <option value="PKL">PKL</option>
+                                <option value="PPL">PPL</option>
                                 <option value="PKL">PKL</option>
                             </select>
                         </div>
@@ -78,6 +78,7 @@
                                 <option disabled >--Kabupaten Badung--</option>
                                 <option value="Petang">Petang</option>
                                 <option value="Abiansemal">Abiansemal</option>
+                                <option disabled >--Kabupaten Tabanan--</option>
                                 <option value="Penebel">Penebel</option>
                             </select>
                         </div>
