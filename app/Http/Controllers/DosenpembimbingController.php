@@ -11,44 +11,78 @@ class DosenPembimbingController extends Controller
 {
     public function index()
     {
-$mahasiswas = Mahasiswa::where('kegiatan', 'KKN')
-                        ->whereDoesntHave('dosenPembimbing')
-                        ->orderBy('kecamatan', 'asc') // Change 'nama' to your desired column and 'asc' to 'desc' if needed
-                        ->get();
+        $mahasiswas = Mahasiswa::where('kegiatan', 'KKN')
+            ->whereDoesntHave('dosenPembimbing')
+            ->orderBy('kecamatan', 'asc')
+            ->get();
+        
         $dosens = Dosen::all();
-        $assignments = DosenPembimbing::with(['mahasiswa', 'dosen'])->get();
+        
+        // Filter assignments hanya untuk mahasiswa KKN
+        $assignments = DosenPembimbing::whereHas('mahasiswa', function($query) {
+            $query->where('kegiatan', 'KKN');
+        })->with(['mahasiswa', 'dosen'])->get();
+
         return view('admin.assigndosenkkn', compact('mahasiswas', 'dosens', 'assignments'));
     }
+
     public function indexppl()
     {
-$mahasiswas = Mahasiswa::where('kegiatan', 'PPL')
-                        ->whereDoesntHave('dosenPembimbing')
-                        ->orderBy('kecamatan', 'asc') // Change 'nama' to your desired column and 'asc' to 'desc' if needed
-                        ->get();
+        $mahasiswas = Mahasiswa::where('kegiatan', 'PPL')
+            ->whereDoesntHave('dosenPembimbing')
+            ->orderBy('kecamatan', 'asc')
+            ->get();
+        
         $dosens = Dosen::all();
-        $assignments = DosenPembimbing::with(['mahasiswa', 'dosen'])->get();
+        
+        // Filter assignments hanya untuk mahasiswa PPL
+        $assignments = DosenPembimbing::whereHas('mahasiswa', function($query) {
+            $query->where('kegiatan', 'PPL');
+        })->with(['mahasiswa', 'dosen'])->get();
+
         return view('admin.assigndosenppl', compact('mahasiswas', 'dosens', 'assignments'));
     }
 
     public function indexpkl()
     {
-$mahasiswas = Mahasiswa::where('kegiatan', 'PKL')
-                        ->whereDoesntHave('dosenPembimbing')
-                        ->get();
+        $mahasiswas = Mahasiswa::where('kegiatan', 'PKL')
+            ->whereDoesntHave('dosenPembimbing')
+            ->get();
+        
         $dosens = Dosen::all();
-        $assignments = DosenPembimbing::with(['mahasiswa', 'dosen'])->get();
-        return view('admin.assigndosenppl', compact('mahasiswas', 'dosens', 'assignments'));
+        
+        // Filter assignments hanya untuk mahasiswa PKL
+        $assignments = DosenPembimbing::whereHas('mahasiswa', function($query) {
+            $query->where('kegiatan', 'PKL');
+        })->with(['mahasiswa', 'dosen'])->get();
+
+        return view('admin.assigndosenpkl', compact('mahasiswas', 'dosens', 'assignments'));
+    }
+
+    public function indexmagang()
+    {
+        $mahasiswas = Mahasiswa::where('kegiatan', 'Magang')
+            ->whereDoesntHave('dosenPembimbing')
+            ->get();
+        
+        $dosens = Dosen::all();
+        
+        // Filter assignments hanya untuk mahasiswa Magang
+        $assignments = DosenPembimbing::whereHas('mahasiswa', function($query) {
+            $query->where('kegiatan', 'Magang');
+        })->with(['mahasiswa', 'dosen'])->get();
+
+        return view('admin.assigndosenmagang', compact('mahasiswas', 'dosens', 'assignments'));
     }
 
     public function assign(Request $request)
     {
         $request->validate([
-            'nims' => 'required|array', // Menerima array NIM
-            'nims.*' => 'exists:mahasiswas,nim', // Validasi setiap NIM harus ada di tabel mahasiswas
+            'nims' => 'required|array',
+            'nims.*' => 'exists:mahasiswas,nim',
             'nidn' => 'required|exists:dosens,nidn',
         ]);
     
-        // Loop setiap NIM untuk disimpan
         foreach ($request->nims as $nim) {
             DosenPembimbing::create([
                 'nim' => $nim,
@@ -56,9 +90,8 @@ $mahasiswas = Mahasiswa::where('kegiatan', 'PKL')
             ]);
         }
     
-        return redirect()->back()->with('success', 'Dosen pembimbing berhasil ditetapkan untuk beberapa mahasiswa!');
+        return redirect()->back()->with('success', 'Dosen pembimbing berhasil ditetapkan!');
     }
-    
 
     public function delete($id)
     {

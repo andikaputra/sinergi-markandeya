@@ -1,38 +1,86 @@
-@extends('layouts.app')
+@extends('layouts.adminmhs')
+
+@section('title', 'Ajukan Lokasi PKL Mandiri')
 
 @section('content')
-<div class="container mt-4">
-    <h2>Ajukan Lokasi PKL</h2>
+<div class="max-w-3xl mx-auto">
+    <div class="flex items-center space-x-4 mb-8">
+        <a href="{{ route('pengajuanpkl.index') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-400 hover:text-amber-600 hover:border-amber-600 transition-all shadow-sm">
+            <i class="fas fa-chevron-left text-xs"></i>
+        </a>
+        <h2 class="text-2xl font-black text-gray-800 tracking-tight">Formulir Pengajuan Lokasi</h2>
+    </div>
 
-    <div class="card p-4">
-        <form action="{{ route('pengajuanpkl.store') }}" method="POST">
+    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-8 border-b border-gray-50 bg-slate-50/50">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-500 p-2 rounded-lg text-white shadow-lg shadow-amber-100">
+                    <i class="fas fa-paper-plane text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 leading-none">Detail Instansi PKL</h3>
+                    <p class="text-xs text-gray-400 font-medium mt-1">Usulkan tempat pelaksanaan praktik kerja lapangan Anda.</p>
+                </div>
+            </div>
+        </div>
+
+        <form action="{{ route('pengajuanpkl.store') }}" method="POST" class="p-10 space-y-6">
             @csrf
-
-            <div class="mb-3">
-                <label for="nama_instansi" class="form-label">Nama Instansi</label>
-                <input type="text" name="nama_instansi" class="form-control" required>
-                @error('nama_instansi')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
+            
+            <div class="space-y-2">
+                <label for="nama_instansi" class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Nama Perusahaan / Instansi</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-300 group-focus-within:text-amber-500 transition-colors">
+                        <i class="fas fa-building text-sm"></i>
+                    </div>
+                    <input type="text" name="nama_instansi" id="nama_instansi" required value="{{ old('nama_instansi') }}"
+                        class="block w-full pl-12 pr-4 py-4 bg-slate-50 border border-gray-100 rounded-2xl text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 focus:bg-white transition-all font-bold"
+                        placeholder="Contoh: PT. Digital Raya">
+                </div>
+                @error('nama_instansi') <p class="text-red-500 text-xs mt-1 font-bold">{{ $message }}</p> @enderror
             </div>
 
-            <div class="mb-3">
-                <label for="alamat" class="form-label">Alamat Instansi</label>
-                <textarea name="alamat" class="form-control" rows="3" required></textarea>
-                @error('alamat')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
+            <div class="space-y-2">
+                <label for="alamat" class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Alamat Lengkap Instansi</label>
+                <div class="relative group">
+                    <div class="absolute top-4 left-0 pl-5 flex items-center pointer-events-none text-gray-300 group-focus-within:text-amber-500 transition-colors">
+                        <i class="fas fa-map-marker-alt text-sm"></i>
+                    </div>
+                    <textarea name="alamat" id="alamat" rows="3" required
+                        class="block w-full pl-12 pr-4 py-4 bg-slate-50 border border-gray-100 rounded-2xl text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 focus:bg-white transition-all font-medium"
+                        placeholder="Jl. Nama Jalan No. XX, Kota/Kabupaten...">{{ old('alamat') }}</textarea>
+                </div>
+                @error('alamat') <p class="text-red-500 text-xs mt-1 font-bold">{{ $message }}</p> @enderror
             </div>
 
-            <div class="mb-3">
-                <label for="kontak" class="form-label">Kontak Instansi (Opsional)</label>
-                <input type="text" name="kontak" class="form-control">
-                @error('kontak')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
+            <div class="space-y-2">
+                <label for="kontak" class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Kontak Instansi (Opsional)</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-300 group-focus-within:text-amber-500 transition-colors">
+                        <i class="fas fa-phone text-sm"></i>
+                    </div>
+                    <input type="text" name="kontak" id="kontak" value="{{ old('kontak') }}"
+                        class="block w-full pl-12 pr-4 py-4 bg-slate-50 border border-gray-100 rounded-2xl text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 focus:bg-white transition-all font-medium"
+                        placeholder="Nomor Telepon atau WhatsApp">
+                </div>
+                @error('kontak') <p class="text-red-500 text-xs mt-1 font-bold">{{ $message }}</p> @enderror
             </div>
 
-            <button type="submit" class="btn btn-primary">Ajukan</button>
+            <div class="bg-amber-50 p-6 rounded-3xl border border-amber-100">
+                <div class="flex items-start space-x-3 text-amber-700">
+                    <i class="fas fa-info-circle mt-1 text-amber-500"></i>
+                    <p class="text-xs font-medium leading-relaxed">
+                        <strong>Perhatian:</strong> Pengajuan lokasi ini akan diverifikasi oleh Admin terlebih dahulu. Pastikan data yang Anda masukkan benar agar proses persetujuan lebih cepat.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" class="w-full py-5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl shadow-xl shadow-amber-100 transition-all flex items-center justify-center space-x-3 group transform hover:-translate-y-1">
+                    <i class="fas fa-paper-plane group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                    <span class="uppercase tracking-widest text-xs">Kirim Pengajuan Sekarang</span>
+                </button>
+            </div>
         </form>
     </div>
 </div>

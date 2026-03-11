@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\PengajuanLokasiPKL;
 use Illuminate\Support\Facades\Auth;
@@ -12,15 +10,15 @@ class PengajuanLokasiPKLController extends Controller
 {
     public function index()
     {
-        $pengajuan = PengajuanLokasiPKL::where('nim', Auth::user()->nim)->get();
-        return view('mahasiswa.pengajuanpkl.index', compact('pengajuan'));
-    }
-    public function adminindex()
-    {
-        $pengajuan = PengajuanLokasiPKL::with('mahasiswa')->get();
-        return view('admin.pengajuanpkl', compact('pengajuan'));
+        $pengajuans = PengajuanLokasiPKL::where('nim', Auth::user()->nim)->get();
+        return view('mahasiswa.pengajuanpkl.index', compact('pengajuans'));
     }
 
+    public function adminindex()
+    {
+        $pengajuans = PengajuanLokasiPKL::with('mahasiswa')->get();
+        return view('admin.pengajuanpkl', compact('pengajuans'));
+    }
 
     public function create()
     {

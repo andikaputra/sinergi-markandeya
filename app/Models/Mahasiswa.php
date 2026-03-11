@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class Mahasiswa extends Authenticatable
 {
     use HasFactory;
+
     protected $guard = 'mahasiswa';
 
     protected $fillable = [
@@ -17,6 +16,8 @@ class Mahasiswa extends Authenticatable
         'nim',
         'kampus',
         'kegiatan',
+        'laporan_link',
+        'tahun_akademik',
         'kecamatan',
         'prodi',
         'pembayaranKRS',
@@ -45,38 +46,73 @@ class Mahasiswa extends Authenticatable
         return $listProdi[$this->prodi] ?? $this->prodi;
     }
 
+    public function getNilaiAkhirAttribute()
+    {
+        $nilaiPembimbing = $this->dosenPembimbing ? $this->dosenPembimbing->nilai : null;
+        $nilaiPenguji = $this->dosenPenguji ? $this->dosenPenguji->nilai : null;
+
+        if (is_numeric($nilaiPembimbing) && is_numeric($nilaiPenguji)) {
+            $rata = ($nilaiPembimbing + $nilaiPenguji) / 2;
+            
+            if ($rata >= 85) return "A";
+            if ($rata >= 80) return "A-";
+            if ($rata >= 75) return "B+";
+            if ($rata >= 70) return "B";
+            if ($rata >= 65) return "B-";
+            if ($rata >= 60) return "C";
+            return "D";
+        }
+
+        return $nilaiPembimbing ?? $nilaiPenguji ?? '-';
+    }
+
     public function jurnals()
-{
-    return $this->hasMany(Jurnal::class, 'nim', 'nim');
-}
+    {
+        return $this->hasMany(Jurnal::class, 'nim', 'nim');
+    }
 
+    public function publikasis()
+    {
+        return $this->hasMany(Publikasi::class, 'nim', 'nim');
+    }
 
-public function dosenPembimbing()
-{
-    return $this->hasMany(DosenPembimbing::class, 'nim', 'nim');
-}
+    public function penempatankkn()
+    {
+        return $this->hasOne(Penempatankkn::class, 'nim', 'nim');
+    }
 
+    public function lokasikkn()
+    {
+        return $this->hasOne(Penempatankkn::class, 'nim', 'nim');
+    }
 
-public function penempatankkn()
-{
-    return $this->hasOne(Penempatankkn::class, 'nim', 'nim');
-}
+    public function penempatanppl()
+    {
+        return $this->hasOne(Penempatanppl::class, 'nim', 'nim');
+    }
 
-// Relasi ke tabel LokasiKKN melalui PenempatanKKN
-public function lokasikkn()
-{
-    return $this->hasOne(Penempatankkn::class, 'nim', 'nim');
-}
+    public function lokasippl()
+    {
+        return $this->hasOne(Penempatanppl::class, 'nim', 'nim');
+    }
 
-public function penempatanppl()
-{
-    return $this->hasOne(Penempatanppl::class, 'nim', 'nim');
-}
+    public function penempatanpkl()
+    {
+        return $this->hasOne(PenempatanPkl::class, 'nim', 'nim');
+    }
 
-// Relasi ke tabel LokasiKKN melalui PenempatanKKN
-public function lokasippl()
-{
-    return $this->hasOne(Penempatanppl::class, 'nim', 'nim');
-}
+    public function penempatanmagang()
+    {
+        return $this->hasOne(PenempatanMagang::class, 'nim', 'nim');
+    }
 
+    public function dosenPenguji()
+    {
+        return $this->hasOne(DosenPenguji::class, 'nim', 'nim');
+    }
+
+    public function dosenPembimbing()
+    {
+        return $this->hasOne(DosenPembimbing::class, 'nim', 'nim');
+    }
 }

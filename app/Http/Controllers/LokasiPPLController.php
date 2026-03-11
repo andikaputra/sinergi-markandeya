@@ -25,7 +25,6 @@ class LokasiPPLController extends Controller
             'Sekolah' => 'required',
         ]);
 
-
         Lokasippl::create([
             'Sekolah' => $request->Sekolah,
         ]);
@@ -58,16 +57,17 @@ class LokasiPPLController extends Controller
     //asign lokasi ppl
     public function indexasignlokasippl()
     {
-        // Pastikan mahasiswa yang belum memiliki lokasi PPL diambil
+        // Ambil mahasiswa PPL yang belum punya lokasi
         $mahasiswas = Mahasiswa::where('kegiatan', 'PPL')
             ->whereDoesntHave('lokasippl') 
             ->get(); 
     
-        // Ambil semua data lokasi PPL
         $lokasippls = Lokasippl::all();
     
-        // Ambil semua penempatan mahasiswa PPL beserta relasi mereka
-        $assignmentslokasippl = Penempatanppl::with(['mahasiswa', 'lokasippl'])->get();
+        // Filter penempatan agar hanya muncul data PPL saja
+        $assignmentslokasippl = Penempatanppl::whereHas('mahasiswa', function($query) {
+            $query->where('kegiatan', 'PPL');
+        })->with(['mahasiswa', 'lokasippl'])->get();
     
         return view('admin.assignlokasippl', compact('mahasiswas', 'lokasippls', 'assignmentslokasippl'));
     }
@@ -75,22 +75,20 @@ class LokasiPPLController extends Controller
     public function assign(Request $request)
     {
         $request->validate([
-            'nims' => 'required|array', // Menerima array NIM
-            'nims.*' => 'exists:mahasiswas,nim', // Validasi setiap NIM harus ada di tabel mahasiswas
+            'nims' => 'required|array',
+            'nims.*' => 'exists:mahasiswas,nim',
             'sekolah' => 'required|exists:lokasi_ppl,id',
         ]);
     
-        // Loop setiap NIM untuk disimpan
         foreach ($request->nims as $nim) {
-            Penempatanppl::create([
-                'nim' => $nim,
-                'sekolah_id' => $request->sekolah,
-            ]);
+            Penempatanppl::updateOrCreate(
+                ['nim' => $nim],
+                ['sekolah_id' => $request->sekolah]
+            );
         }
     
-        return redirect()->back()->with('success', 'Sekolah berhasil ditetapkan untuk beberapa mahasiswa!');
+        return redirect()->back()->with('success', 'Sekolah berhasil ditetapkan!');
     }
-    
 
     public function deletelokasippl($id)
     {

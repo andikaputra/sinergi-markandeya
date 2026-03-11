@@ -1,66 +1,100 @@
 @extends('layouts.admin')
 
+@section('title', 'Manajemen Penempatan PKL')
+
 @section('content')
-<div class="container mt-4">
-    <h2>Pengajuan Lokasi PKL</h2>
-    
+<div class="space-y-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
+        <div>
+            <h2 class="text-2xl font-black text-gray-800 tracking-tight">Pengajuan Lokasi PKL</h2>
+            <p class="text-sm text-gray-500 font-medium">Verifikasi dan kelola penempatan mandiri mahasiswa PKL.</p>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black border border-blue-100">
+                TOTAL: {{ $pengajuans->count() }}
+            </span>
+        </div>
+    </div>
 
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
-
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>NIM</th>
-                <th>Nama Mahasiswa</th>
-                <th>Prodi</th>
-                <th>Nama Instansi</th>
-                <th>Alamat</th>
-                <th>Kontak</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($pengajuan as $item)
-                <tr>
-                    <td>{{ $item->nim }}</td>
-                    <td>{{ $item->mahasiswa->nama ?? 'Tidak Ada' }}</td>
-                    <td>{{ $item->mahasiswa->prodi_full }}</td>
-                    <td>{{ $item->nama_instansi }}</td>
-                    <td>{{ $item->alamat }}</td>
-                    <td>{{ $item->kontak ?? '-' }}</td>
-                    <td>
-                        @if ($item->status == 'pending')
-                            <span class="badge bg-warning text-dark">Pending</span>
-                        @elseif ($item->status == 'approved')
-                            <span class="badge bg-success">Approved</span>
-                        @else
-                            <span class="badge bg-danger">Rejected</span>
-                        @endif
-                    </td>
-                    <td>
-                            <form action="{{ route('pengajuanpkl.approve', $item->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                            </form>
-                            <form action="{{ route('pengajuanpkl.reject', $item->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                            </form>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="text-center">Belum ada pengajuan lokasi PKL.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-8 overflow-x-auto">
+            <table class="w-full text-left border-separate border-spacing-0" id="pklTable">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Instansi / Perusahaan</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-center">Status</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @foreach ($pengajuans as $pengajuan)
+                    <tr class="hover:bg-slate-50/30 transition-colors group">
+                        <td class="px-6 py-5">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs border border-amber-100 group-hover:scale-110 transition-transform">
+                                    {{ substr($pengajuan->mahasiswa->nama, 0, 1) }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-gray-800">{{ $pengajuan->mahasiswa->nama }}</p>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{{ $pengajuan->nim }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-5">
+                            <div class="space-y-1">
+                                <p class=\"text-sm font-bold text-slate-700\">{{ $pengajuan->nama_instansi }}</p>
+                                <div class=\"flex items-center text-[10px] text-slate-400 font-medium italic\">
+                                    <i class=\"fas fa-map-marker-alt mr-1\"></i>
+                                    {{ $pengajuan->alamat }}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-5 text-center">
+                            @if($pengajuan->status == 'pending')
+                                <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-[10px] font-black border border-amber-100 uppercase tracking-wider animate-pulse">Pending</span>
+                            @elseif($pengajuan->status == 'approved')
+                                <span class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black border border-emerald-100 uppercase tracking-wider">Approved</span>
+                            @else
+                                <span class="px-3 py-1 bg-red-50 text-red-600 rounded-full text-[10px] font-black border border-red-100 uppercase tracking-wider">Rejected</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-5 text-right">
+                            @if($pengajuan->status == 'pending')
+                            <div class="flex items-center justify-end space-x-2">
+                                <form action="{{ route('pengajuanpkl.approve', $pengajuan->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black rounded-lg transition-all shadow-md shadow-emerald-100 uppercase tracking-widest">
+                                        Approve
+                                    </button>
+                                </form>
+                                <form action="{{ route('pengajuanpkl.reject', $pengajuan->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="px-4 py-2 bg-white border border-gray-200 text-red-600 text-[10px] font-black rounded-lg hover:bg-red-50 transition-all uppercase tracking-widest">
+                                        Reject
+                                    </button>
+                                </form>
+                            </div>
+                            @else
+                                <span class="text-xs font-bold text-slate-300 italic">No Actions</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('#pklTable').DataTable({
+            "language": {
+                "search": "",
+                "searchPlaceholder": "Cari pengajuan..."
+            }
+        });
+    });
+</script>
 @endsection

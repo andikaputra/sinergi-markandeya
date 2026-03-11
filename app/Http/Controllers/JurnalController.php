@@ -3,20 +3,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Jurnal;
+use App\Models\Mahasiswa;
+use App\Models\DosenPembimbing;
 use Illuminate\Support\Facades\Auth;
 
 class JurnalController extends Controller
 {
     public function index()
     {
-        // Ambil NIM mahasiswa yang login
         $nim = Auth::user()->nim;
-
-        // Ambil jurnal yang sesuai dengan NIM
-        $jurnals = Jurnal::whereHas('mahasiswa', function ($query) use ($nim) {
-            $query->where('nim', $nim);
-        })->orderBy('tanggal', 'desc')->get();
-
+        $jurnals = Jurnal::where('nim', $nim)->orderBy('tanggal', 'desc')->get();
         return view('mahasiswa.jurnals.index', compact('jurnals'));
     }
 
@@ -39,5 +35,16 @@ class JurnalController extends Controller
         ]);
 
         return redirect()->route('jurnal.index')->with('success', 'Jurnal berhasil ditambahkan.');
+    }
+
+    public function cetak()
+    {
+        $mahasiswa = Auth::user();
+        $jurnals = Jurnal::where('nim', $mahasiswa->nim)->orderBy('tanggal', 'asc')->get();
+        
+        // Ambil data dosen pembimbing
+        $pembimbing = DosenPembimbing::where('nim', $mahasiswa->nim)->with('dosen')->first();
+
+        return view('mahasiswa.jurnals.cetak', compact('mahasiswa', 'jurnals', 'pembimbing'));
     }
 }

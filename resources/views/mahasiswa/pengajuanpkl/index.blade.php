@@ -1,65 +1,66 @@
 @extends('layouts.adminmhs')
 
+@section('title', 'Pengajuan Lokasi PKL')
+
 @section('content')
-<div class="container mt-4">
-    <h2>Pengajuan Lokasi PKL</h2>
-    
-    <a href="{{ route('pengajuanpkl.create') }}" class="btn btn-primary mb-3">Ajukan Lokasi Baru</a>
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
+        <div>
+            <h2 class="text-2xl font-black text-gray-800 tracking-tight">Status Pengajuan</h2>
+            <p class="text-sm text-gray-500 font-medium">Pantau status persetujuan lokasi PKL mandiri Anda.</p>
+        </div>
+        <a href="{{ route('pengajuanpkl.create') }}" class="inline-flex items-center justify-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl transition-all shadow-lg shadow-amber-100 group">
+            <i class="fas fa-paper-plane mr-2 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform"></i>
+            Ajukan Lokasi Baru
+        </a>
+    </div>
 
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    @if($pengajuans->isEmpty())
+    <div class="bg-white p-16 rounded-[2.5rem] shadow-sm border border-gray-100 text-center">
+        <div class="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
+            <i class="fas fa-building text-4xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800">Belum ada pengajuan</h3>
+        <p class="text-gray-500 max-w-sm mx-auto mt-2">Silakan ajukan lokasi instansi atau perusahaan tempat Anda akan melaksanakan PKL.</p>
+    </div>
+    @else
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        @foreach ($pengajuans as $item)
+        <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-all">
+            <div class="p-8">
+                <div class="flex items-start justify-between mb-6">
+                    <div class="bg-blue-50 text-blue-600 p-4 rounded-2xl">
+                        <i class="fas fa-building text-xl"></i>
+                    </div>
+                    @if ($item->status == 'pending')
+                        <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-[10px] font-black border border-amber-100 uppercase tracking-widest animate-pulse">Pending</span>
+                    @elseif ($item->status == 'approved')
+                        <span class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black border border-emerald-100 uppercase tracking-widest">Approved</span>
+                    @else
+                        <span class="px-3 py-1 bg-red-50 text-red-600 rounded-full text-[10px] font-black border border-red-100 uppercase tracking-widest">Rejected</span>
+                    @endif
+                </div>
+                
+                <h4 class="text-lg font-black text-gray-800 mb-2 leading-tight">{{ $item->nama_instansi }}</h4>
+                
+                <div class="space-y-3 mt-6">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-map-marker-alt w-5 text-blue-400"></i>
+                        <span class="font-medium">{{ $item->alamat }}</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-phone w-5 text-emerald-400"></i>
+                        <span class="font-medium">{{ $item->kontak ?? 'Tidak ada kontak' }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="px-8 py-4 bg-slate-50 border-t border-gray-50 flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                <span>Dibuat pada:</span>
+                <span>{{ $item->created_at->translatedFormat('d M Y') }}</span>
+            </div>
+        </div>
+        @endforeach
+    </div>
     @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
-
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Nama Instansi</th>
-                <th>Alamat</th>
-                <th>Kontak</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($pengajuan as $item)
-                <tr>
-                    <td>{{ $item->nama_instansi }}</td>
-                    <td>{{ $item->alamat }}</td>
-                    <td>{{ $item->kontak ?? '-' }}</td>
-                    <td>
-                        @if ($item->status == 'pending')
-                            <span class="badge bg-warning text-dark">Pending</span>
-                        @elseif ($item->status == 'approved')
-                            <span class="badge bg-success">Approved</span>
-                        @else
-                            <span class="badge bg-danger">Rejected</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if (Auth::user()->role === 'admin')
-                            <form action="{{ route('pengajuan_pkl.approve', $item->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                            </form>
-                            <form action="{{ route('pengajuan_pkl.reject', $item->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                            </form>
-                        @else
-                            <span class="text-muted">Tidak ada aksi</span>
-                        @endif
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="text-center">Belum ada pengajuan lokasi PKL.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
 </div>
 @endsection

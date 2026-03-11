@@ -20,25 +20,41 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required',
             'password' => 'required'
         ]);
     
-        // Cek kredensial untuk mahasiswa
-        if (Auth::guard('mahasiswa')->attempt($request->only('email', 'password'))) {
-            $request->session()->regenerate();
-            return redirect()->route('dashboard')->with('success', 'Login berhasil!');
+        // Cek kredensial untuk mahasiswa (menggunakan email)
+        if (filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+            if (Auth::guard('mahasiswa')->attempt($request->only('email', 'password'))) {
+                $request->session()->regenerate();
+                return redirect()->route('dashboard')->with('success', 'Login berhasil!');
+            }
+        } else {
+            // Cek kredensial untuk dosen (menggunakan nidn)
+            if (Auth::guard('dosen')->attempt(['nidn' => $request->email, 'password' => $request->password])) {
+                $request->session()->regenerate();
+                return redirect()->route('dosen.dashboard')->with('success', 'Login Dosen berhasil!');
+            }
         }
     
-        return back()->withErrors(['email' => 'Email atau password salah!']);
+        return back()->withErrors(['email' => 'Kredensial tidak ditemukan!']);
     }
 
-    
-
     // Logout
-    public function logout()
+    public function logout(Request $request)
     {
-        Auth::logout();
+        if (Auth::guard('mahasiswa')->check()) {
+            Auth::guard('mahasiswa')->logout();
+        } elseif (Auth::guard('dosen')->check()) {
+            Auth::guard('dosen')->logout();
+        } else {
+            Auth::logout();
+        }
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/login')->with('success', 'Anda telah logout.');
     }
 
@@ -69,5 +85,37 @@ class AuthController extends Controller
     {
         Auth::logout();
         return redirect('/admin')->with('success', 'Anda telah logout.');
+    }
+
+    public function showChangePasswordForm()
+    {
+        return view('auth.change-password');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = null;
+        if (Auth::guard('mahasiswa')->check()) {
+            $user = Auth::guard('mahasiswa')->user();
+        } elseif (Auth::guard('dosen')->check()) {
+            $user = Auth::guard('dosen')->user();
+        } else {
+            $user = Auth::user();
+        }
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Password saat ini tidak cocok!']);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return back()->with('success', 'Password berhasil diperbarui!');
     }
 }

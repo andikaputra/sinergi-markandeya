@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Mahasiswa;
 use App\Models\Penempatankkn;
 use App\Models\Penempatanppl;
+use App\Models\PenempatanPkl;
+use App\Models\TahunAkademik;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -26,16 +28,17 @@ class MahasiswaController extends Controller
             'nim' => 'required|string|max:20|unique:mahasiswas',
             'kampus' => 'required|string|max:255',
             'kegiatan' => 'required|string|max:255',
-            'kecamatan'=>'string|max:255',
+            'kecamatan' => 'required|string|max:255',
             'prodi' => 'required|string|max:255',
-            'pembayaranKRS' => 'required|mimes:pdf,jpg,jpeg,png|max:2048',
-            'KRS' => 'required|mimes:pdf,jpg,jpeg,png|max:2048',
+            'pembayaranKRS' => 'required|string|max:255',
+            'KRS' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:mahasiswas',
             'password' => 'required|string|min:6|confirmed',
-            'pembayaranKRS'=>'required|string|max:255',
-            'KRS'=>'required|string|max:255',
         ]);
 
+        // Ambil Tahun Akademik Aktif
+        $activeTA = TahunAkademik::active();
+        $taString = $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null;
 
         // Simpan data ke database
         Mahasiswa::create([
@@ -43,12 +46,13 @@ class MahasiswaController extends Controller
             'nim' => $request->nim,
             'kampus' => $request->kampus,
             'kegiatan' => $request->kegiatan,
-            'kecamatan'=>$request->kecamatan,
+            'kecamatan' => $request->kecamatan,
             'prodi' => $request->prodi,
             'pembayaranKRS' => $request->pembayaranKRS,
             'KRS' => $request->KRS,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'tahun_akademik' => $taString
         ]);
 
         return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Silakan login.');
@@ -58,7 +62,7 @@ class MahasiswaController extends Controller
     {
         $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->first();
     
-        // Ambil lokasi KKN atau PPL berdasarkan NIM yang login
+        // Ambil lokasi KKN, PPL, atau PKL berdasarkan NIM yang login
         $penempatankknmhs = Penempatankkn::with(['mahasiswa', 'lokasikkn'])
             ->where('nim', Auth::user()->nim)
             ->first();
@@ -66,11 +70,25 @@ class MahasiswaController extends Controller
         $penempatanpplmhs = Penempatanppl::with(['mahasiswa', 'lokasippl'])
             ->where('nim', Auth::user()->nim)
             ->first();
+
+        $penempatanpklmhs = PenempatanPkl::with(['mahasiswa', 'lokasipkl'])
+            ->where('nim', Auth::user()->nim)
+            ->first();
     
-        return view('mahasiswa.dashboard', compact('penempatankknmhs', 'penempatanpplmhs'));
+        return view('mahasiswa.dashboard', compact('penempatankknmhs', 'penempatanpplmhs', 'penempatanpklmhs', 'mahasiswa'));
     }
 
+    public function saveLaporan(Request $request)
+    {
+        $request->validate([
+            'laporan_link' => 'required|url'
+        ]);
 
+        $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->firstOrFail();
+        $mahasiswa->update([
+            'laporan_link' => $request->laporan_link
+        ]);
 
+        return redirect()->back()->with('success', 'Link laporan akhir berhasil disimpan!');
+    }
 }
-

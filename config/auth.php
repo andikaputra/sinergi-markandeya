@@ -45,9 +45,13 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'mahasiswa' => [ // Tambahkan ini
+        'mahasiswa' => [
             'driver' => 'session',
             'provider' => 'mahasiswas',
+        ],
+        'dosen' => [
+            'driver' => 'session',
+            'provider' => 'dosens',
         ],
     ],
 
@@ -73,9 +77,13 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
-        'mahasiswas' => [ // Tambahkan ini
+        'mahasiswas' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\Mahasiswa::class),
+        ],
+        'dosens' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Dosen::class,
         ],
 
         // 'users' => [

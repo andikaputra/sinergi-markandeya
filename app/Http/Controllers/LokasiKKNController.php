@@ -29,7 +29,7 @@ class LokasiKKNController extends Controller
             'provinsi' => 'required',
         ]);
 
-        LokasiKKN::create($request->all());
+        Lokasikkn::create($request->all());
 
         return redirect()->route('lokasikkn.index')->with('success', 'Tempat KKN berhasil ditambahkan!');
     }
@@ -51,12 +51,12 @@ class LokasiKKNController extends Controller
 
         $tempatKKN->update($request->all());
 
-        return redirect()->route('tempat-kkn.index')->with('success', 'Tempat KKN berhasil diperbarui!');
+        return redirect()->route('lokasikkn.index')->with('success', 'Tempat KKN berhasil diperbarui!');
     }
 
     public function destroylokasikkn($id)
     {
-        LokasiKKN::findOrFail($id)->delete();
+        Lokasikkn::findOrFail($id)->delete();
         return redirect()->route('lokasikkn.index')->with('success', 'Tempat KKN berhasil dihapus!');
     }
 
@@ -81,19 +81,19 @@ class LokasiKKNController extends Controller
     
         // Loop setiap NIM untuk disimpan
         foreach ($request->nims as $nim) {
-            Penempatankkn::create([
-                'nim' => $nim,
-                'lokasi_kkn_id' => $request->lokasikkn,
-            ]);
+            Penempatankkn::updateOrCreate(
+                ['nim' => $nim],
+                ['lokasi_kkn_id' => $request->lokasikkn]
+            );
         }
     
-        return redirect()->back()->with('success', 'Dosen pembimbing berhasil ditetapkan untuk beberapa mahasiswa!');
+        return redirect()->back()->with('success', 'Lokasi KKN berhasil ditetapkan!');
     }
     
 
     public function deletelokasikkn($id)
     {
         Penempatankkn::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Dosen pembimbing berhasil dihapus!');
+        return redirect()->back()->with('success', 'Penetapan Lokasi KKN berhasil dihapus!');
     }
 }
