@@ -4,9 +4,10 @@
 
 @section('content')
 <div class="space-y-6">
+    @include('admin._import_mahasiswa')
+
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
         <div class="flex-1">
-            <h2 class="text-2xl font-bold text-gray-800">Daftar Peserta Magang</h2>
             <form action="{{ route('admin.peserta.magang') }}" method="GET" class="mt-2 flex items-center space-x-2">
                 <select name="ta" onchange="this.form.submit()" class="text-xs font-bold bg-slate-50 border-none rounded-lg focus:ring-indigo-500">
                     <option value="">Semua Tahun Akademik</option>
@@ -27,7 +28,7 @@
                 <i class="fas fa-file-csv mr-2"></i>
                 CSV
             </a>
-            <a href="{{ route('admin.print.magang', ['ta' => request('ta')]) }}" target="_blank" class="inline-flex items-center justify-center px-4 py-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white font-bold rounded-xl transition-all duration-300">
+            <a href="{{ route('admin.print.magang', ['ta' => request('ta')]) }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-4 py-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white font-bold rounded-xl transition-all duration-300">
                 <i class="fas fa-file-pdf mr-2"></i>
                 Cetak PDF
             </a>

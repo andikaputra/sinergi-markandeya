@@ -5,10 +5,7 @@
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-        <div>
-            <h2 class="text-2xl font-black text-gray-800 tracking-tight">Daftar Tempat KKN</h2>
-            <p class="text-sm text-gray-500 font-medium">Kelola titik lokasi pengabdian mahasiswa di seluruh wilayah.</p>
-        </div>
+        <div></div>
         <a href="{{ route('lokasikkn.create') }}" class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-100 group">
             <i class="fas fa-plus-circle mr-2 group-hover:rotate-90 transition-transform"></i>
             Tambah Lokasi Baru

@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'kegiatan' => \App\Http\Middleware\CheckKegiatan::class,
+            'superadmin' => \App\Http\Middleware\SuperAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

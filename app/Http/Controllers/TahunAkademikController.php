@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TahunAkademik;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TahunAkademikController extends Controller
 {
@@ -31,12 +32,11 @@ class TahunAkademikController extends Controller
 
     public function setActive($id)
     {
-        // Nonaktifkan semua tahun akademik
-        TahunAkademik::query()->update(['is_active' => false]);
-
-        // Aktifkan yang dipilih
-        $tahun = TahunAkademik::findOrFail($id);
-        $tahun->update(['is_active' => true]);
+        DB::transaction(function () use ($id) {
+            TahunAkademik::query()->update(['is_active' => false]);
+            $tahun = TahunAkademik::findOrFail($id);
+            $tahun->update(['is_active' => true]);
+        });
 
         return redirect()->back()->with('success', 'Tahun Akademik aktif berhasil diubah!');
     }

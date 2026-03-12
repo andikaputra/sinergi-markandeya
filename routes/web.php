@@ -23,10 +23,10 @@ Route::get('/', function () {
 
 
 Route::get('/register', [MahasiswaController::class, 'showRegisterForm'])->name('register.form');
-Route::post('/register', [MahasiswaController::class, 'register'])->name('register.submit');
+Route::post('/register', [MahasiswaController::class, 'register'])->name('register.submit')->middleware('throttle:3,1');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit')->middleware('throttle:5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Change Password Routes (Universal)
@@ -37,7 +37,7 @@ Route::middleware(['auth:web,mahasiswa,dosen'])->group(function() {
 
 // Halaman Login Admin
 Route::get('/admin', [AuthController::class, 'showLoginFormAdmin'])->name('loginadmin');
-Route::post('/loginadmin', [AuthController::class, 'loginAdmin'])->name('loginadmin.submit');
+Route::post('/loginadmin', [AuthController::class, 'loginAdmin'])->name('loginadmin.submit')->middleware('throttle:5,1');
 Route::post('/logoutadmin', [AuthController::class, 'logoutadmin'])->name('logoutadmin');
 
 // Proteksi Halaman Admin
@@ -52,17 +52,23 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/admindashboard', [AdminController::class, 'dashboard'])->name('admindashboard');
 
 
-    Route::get('/admin/peserta/kkn', [AdminController::class, 'pesertaKKN'])->name('admin.peserta.kkn');
-    Route::get('/admin/peserta/ppl', [AdminController::class, 'pesertaPPL'])->name('admin.peserta.ppl');
-    Route::get('/admin/peserta/pkl', [AdminController::class, 'pesertaPKL'])->name('admin.peserta.pkl');
-    Route::get('/admin/peserta/magang', [AdminController::class, 'pesertaMagang'])->name('admin.peserta.magang');
+    Route::get('/admin/peserta/kkn', [AdminController::class, 'pesertaKKN'])->name('admin.peserta.kkn')->middleware('kegiatan:KKN');
+    Route::get('/admin/peserta/ppl', [AdminController::class, 'pesertaPPL'])->name('admin.peserta.ppl')->middleware('kegiatan:PPL');
+    Route::get('/admin/peserta/pkl', [AdminController::class, 'pesertaPKL'])->name('admin.peserta.pkl')->middleware('kegiatan:PKL');
+    Route::get('/admin/peserta/magang', [AdminController::class, 'pesertaMagang'])->name('admin.peserta.magang')->middleware('kegiatan:Magang');
+
+    // Kelola Admin (Superadmin Only)
+    Route::get('/admin/kelola', [AdminController::class, 'adminIndex'])->name('admin.kelola')->middleware('superadmin');
+    Route::post('/admin/kelola', [AdminController::class, 'adminStore'])->name('admin.kelola.store')->middleware('superadmin');
+    Route::delete('/admin/kelola/{id}', [AdminController::class, 'adminDestroy'])->name('admin.kelola.delete')->middleware('superadmin');
 
     // Mahasiswa Management
     Route::get('/admin/mahasiswa/create', [AdminController::class, 'createMahasiswa'])->name('admin.mahasiswa.create');
     Route::post('/admin/mahasiswa/store', [AdminController::class, 'storeMahasiswa'])->name('admin.mahasiswa.store');
 
-    // Import Route
+    // Import Routes
     Route::post('/admin/import-mahasiswa', [AdminController::class, 'importMahasiswa'])->name('admin.import.mahasiswa');
+    Route::post('/admin/import-dosen', [AdminController::class, 'importDosen'])->name('admin.import.dosen');
 
     // Export Routes
     Route::get('/admin/export/kkn', [AdminController::class, 'exportKKN'])->name('admin.export.kkn');
@@ -140,6 +146,7 @@ Route::middleware(['auth:mahasiswa'])->group(function () {
 
     Route::get('/dashboard', [MahasiswaController::class, 'showDashboard'])->name('dashboard');
     Route::post('/save-laporan', [MahasiswaController::class, 'saveLaporan'])->name('mahasiswa.save_laporan');
+    Route::get('/teman-selokasi', [MahasiswaController::class, 'temanSeLokasi'])->name('mahasiswa.teman-selokasi');
 
     Route::get('/jurnal', [JurnalController::class, 'index'])->name('jurnal.index');
     Route::get('/jurnal/create', [JurnalController::class, 'create'])->name('jurnal.create');
@@ -158,11 +165,13 @@ Route::middleware(['auth:mahasiswa'])->group(function () {
 
 // Routes untuk Dosen Pembimbing
 Route::middleware(['auth:dosen'])->prefix('dosen-pembimbing')->group(function () {
-    Route::get('/dashboard', [DosenController::class, 'dashboard'])->name('dosen.dashboard');
+    Route::get('/dashboard', [DosenController::class, 'beranda'])->name('dosen.dashboard');
+    Route::get('/bimbingan', [DosenController::class, 'bimbingan'])->name('dosen.bimbingan');
     Route::get('/mahasiswa/{nim}', [DosenController::class, 'detailMahasiswa'])->name('dosen.mahasiswa.detail');
     Route::post('/mahasiswa/{nim}/nilai', [DosenController::class, 'inputNilai'])->name('dosen.mahasiswa.nilai');
 
     // Fitur Penguji
     Route::get('/ujian', [DosenPengujiController::class, 'dosenIndex'])->name('dosen.ujian.index');
+    Route::get('/ujian/{nim}', [DosenPengujiController::class, 'detailMahasiswa'])->name('dosen.ujian.detail');
     Route::post('/ujian/{nim}/nilai', [DosenPengujiController::class, 'inputNilai'])->name('dosen.ujian.nilai');
 });

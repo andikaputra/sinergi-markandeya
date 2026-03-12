@@ -6,11 +6,6 @@
 <div class="space-y-8">
     <!-- Assignment Form Card -->
     <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
-        <div class="p-8 border-b border-gray-50 bg-slate-50/50">
-            <h2 class="text-xl font-black text-gray-800 tracking-tight">Plotting Dosen KKN</h2>
-            <p class="text-sm text-gray-500 font-medium">Tentukan dosen pendamping untuk kelompok mahasiswa KKN.</p>
-        </div>
-        
         <form action="{{ route('assign.dosen.store') }}" method="POST" class="p-8">
             @csrf
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

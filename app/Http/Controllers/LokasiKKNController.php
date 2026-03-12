@@ -29,7 +29,7 @@ class LokasiKKNController extends Controller
             'provinsi' => 'required',
         ]);
 
-        Lokasikkn::create($request->all());
+        Lokasikkn::create($request->only(['desa', 'alamat', 'kecamatan', 'kabupaten', 'provinsi']));
 
         return redirect()->route('lokasikkn.index')->with('success', 'Tempat KKN berhasil ditambahkan!');
     }
@@ -49,7 +49,7 @@ class LokasiKKNController extends Controller
             'provinsi' => 'required',
         ]);
 
-        $tempatKKN->update($request->all());
+        $tempatKKN->update($request->only(['desa', 'alamat', 'kecamatan', 'kabupaten', 'provinsi']));
 
         return redirect()->route('lokasikkn.index')->with('success', 'Tempat KKN berhasil diperbarui!');
     }
@@ -64,7 +64,7 @@ class LokasiKKNController extends Controller
     public function indexasignlokasikkn()
     {
         $mahasiswas = Mahasiswa::where('kegiatan', 'KKN')
-        ->whereDoesntHave('lokasikkn') // Pastikan mahasiswa belum memiliki lokasi
+        ->whereDoesntHave('penempatankkn')
         ->get();
         $lokasikkns = Lokasikkn::all();
         $assignmentslokasikkn = Penempatankkn::with(['mahasiswa', 'lokasikkn'])->get();

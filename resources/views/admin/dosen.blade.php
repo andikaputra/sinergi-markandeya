@@ -4,16 +4,47 @@
 
 @section('content')
 <div class="space-y-6">
+    @if(session('success'))
+    <div class="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-700 text-sm font-bold flex items-center">
+        <i class="fas fa-check-circle mr-3 text-lg"></i>
+        {{ session('success') }}
+    </div>
+    @endif
+    @if(session('error'))
+    <div class="p-5 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm font-bold flex items-center">
+        <i class="fas fa-exclamation-triangle mr-3 text-lg"></i>
+        {{ session('error') }}
+    </div>
+    @endif
+
     <!-- Header Card -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-        <div>
-            <h2 class="text-2xl font-black text-gray-800 tracking-tight">Daftar Dosen Pembimbing</h2>
-            <p class="text-sm text-gray-500 font-medium">Kelola data tenaga pendidik untuk pendampingan KKN, PPL, dan PKL.</p>
+        <div></div>
+        <div class="flex space-x-2">
+            <a href="{{ route('dosen.create') }}" class="inline-flex items-center justify-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-100 group">
+                <i class="fas fa-plus mr-2 group-hover:scale-110 transition-transform"></i>
+                Tambah Dosen
+            </a>
         </div>
-        <a href="{{ route('dosen.create') }}" class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-100 group">
-            <i class="fas fa-plus mr-2 group-hover:scale-110 transition-transform"></i>
-            Tambah Dosen
-        </a>
+    </div>
+
+    <!-- Import Dosen CSV -->
+    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div class="flex-1">
+                <h5 class="text-sm font-bold text-gray-800 flex items-center mb-1">
+                    <i class="fas fa-file-csv text-emerald-500 mr-2"></i> Import Dosen via CSV
+                </h5>
+                <p class="text-xs text-gray-400">Format: <code class="bg-gray-100 px-1.5 py-0.5 rounded text-gray-600 font-mono">nidn, nama</code> &mdash; Password default = NIDN</p>
+            </div>
+            <form action="{{ route('admin.import.dosen') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2">
+                @csrf
+                <input type="file" name="file_csv" accept=".csv,.txt" required class="block text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-blue-50 file:text-blue-600 cursor-pointer hover:file:bg-blue-100">
+                <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition-all whitespace-nowrap shadow-sm">
+                    <i class="fas fa-upload mr-1"></i> Upload
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- Data Table Card -->

@@ -5,17 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Dosen;
 use App\Models\Mahasiswa;
 use App\Models\DosenPenguji;
+use App\Models\Jurnal;
+use App\Models\TahunAkademik;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DosenPengujiController extends Controller
 {
     // Admin: List and Form to Assign
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
-        $mahasiswas = Mahasiswa::whereDoesntHave('dosenPenguji')->get();
+        $allowedKegiatan = Auth::user()->getAllowedKegiatan();
+
+        $mahasiswas = Mahasiswa::whereDoesntHave('dosenPenguji')
+            ->whereIn('kegiatan', $allowedKegiatan)
+            ->orderBy('nama')->get();
+
         $dosens = Dosen::all();
-        $assignments = DosenPenguji::with(['mahasiswa', 'dosen'])->get();
+
+        $assignments = DosenPenguji::with(['mahasiswa', 'dosen'])
+            ->whereHas('mahasiswa', fn($q) => $q->whereIn('kegiatan', $allowedKegiatan))
+            ->get();
 
         return view('admin.assigndosenpenguji', compact('mahasiswas', 'dosens', 'assignments'));
     }
@@ -44,14 +54,48 @@ class DosenPengujiController extends Controller
     }
 
     // Dosen: List Mahasiswa Ujian
-    public function dosenIndex()
+    public function dosenIndex(Request $request)
     {
         $dosen = Auth::guard('dosen')->user();
-        $mahasiswaUjian = DosenPenguji::where('nidn', $dosen->nidn)
-            ->with(['mahasiswa.publikasis'])
-            ->get();
+        $tahunAkademiks = TahunAkademik::orderBy('is_active', 'desc')->orderBy('id', 'desc')->get();
+        $activeTA = TahunAkademik::active();
 
-        return view('dosen.ujian_index', compact('mahasiswaUjian'));
+        $selectedTA = $request->input('tahun_akademik', $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null);
+        $selectedKegiatan = $request->input('kegiatan');
+
+        $query = DosenPenguji::where('nidn', $dosen->nidn)
+            ->with(['mahasiswa.publikasis', 'mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang'])
+            ->whereHas('mahasiswa', function ($q) use ($selectedTA, $selectedKegiatan) {
+                if ($selectedTA) {
+                    $q->where('tahun_akademik', $selectedTA);
+                }
+                if ($selectedKegiatan) {
+                    $q->where('kegiatan', $selectedKegiatan);
+                }
+            });
+
+        $mahasiswaUjian = $query->get();
+
+        return view('dosen.ujian_index', compact('mahasiswaUjian', 'tahunAkademiks', 'selectedTA', 'selectedKegiatan'));
+    }
+
+    public function detailMahasiswa($nim)
+    {
+        $dosen = Auth::guard('dosen')->user();
+
+        $isUjian = DosenPenguji::where('nidn', $dosen->nidn)
+            ->where('nim', $nim)
+            ->firstOrFail();
+
+        $mahasiswa = Mahasiswa::with([
+            'penempatankkn.lokasikkn', 'penempatanppl.lokasippl',
+            'penempatanpkl.lokasipkl', 'penempatanmagang.lokasimagang',
+            'publikasis',
+        ])->where('nim', $nim)->firstOrFail();
+
+        $jurnals = Jurnal::where('nim', $nim)->orderBy('tanggal', 'desc')->get();
+
+        return view('dosen.ujian_detail', compact('mahasiswa', 'jurnals', 'isUjian'));
     }
 
     public function inputNilai(Request $request, $nim)
@@ -59,7 +103,7 @@ class DosenPengujiController extends Controller
         $dosen = Auth::guard('dosen')->user();
         
         $request->validate([
-            'nilai' => 'required|string|max:10'
+            'nilai' => 'required|numeric|min:0|max:100'
         ]);
 
         $ujian = DosenPenguji::where('nidn', $dosen->nidn)

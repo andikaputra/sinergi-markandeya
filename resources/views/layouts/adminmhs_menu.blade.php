@@ -15,6 +15,10 @@
     <i class="fas fa-paper-plane text-lg"></i>
     <span class="font-medium text-sm">Publikasi</span>
 </a>
+<a href="{{ route('mahasiswa.teman-selokasi') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
+    <i class="fas fa-users text-lg"></i>
+    <span class="font-medium text-sm">Teman Se-Lokasi</span>
+</a>
 
 @if(Auth::guard('mahasiswa')->check() && Auth::guard('mahasiswa')->user()->kegiatan == 'PKL')
 <div class="pt-4 pb-2">

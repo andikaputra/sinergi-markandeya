@@ -1,11 +1,11 @@
 @extends('layouts.dosen')
 
-@section('title', 'Detail Mahasiswa Bimbingan')
+@section('title', 'Detail Mahasiswa Ujian')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex items-center space-x-4 mb-8">
-        <a href="{{ route('dosen.dashboard') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-600 transition-all">
+        <a href="{{ route('dosen.ujian.index') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-600 transition-all">
             <i class="fas fa-chevron-left text-xs"></i>
         </a>
         <h2 class="text-2xl font-bold text-gray-800">Detail & Jurnal Mahasiswa</h2>
@@ -51,14 +51,14 @@
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
                 <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
                     <i class="fas fa-star text-amber-400 mr-2"></i>
-                    Penilaian Mahasiswa
+                    Penilaian Ujian
                 </h4>
-                <form action="{{ route('dosen.mahasiswa.nilai', $mahasiswa->nim) }}" method="POST">
+                <form action="{{ route('dosen.ujian.nilai', $mahasiswa->nim) }}" method="POST">
                     @csrf
                     <div class="space-y-4">
                         <label class="block">
-                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Nilai Pembimbing (0-100)</span>
-                            <input type="number" name="nilai" value="{{ $isBimbingan->nilai }}" min="0" max="100" step="0.1"
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Nilai Ujian (0-100)</span>
+                            <input type="number" name="nilai" value="{{ $isUjian->nilai }}" min="0" max="100" step="0.1"
                                 class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold text-lg"
                                 placeholder="Masukkan nilai angka...">
                         </label>

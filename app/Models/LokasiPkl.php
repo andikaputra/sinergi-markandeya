@@ -11,4 +11,9 @@ class LokasiPkl extends Model
 
     protected $table = 'lokasi_pkls';
     protected $fillable = ['nama_instansi', 'alamat', 'kontak', 'email', 'website'];
+
+    public function penempatanpkl()
+    {
+        return $this->hasMany(PenempatanPkl::class, 'lokasi_pkl_id');
+    }
 }

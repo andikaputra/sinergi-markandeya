@@ -23,6 +23,10 @@ class Dosen extends Authenticatable
         'remember_token',
     ];
 
+    protected $casts = [
+        'password' => 'hashed',
+    ];
+
     public function mahasiswaBimbingan()
     {
         return $this->hasMany(DosenPembimbing::class, 'nidn', 'nidn');

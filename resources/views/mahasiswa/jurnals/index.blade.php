@@ -10,7 +10,7 @@
             <p class="text-sm text-gray-500">Catat setiap aktivitas harian Anda selama program berlangsung.</p>
         </div>
         <div class="flex space-x-3">
-            <a href="{{ route('jurnal.cetak') }}" target="_blank" class="inline-flex items-center justify-center px-6 py-3 bg-white border border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-200 font-bold rounded-2xl transition-all duration-300 shadow-sm group">
+            <a href="{{ route('jurnal.cetak') }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-6 py-3 bg-white border border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-200 font-bold rounded-2xl transition-all duration-300 shadow-sm group">
                 <i class="fas fa-print mr-2 group-hover:scale-110 transition-transform"></i>
                 Cetak Jurnal (PDF)
             </a>

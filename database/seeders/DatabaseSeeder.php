@@ -21,12 +21,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Seed Admin
+        // 1. Seed Admin (Super Admin)
         User::updateOrCreate(
             ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Administrator',
                 'password' => Hash::make('password'),
+                'role' => 'superadmin',
+                'kegiatan' => null,
             ]
         );
 

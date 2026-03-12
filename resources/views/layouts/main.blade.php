@@ -10,11 +10,11 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
     
     <!-- Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
     
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     
     <!-- DataTables -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -88,11 +88,11 @@
         <div class="p-6 border-t border-gray-50">
             <div class="bg-slate-50 p-4 rounded-2xl border border-gray-100 flex items-center space-x-3 mb-4">
                 <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-blue-600 font-bold shadow-sm">
-                    {{ substr(Auth::user()->name ?? 'U', 0, 1) }}
+                    {{ substr(Auth::user()->nama ?? Auth::user()->name ?? 'U', 0, 1) }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-gray-900 truncate">{{ Auth::user()->name ?? 'User' }}</p>
-                    <p class="text-xs text-gray-400 truncate font-medium">Online</p>
+                    <p class="text-sm font-bold text-gray-900 truncate">{{ Auth::user()->nama ?? Auth::user()->name ?? 'User' }}</p>
+                    <p class="text-xs text-gray-400 truncate font-medium">@yield('user_type', 'Panel')</p>
                 </div>
             </div>
             <form method="POST" action="@yield('logout_route')">

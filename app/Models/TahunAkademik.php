@@ -12,6 +12,10 @@ class TahunAkademik extends Model
     protected $table = 'tahun_akademiks';
     protected $fillable = ['tahun', 'semester', 'is_active'];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     // Helper untuk mendapatkan tahun akademik yang aktif
     public static function active()
     {

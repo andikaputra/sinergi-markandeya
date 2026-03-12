@@ -7,18 +7,81 @@ use App\Models\Dosen;
 use App\Models\Mahasiswa;
 use App\Models\Jurnal;
 use App\Models\DosenPembimbing;
+use App\Models\DosenPenguji;
+use App\Models\TahunAkademik;
 use Illuminate\Support\Facades\Auth;
 
 class DosenController extends Controller
 {
-    public function dashboard()
+    public function beranda()
     {
         $dosen = Auth::guard('dosen')->user();
-        $mahasiswaBimbingan = DosenPembimbing::where('nidn', $dosen->nidn)
-            ->with(['mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.dosenPenguji'])
-            ->get();
+        $activeTA = TahunAkademik::active();
+        $taString = $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null;
 
-        return view('dosen.dashboard', compact('mahasiswaBimbingan'));
+        // Hitung mahasiswa bimbingan (TA aktif)
+        $bimbinganQuery = DosenPembimbing::where('nidn', $dosen->nidn);
+        if ($taString) {
+            $bimbinganQuery->whereHas('mahasiswa', fn($q) => $q->where('tahun_akademik', $taString));
+        }
+        $totalBimbingan = $bimbinganQuery->count();
+
+        // Hitung mahasiswa ujian (TA aktif)
+        $ujianQuery = DosenPenguji::where('nidn', $dosen->nidn);
+        if ($taString) {
+            $ujianQuery->whereHas('mahasiswa', fn($q) => $q->where('tahun_akademik', $taString));
+        }
+        $totalUjian = $ujianQuery->count();
+
+        // Hitung per kegiatan (bimbingan TA aktif)
+        $bimbinganAll = DosenPembimbing::where('nidn', $dosen->nidn)
+            ->with('mahasiswa')
+            ->whereHas('mahasiswa', function ($q) use ($taString) {
+                if ($taString) {
+                    $q->where('tahun_akademik', $taString);
+                }
+            })->get();
+
+        $countKKN = $bimbinganAll->filter(fn($i) => $i->mahasiswa->kegiatan == 'KKN')->count();
+        $countPPL = $bimbinganAll->filter(fn($i) => $i->mahasiswa->kegiatan == 'PPL')->count();
+        $countPKL = $bimbinganAll->filter(fn($i) => $i->mahasiswa->kegiatan == 'PKL')->count();
+        $countMagang = $bimbinganAll->filter(fn($i) => $i->mahasiswa->kegiatan == 'Magang')->count();
+
+        // Sudah dinilai vs belum
+        $sudahDinilai = $bimbinganAll->filter(fn($i) => $i->nilai !== null)->count();
+        $belumDinilai = $totalBimbingan - $sudahDinilai;
+
+        return view('dosen.beranda', compact(
+            'dosen', 'activeTA', 'totalBimbingan', 'totalUjian',
+            'countKKN', 'countPPL', 'countPKL', 'countMagang',
+            'sudahDinilai', 'belumDinilai'
+        ));
+    }
+
+    public function bimbingan(Request $request)
+    {
+        $dosen = Auth::guard('dosen')->user();
+        $tahunAkademiks = TahunAkademik::orderBy('is_active', 'desc')->orderBy('id', 'desc')->get();
+        $activeTA = TahunAkademik::active();
+
+        // Default to active tahun akademik
+        $selectedTA = $request->input('tahun_akademik', $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null);
+        $selectedKegiatan = $request->input('kegiatan');
+
+        $query = DosenPembimbing::where('nidn', $dosen->nidn)
+            ->with(['mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang', 'mahasiswa.dosenPenguji', 'mahasiswa.publikasis'])
+            ->whereHas('mahasiswa', function ($q) use ($selectedTA, $selectedKegiatan) {
+                if ($selectedTA) {
+                    $q->where('tahun_akademik', $selectedTA);
+                }
+                if ($selectedKegiatan) {
+                    $q->where('kegiatan', $selectedKegiatan);
+                }
+            });
+
+        $mahasiswaBimbingan = $query->get();
+
+        return view('dosen.bimbingan', compact('mahasiswaBimbingan', 'tahunAkademiks', 'selectedTA', 'selectedKegiatan'));
     }
 
     public function detailMahasiswa($nim)
@@ -30,7 +93,7 @@ class DosenController extends Controller
             ->where('nim', $nim)
             ->firstOrFail();
 
-        $mahasiswa = Mahasiswa::with(['penempatankkn.lokasikkn', 'penempatanppl.lokasippl', 'penempatanpkl.lokasipkl', 'penempatanmagang.lokasimagang'])
+        $mahasiswa = Mahasiswa::with(['penempatankkn.lokasikkn', 'penempatanppl.lokasippl', 'penempatanpkl.lokasipkl', 'penempatanmagang.lokasimagang', 'publikasis'])
             ->where('nim', $nim)
             ->firstOrFail();
             
@@ -44,7 +107,7 @@ class DosenController extends Controller
         $dosen = Auth::guard('dosen')->user();
         
         $request->validate([
-            'nilai' => 'required|string|max:10'
+            'nilai' => 'required|numeric|min:0|max:100'
         ]);
 
         $bimbingan = DosenPembimbing::where('nidn', $dosen->nidn)

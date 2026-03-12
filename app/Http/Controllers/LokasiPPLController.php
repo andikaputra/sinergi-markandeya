@@ -43,7 +43,7 @@ class LokasiPPLController extends Controller
             'Sekolah' => 'required',
         ]);
 
-        $lokasippl->update($request->all());
+        $lokasippl->update($request->only(['Sekolah']));
 
         return redirect()->route('lokasippl.index')->with('success', 'Tempat PPL berhasil diperbarui!');
     }
@@ -59,7 +59,7 @@ class LokasiPPLController extends Controller
     {
         // Ambil mahasiswa PPL yang belum punya lokasi
         $mahasiswas = Mahasiswa::where('kegiatan', 'PPL')
-            ->whereDoesntHave('lokasippl') 
+            ->whereDoesntHave('penempatanppl')
             ->get(); 
     
         $lokasippls = Lokasippl::all();

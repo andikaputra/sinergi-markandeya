@@ -5,10 +5,7 @@
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-        <div>
-            <h2 class="text-2xl font-black text-gray-800 tracking-tight">Daftar Mitra Sekolah</h2>
-            <p class="text-sm text-gray-500 font-medium">Kelola daftar sekolah untuk penempatan Praktik Pengalaman Lapangan.</p>
-        </div>
+        <div></div>
         <a href="{{ route('lokasippl.create') }}" class="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-100 group">
             <i class="fas fa-school mr-2 group-hover:scale-110 transition-transform"></i>
             Tambah Sekolah Baru

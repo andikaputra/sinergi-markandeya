@@ -47,7 +47,7 @@
                 </div>
             </div>
             <div class="p-4 bg-gray-50/50 border-t border-gray-100">
-                <a href="{{ $publikasi->link }}" target="_blank" class="flex items-center justify-center w-full px-4 py-3 bg-white border border-gray-200 text-blue-600 font-bold rounded-xl hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 shadow-sm">
+                <a href="{{ $publikasi->link }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full px-4 py-3 bg-white border border-gray-200 text-blue-600 font-bold rounded-xl hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 shadow-sm">
                     <span>Lihat Publikasi</span>
                     <i class="fas fa-external-link-alt ml-2 text-xs"></i>
                 </a>

@@ -7,6 +7,7 @@ use App\Models\Mahasiswa;
 use App\Models\Penempatankkn;
 use App\Models\Penempatanppl;
 use App\Models\PenempatanPkl;
+use App\Models\PenempatanMagang;
 use App\Models\TahunAkademik;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -27,13 +28,13 @@ class MahasiswaController extends Controller
             'nama' => 'required|string|max:255',
             'nim' => 'required|string|max:20|unique:mahasiswas',
             'kampus' => 'required|string|max:255',
-            'kegiatan' => 'required|string|max:255',
+            'kegiatan' => 'required|in:KKN,PPL,PKL,Magang',
             'kecamatan' => 'required|string|max:255',
-            'prodi' => 'required|string|max:255',
+            'prodi' => 'required|in:PGSD,PBSI,PBI,SI,ME,PARBUD,HUKUM',
             'pembayaranKRS' => 'required|string|max:255',
             'KRS' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:mahasiswas',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         // Ambil Tahun Akademik Aktif
@@ -51,7 +52,7 @@ class MahasiswaController extends Controller
             'pembayaranKRS' => $request->pembayaranKRS,
             'KRS' => $request->KRS,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $request->password, // hashed by model cast
             'tahun_akademik' => $taString
         ]);
 
@@ -60,7 +61,8 @@ class MahasiswaController extends Controller
 
     public function showDashboard()
     {
-        $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->first();
+        $mahasiswa = Mahasiswa::with(['dosenPembimbing.dosen', 'dosenPenguji.dosen'])
+            ->where('nim', Auth::user()->nim)->first();
     
         // Ambil lokasi KKN, PPL, atau PKL berdasarkan NIM yang login
         $penempatankknmhs = Penempatankkn::with(['mahasiswa', 'lokasikkn'])
@@ -74,8 +76,86 @@ class MahasiswaController extends Controller
         $penempatanpklmhs = PenempatanPkl::with(['mahasiswa', 'lokasipkl'])
             ->where('nim', Auth::user()->nim)
             ->first();
-    
-        return view('mahasiswa.dashboard', compact('penempatankknmhs', 'penempatanpplmhs', 'penempatanpklmhs', 'mahasiswa'));
+
+        $penempatanmagangmhs = PenempatanMagang::with(['mahasiswa', 'lokasimagang'])
+            ->where('nim', Auth::user()->nim)
+            ->first();
+
+        // Ambil teman satu lokasi
+        $temanSeLokasi = collect();
+        $nim = Auth::user()->nim;
+
+        if ($penempatankknmhs) {
+            $temanSeLokasi = Penempatankkn::with('mahasiswa')
+                ->where('lokasi_kkn_id', $penempatankknmhs->lokasi_kkn_id)
+                ->where('nim', '!=', $nim)
+                ->get()->pluck('mahasiswa');
+        } elseif ($penempatanpplmhs) {
+            $temanSeLokasi = Penempatanppl::with('mahasiswa')
+                ->where('sekolah_id', $penempatanpplmhs->sekolah_id)
+                ->where('nim', '!=', $nim)
+                ->get()->pluck('mahasiswa');
+        } elseif ($penempatanpklmhs) {
+            $temanSeLokasi = PenempatanPkl::with('mahasiswa')
+                ->where('lokasi_pkl_id', $penempatanpklmhs->lokasi_pkl_id)
+                ->where('nim', '!=', $nim)
+                ->get()->pluck('mahasiswa');
+        } elseif ($penempatanmagangmhs) {
+            $temanSeLokasi = PenempatanMagang::with('mahasiswa')
+                ->where('lokasi_magang_id', $penempatanmagangmhs->lokasi_magang_id)
+                ->where('nim', '!=', $nim)
+                ->get()->pluck('mahasiswa');
+        }
+
+        return view('mahasiswa.dashboard', compact('penempatankknmhs', 'penempatanpplmhs', 'penempatanpklmhs', 'penempatanmagangmhs', 'mahasiswa', 'temanSeLokasi'));
+    }
+
+    public function temanSeLokasi()
+    {
+        $nim = Auth::user()->nim;
+        $kegiatan = Auth::user()->kegiatan;
+        $temanSeLokasi = collect();
+        $namaLokasi = null;
+
+        if ($kegiatan == 'KKN') {
+            $penempatan = Penempatankkn::with('lokasikkn')->where('nim', $nim)->first();
+            if ($penempatan) {
+                $namaLokasi = 'Desa ' . $penempatan->lokasikkn->desa;
+                $temanSeLokasi = Penempatankkn::with('mahasiswa')
+                    ->where('lokasi_kkn_id', $penempatan->lokasi_kkn_id)
+                    ->where('nim', '!=', $nim)
+                    ->get()->pluck('mahasiswa');
+            }
+        } elseif ($kegiatan == 'PPL') {
+            $penempatan = Penempatanppl::with('lokasippl')->where('nim', $nim)->first();
+            if ($penempatan) {
+                $namaLokasi = $penempatan->lokasippl->Sekolah;
+                $temanSeLokasi = Penempatanppl::with('mahasiswa')
+                    ->where('sekolah_id', $penempatan->sekolah_id)
+                    ->where('nim', '!=', $nim)
+                    ->get()->pluck('mahasiswa');
+            }
+        } elseif ($kegiatan == 'PKL') {
+            $penempatan = PenempatanPkl::with('lokasipkl')->where('nim', $nim)->first();
+            if ($penempatan) {
+                $namaLokasi = $penempatan->lokasipkl->nama_instansi;
+                $temanSeLokasi = PenempatanPkl::with('mahasiswa')
+                    ->where('lokasi_pkl_id', $penempatan->lokasi_pkl_id)
+                    ->where('nim', '!=', $nim)
+                    ->get()->pluck('mahasiswa');
+            }
+        } elseif ($kegiatan == 'Magang') {
+            $penempatan = PenempatanMagang::with('lokasimagang')->where('nim', $nim)->first();
+            if ($penempatan) {
+                $namaLokasi = $penempatan->lokasimagang->nama_instansi;
+                $temanSeLokasi = PenempatanMagang::with('mahasiswa')
+                    ->where('lokasi_magang_id', $penempatan->lokasi_magang_id)
+                    ->where('nim', '!=', $nim)
+                    ->get()->pluck('mahasiswa');
+            }
+        }
+
+        return view('mahasiswa.teman_selokasi', compact('temanSeLokasi', 'namaLokasi', 'kegiatan'));
     }
 
     public function saveLaporan(Request $request)

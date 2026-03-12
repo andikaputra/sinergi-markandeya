@@ -31,6 +31,10 @@ class Mahasiswa extends Authenticatable
         'remember_token',
     ];
 
+    protected $casts = [
+        'password' => 'hashed',
+    ];
+
     public function getProdiFullAttribute()
     {
         $listProdi = [
@@ -48,18 +52,15 @@ class Mahasiswa extends Authenticatable
 
     public function getNilaiAkhirAttribute()
     {
-        $nilaiPembimbing = $this->dosenPembimbing ? $this->dosenPembimbing->nilai : null;
-        $nilaiPenguji = $this->dosenPenguji ? $this->dosenPenguji->nilai : null;
+        $nilaiPembimbing = $this->dosenPembimbing?->nilai;
+        $nilaiPenguji = $this->dosenPenguji?->nilai;
 
         if (is_numeric($nilaiPembimbing) && is_numeric($nilaiPenguji)) {
             $rata = ($nilaiPembimbing + $nilaiPenguji) / 2;
-            
+
             if ($rata >= 85) return "A";
-            if ($rata >= 80) return "A-";
-            if ($rata >= 75) return "B+";
             if ($rata >= 70) return "B";
-            if ($rata >= 65) return "B-";
-            if ($rata >= 60) return "C";
+            if ($rata >= 55) return "C";
             return "D";
         }
 
@@ -81,17 +82,7 @@ class Mahasiswa extends Authenticatable
         return $this->hasOne(Penempatankkn::class, 'nim', 'nim');
     }
 
-    public function lokasikkn()
-    {
-        return $this->hasOne(Penempatankkn::class, 'nim', 'nim');
-    }
-
     public function penempatanppl()
-    {
-        return $this->hasOne(Penempatanppl::class, 'nim', 'nim');
-    }
-
-    public function lokasippl()
     {
         return $this->hasOne(Penempatanppl::class, 'nim', 'nim');
     }

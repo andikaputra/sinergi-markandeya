@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Mahasiswa;
 use App\Models\Dosen;
+use App\Models\User;
 use App\Models\Penempatankkn;
 use App\Models\Penempatanppl;
 use App\Models\PenempatanPkl;
@@ -13,6 +14,8 @@ use App\Models\DosenPembimbing;
 use App\Models\DosenPenguji;
 use App\Models\TahunAkademik;
 use App\Models\Publikasi;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
@@ -137,7 +140,7 @@ class AdminController extends Controller
         Dosen::create([
             'nidn' => $request->nidn,
             'nama' => $request->nama,
-            'password' => Hash::make($request->nidn),
+            'password' => $request->nidn, // Default: NIDN (hashed by model cast)
         ]);
 
         return redirect()->route('dosen.index')->with('success', 'Dosen berhasil ditambahkan.');
@@ -156,8 +159,8 @@ class AdminController extends Controller
             'nama' => 'required|string|max:255',
             'nim' => 'required|string|unique:mahasiswas,nim',
             'email' => 'required|email|unique:mahasiswas,email',
-            'prodi' => 'required',
-            'kegiatan' => 'required',
+            'prodi' => 'required|in:PGSD,PBSI,PBI,SI,ME,PARBUD,HUKUM',
+            'kegiatan' => 'required|in:KKN,PPL,PKL,Magang',
             'tahun_akademik' => 'required',
             'kecamatan' => 'required',
             'kampus' => 'required',
@@ -172,7 +175,7 @@ class AdminController extends Controller
             'tahun_akademik' => $request->tahun_akademik,
             'kecamatan' => $request->kecamatan,
             'kampus' => $request->kampus,
-            'password' => Hash::make($request->nim), // Default: NIM
+            'password' => $request->nim, // Default: NIM (hashed by model cast)
             'pembayaranKRS' => 'Lunas (By Admin)',
             'KRS' => 'Aktif (By Admin)'
         ]);
@@ -186,32 +189,67 @@ class AdminController extends Controller
     public function importMahasiswa(Request $request)
     {
         $request->validate([
-            'file_csv' => 'required|mimes:csv,txt'
+            'file_csv' => 'required|mimes:csv,txt|max:2048'
         ]);
+
+        $validProdi = ['PGSD', 'PBSI', 'PBI', 'SI', 'ME', 'PARBUD', 'HUKUM'];
+        $validKegiatan = ['KKN', 'PPL', 'PKL', 'Magang'];
 
         $file = $request->file('file_csv');
         $handle = fopen($file->getPathname(), 'r');
-        
+
         // Skip header
         fgetcsv($handle);
 
         $count = 0;
+        $errors = [];
+        $row = 1;
         $activeTA = TahunAkademik::active();
         $taString = $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null;
 
-        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            // Format CSV: nama, nim, email, prodi, kegiatan, kecamatan, kampus
-            if (count($data) >= 5) {
+        DB::beginTransaction();
+        try {
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                $row++;
+                // Format CSV: nama, nim, email, prodi, kegiatan, kecamatan, kampus
+                if (count($data) < 5) {
+                    $errors[] = "Baris $row: kolom kurang dari 5";
+                    continue;
+                }
+
+                $nama = trim($data[0]);
+                $nim = trim($data[1]);
+                $email = trim($data[2]);
+                $prodi = trim($data[3]);
+                $kegiatan = trim($data[4]);
+
+                if (empty($nim) || empty($nama)) {
+                    $errors[] = "Baris $row: NIM atau Nama kosong";
+                    continue;
+                }
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $errors[] = "Baris $row ($nim): email tidak valid";
+                    continue;
+                }
+                if (!in_array($prodi, $validProdi)) {
+                    $errors[] = "Baris $row ($nim): prodi '$prodi' tidak valid";
+                    continue;
+                }
+                if (!in_array($kegiatan, $validKegiatan)) {
+                    $errors[] = "Baris $row ($nim): kegiatan '$kegiatan' tidak valid";
+                    continue;
+                }
+
                 Mahasiswa::updateOrCreate(
-                    ['nim' => $data[1]],
+                    ['nim' => $nim],
                     [
-                        'nama' => $data[0],
-                        'email' => $data[2],
-                        'prodi' => $data[3],
-                        'kegiatan' => $data[4],
-                        'kecamatan' => $data[5] ?? '-',
-                        'kampus' => $data[6] ?? 'Markandeya',
-                        'password' => Hash::make($data[1]), // Default password = NIM
+                        'nama' => $nama,
+                        'email' => $email,
+                        'prodi' => $prodi,
+                        'kegiatan' => $kegiatan,
+                        'kecamatan' => trim($data[5] ?? '-') ?: '-',
+                        'kampus' => trim($data[6] ?? 'Markandeya') ?: 'Markandeya',
+                        'password' => $nim, // Default password = NIM (hashed by model cast)
                         'tahun_akademik' => $taString,
                         'pembayaranKRS' => 'Lunas (Import)',
                         'KRS' => 'Aktif (Import)'
@@ -219,10 +257,77 @@ class AdminController extends Controller
                 );
                 $count++;
             }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            fclose($handle);
+            return redirect()->back()->with('error', 'Gagal mengimpor: ' . $e->getMessage());
         }
         fclose($handle);
 
-        return redirect()->back()->with('success', "Berhasil mengimpor $count mahasiswa!");
+        $message = "Berhasil mengimpor $count mahasiswa!";
+        if (!empty($errors)) {
+            $message .= ' (' . count($errors) . ' baris dilewati: ' . implode('; ', array_slice($errors, 0, 5)) . ')';
+        }
+        return redirect()->back()->with('success', $message);
+    }
+
+    public function importDosen(Request $request)
+    {
+        $request->validate([
+            'file_csv' => 'required|mimes:csv,txt|max:2048'
+        ]);
+
+        $file = $request->file('file_csv');
+        $handle = fopen($file->getPathname(), 'r');
+
+        // Skip header
+        fgetcsv($handle);
+
+        $count = 0;
+        $errors = [];
+        $row = 1;
+
+        DB::beginTransaction();
+        try {
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                $row++;
+                // Format CSV: nidn, nama
+                if (count($data) < 2) {
+                    $errors[] = "Baris $row: kolom kurang dari 2";
+                    continue;
+                }
+
+                $nidn = trim($data[0]);
+                $nama = trim($data[1]);
+
+                if (empty($nidn) || empty($nama)) {
+                    $errors[] = "Baris $row: NIDN atau Nama kosong";
+                    continue;
+                }
+
+                Dosen::updateOrCreate(
+                    ['nidn' => $nidn],
+                    [
+                        'nama' => $nama,
+                        'password' => $nidn, // Default password = NIDN (hashed by model cast)
+                    ]
+                );
+                $count++;
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            fclose($handle);
+            return redirect()->back()->with('error', 'Gagal mengimpor dosen: ' . $e->getMessage());
+        }
+        fclose($handle);
+
+        $message = "Berhasil mengimpor $count dosen!";
+        if (!empty($errors)) {
+            $message .= ' (' . count($errors) . ' baris dilewati: ' . implode('; ', array_slice($errors, 0, 5)) . ')';
+        }
+        return redirect()->back()->with('success', $message);
     }
 
     // Fitur Export CSV (KKN, PPL, PKL, Magang)
@@ -249,7 +354,15 @@ class AdminController extends Controller
     private function generateCsvExport(Request $request, $kegiatan)
     {
         $fileName = 'rekap_peserta_' . strtolower($kegiatan) . '_' . date('Y-m-d') . '.csv';
-        $query = Mahasiswa::where('kegiatan', $kegiatan)->with(['penempatankkn.lokasikkn', 'penempatanppl.lokasippl', 'penempatanpkl.lokasipkl', 'penempatanmagang.lokasimagang']);
+
+        $placementRelation = match ($kegiatan) {
+            'KKN' => 'penempatankkn.lokasikkn',
+            'PPL' => 'penempatanppl.lokasippl',
+            'PKL' => 'penempatanpkl.lokasipkl',
+            'Magang' => 'penempatanmagang.lokasimagang',
+        };
+        $query = Mahasiswa::where('kegiatan', $kegiatan)
+            ->with([$placementRelation, 'dosenPembimbing.dosen', 'dosenPenguji.dosen']);
         
         if ($request->has('ta') && $request->ta != '') {
             $query->where('tahun_akademik', $request->ta);
@@ -310,5 +423,47 @@ class AdminController extends Controller
         $peserta = $query->get();
         $title = "REKAPITULASI PESERTA " . $kegiatan;
         return view('admin.export.pdf_rekap', compact('peserta', 'title'));
+    }
+
+    // ==================== ADMIN MANAGEMENT (SUPERADMIN ONLY) ====================
+
+    public function adminIndex()
+    {
+        $admins = User::orderByRaw("role = 'superadmin' DESC")->orderBy('name')->get();
+        return view('admin.kelola_admin', compact('admins'));
+    }
+
+    public function adminStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'role' => 'required|in:superadmin,admin',
+            'kegiatan' => 'nullable|array',
+            'kegiatan.*' => 'in:KKN,PPL,PKL,Magang',
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'role' => $request->role,
+            'kegiatan' => $request->role === 'superadmin' ? null : ($request->kegiatan ?? []),
+        ]);
+
+        return redirect()->route('admin.kelola')->with('success', 'Admin baru berhasil ditambahkan!');
+    }
+
+    public function adminDestroy($id)
+    {
+        $admin = User::findOrFail($id);
+
+        if ($admin->id === Auth::id()) {
+            return redirect()->back()->with('error', 'Anda tidak bisa menghapus akun sendiri.');
+        }
+
+        $admin->delete();
+        return redirect()->route('admin.kelola')->with('success', 'Admin berhasil dihapus.');
     }
 }

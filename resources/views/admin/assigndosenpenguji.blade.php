@@ -6,18 +6,17 @@
 <div class="space-y-8">
     <!-- Assignment Form Card -->
     <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
-        <div class="p-8 border-b border-gray-50 bg-slate-50/50">
-            <h2 class="text-xl font-black text-gray-800 tracking-tight">Tentukan Dosen Penguji</h2>
-            <p class="text-sm text-gray-500 font-medium">Pilih mahasiswa dan plot dosen yang akan menguji hasil laporan.</p>
-        </div>
-        
         <form action="{{ route('assign.dosenpenguji.store') }}" method="POST" class="p-8">
             @csrf
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 <!-- Student Selection -->
                 <div class="lg:col-span-7 space-y-4">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Mahasiswa (Belum Ada Penguji)</label>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                        Mahasiswa (Belum Ada Penguji)
+                        <span class="text-indigo-500 ml-1">{{ $mahasiswas->count() }} orang</span>
+                    </label>
                     <div class="bg-slate-50 rounded-3xl border border-gray-100 overflow-hidden">
+                        @if($mahasiswas->isNotEmpty())
                         <div class="max-h-[400px] overflow-y-auto sidebar-scroll p-4 space-y-2">
                             @foreach($mahasiswas as $mahasiswa)
                                 <label class="flex items-center p-4 bg-white border border-gray-100 rounded-2xl cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
@@ -30,11 +29,19 @@
                                             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{{ $mahasiswa->nim }}</span>
                                             <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
                                             <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-tighter">{{ $mahasiswa->kegiatan }}</span>
+                                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{{ $mahasiswa->prodi }}</span>
                                         </div>
                                     </div>
                                 </label>
                             @endforeach
                         </div>
+                        @else
+                        <div class="p-8 text-center">
+                            <i class="fas fa-check-circle text-emerald-300 text-3xl mb-3"></i>
+                            <p class="text-sm text-gray-500 font-medium">Semua mahasiswa sudah memiliki dosen penguji.</p>
+                        </div>
+                        @endif
                     </div>
                 </div>
 
@@ -68,14 +75,16 @@
 
     <!-- Assignments List -->
     <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
-        <div class="p-8 flex items-center justify-between border-b border-gray-50 text-xs font-black uppercase tracking-widest text-gray-400">
-            Daftar Mahasiswa & Penguji
+        <div class="p-8 flex items-center justify-between border-b border-gray-50">
+            <span class="text-xs font-black uppercase tracking-widest text-gray-400">Daftar Mahasiswa & Penguji</span>
+            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold border border-indigo-100">{{ $assignments->count() }} plotting</span>
         </div>
         <div class="overflow-x-auto p-8">
             <table class="w-full text-left border-separate border-spacing-0" id="assignmentsTable">
                 <thead>
                     <tr>
                         <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Kegiatan</th>
                         <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Dosen Penguji</th>
                         <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
                     </tr>
@@ -93,6 +102,11 @@
                                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{{ $assignment->nim }}</p>
                                 </div>
                             </div>
+                        </td>
+                        <td class="px-6 py-5">
+                            <span class="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                                {{ $assignment->mahasiswa->kegiatan }}
+                            </span>
                         </td>
                         <td class="px-6 py-5">
                             <div class="flex items-center space-x-2 text-indigo-600">

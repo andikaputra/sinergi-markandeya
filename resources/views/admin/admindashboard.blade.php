@@ -4,6 +4,19 @@
 
 @section('content')
 <div class="space-y-8">
+    @if(session('success'))
+    <div class="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-700 text-sm font-bold flex items-center">
+        <i class="fas fa-check-circle mr-3 text-lg"></i>
+        {{ session('success') }}
+    </div>
+    @endif
+    @if(session('error'))
+    <div class="p-5 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm font-bold flex items-center">
+        <i class="fas fa-exclamation-triangle mr-3 text-lg"></i>
+        {{ session('error') }}
+    </div>
+    @endif
+
     <!-- Stat Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <!-- Card KKN -->
@@ -75,17 +88,24 @@
                 <div class="relative z-10">
                     <h4 class="text-3xl font-black mb-4 tracking-tight">Portal Sinergi Admin</h4>
                     <p class="text-blue-100 opacity-80 mb-8 max-w-md">Gunakan dashboard ini untuk memantau pendaftaran, melakukan plotting dosen, dan mengelola database mahasiswa Markandeya Bali.</p>
-                    
-                    <!-- Import Component -->
-                    <div class="p-6 bg-white/10 backdrop-blur-md rounded-3xl border border-white/10 max-w-lg">
-                        <h5 class="text-xs font-black uppercase tracking-widest mb-4 flex items-center">
-                            <i class="fas fa-upload mr-2"></i> Import Mahasiswa (CSV)
-                        </h5>
-                        <form action="{{ route('admin.import.mahasiswa') }}" method="POST" enctype="multipart/form-data" class="flex gap-2">
-                            @csrf
-                            <input type="file" name="file_csv" required class="block w-full text-xs text-blue-100 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-white file:text-blue-700 cursor-pointer">
-                            <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-full text-xs font-black transition-all">Upload</button>
-                        </form>
+
+                    <div class="grid grid-cols-2 gap-3 max-w-lg">
+                        <a href="{{ route('admin.peserta.kkn') }}" class="flex items-center p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 hover:bg-white/20 transition-all group">
+                            <i class="fas fa-users text-lg mr-3 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs font-black uppercase tracking-wider">Peserta KKN</span>
+                        </a>
+                        <a href="{{ route('admin.peserta.ppl') }}" class="flex items-center p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 hover:bg-white/20 transition-all group">
+                            <i class="fas fa-chalkboard-teacher text-lg mr-3 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs font-black uppercase tracking-wider">Peserta PPL</span>
+                        </a>
+                        <a href="{{ route('admin.peserta.pkl') }}" class="flex items-center p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 hover:bg-white/20 transition-all group">
+                            <i class="fas fa-building text-lg mr-3 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs font-black uppercase tracking-wider">Peserta PKL</span>
+                        </a>
+                        <a href="{{ route('admin.peserta.magang') }}" class="flex items-center p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 hover:bg-white/20 transition-all group">
+                            <i class="fas fa-briefcase text-lg mr-3 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs font-black uppercase tracking-wider">Peserta Magang</span>
+                        </a>
                     </div>
                 </div>
                 <div class="absolute -bottom-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-[80px]"></div>
@@ -111,22 +131,40 @@
                         </div>
                         <span class="text-sm font-bold text-gray-600 group-hover:text-blue-700">Set Periode Aktif</span>
                     </a>
+                    <a href="{{ route('admin.mahasiswa.create') }}" class="flex items-center p-4 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group">
+                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm mr-4">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <span class="text-sm font-bold text-gray-600 group-hover:text-blue-700">Tambah Mahasiswa</span>
+                    </a>
                     <a href="{{ route('dosen.create') }}" class="flex items-center p-4 bg-slate-50 rounded-2xl hover:bg-emerald-50 transition-colors group">
                         <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-600 shadow-sm mr-4">
-                            <i class="fas fa-user-plus"></i>
+                            <i class="fas fa-user-tie"></i>
                         </div>
                         <span class="text-sm font-bold text-gray-600 group-hover:text-emerald-700">Tambah Dosen</span>
+                    </a>
+                    <a href="{{ route('dosen.index') }}" class="flex items-center p-4 bg-slate-50 rounded-2xl hover:bg-indigo-50 transition-colors group">
+                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-indigo-600 shadow-sm mr-4">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <span class="text-sm font-bold text-gray-600 group-hover:text-indigo-700">Kelola Dosen</span>
                     </a>
                 </div>
             </div>
 
-            <div class="bg-indigo-900 p-8 rounded-[2.5rem] shadow-xl text-white relative overflow-hidden">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 relative overflow-hidden">
                 <div class="relative z-10">
-                    <h4 class="text-lg font-bold mb-2">Butuh Bantuan?</h4>
-                    <p class="text-xs text-indigo-200 leading-relaxed mb-6">Hubungi tim IT Markandeya jika Anda mengalami kendala pada sistem plotting atau sinkronisasi data.</p>
-                    <a href="#" class="inline-block px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-xs font-bold transition-all uppercase tracking-widest">Kontak Support</a>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                            <i class="fas fa-headset text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-800">Butuh Bantuan?</h4>
+                    </div>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Hubungi tim IT Markandeya jika Anda mengalami kendala pada sistem plotting atau sinkronisasi data.</p>
+                    <a href="mailto:it@markandeyabali.ac.id" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black transition-all uppercase tracking-widest shadow-lg shadow-blue-200">
+                        <i class="fas fa-envelope mr-2"></i>Kontak Support
+                    </a>
                 </div>
-                <i class="fas fa-question-circle absolute -bottom-10 -right-10 text-9xl opacity-10"></i>
             </div>
         </div>
     </div>
