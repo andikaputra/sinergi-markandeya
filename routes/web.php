@@ -15,6 +15,10 @@ use App\Http\Controllers\LokasiPklController;
 use App\Http\Controllers\PublikasiController;
 use App\Http\Controllers\PengajuanLokasiPKLController;
 use App\Http\Controllers\TahunAkademikController;
+use App\Http\Controllers\LokasiMagangController;
+use App\Http\Controllers\PembimbingLuarController;
+use App\Http\Controllers\PembimbingLuarDashboardController;
+use App\Http\Controllers\PengajuanLokasiMagangController;
 
 
 Route::get('/', function () {
@@ -30,7 +34,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit')->m
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Change Password Routes (Universal)
-Route::middleware(['auth:web,mahasiswa,dosen'])->group(function() {
+Route::middleware(['auth:web,mahasiswa,dosen,pembimbing_luar'])->group(function() {
     Route::get('/change-password', [AuthController::class, 'showChangePasswordForm'])->name('password.change');
     Route::post('/change-password', [AuthController::class, 'updatePassword'])->name('password.update');
 });
@@ -127,6 +131,12 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/assign-lokasipkl', [LokasiPklController::class, 'assignStore'])->name('assign.lokasipkl.store');
     Route::delete('/assign-lokasipkl/{id}', [LokasiPklController::class, 'assignDelete'])->name('assign.lokasipkl.delete');
 
+    //Magang (Master Data)
+    Route::get('/lokasimagang', [LokasiMagangController::class, 'index'])->name('lokasimagang.index');
+    Route::get('/lokasimagang/create', [LokasiMagangController::class, 'create'])->name('lokasimagang.create');
+    Route::post('/lokasimagang/store', [LokasiMagangController::class, 'store'])->name('lokasimagang.store');
+    Route::delete('/lokasimagang/{id}', [LokasiMagangController::class, 'destroy'])->name('lokasimagang.delete');
+
     Route::get('/assign-lokasimagang', [AdminController::class, 'assignMagangIndex'])->name('assign.lokasimagang');
     Route::post('/assign-lokasimagang', [AdminController::class, 'assignMagangStore'])->name('assign.lokasimagang.store');
     Route::delete('/assign-lokasimagang/{id}', [AdminController::class, 'assignMagangDelete'])->name('assign.lokasimagang.delete');
@@ -138,6 +148,25 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/pengajuan-pkladmin', [PengajuanLokasiPKLController::class, 'adminindex'])->name('pengajuanpkl.adminindex');
     Route::post('/pengajuan-pkl/{id}/approve', [PengajuanLokasiPKLController::class, 'approve'])->name('pengajuanpkl.approve');
     Route::post('/pengajuan-pkl/{id}/reject', [PengajuanLokasiPKLController::class, 'reject'])->name('pengajuanpkl.reject');
+
+    Route::get('/pengajuan-magangadmin', [PengajuanLokasiMagangController::class, 'adminindex'])->name('pengajuanmagang.adminindex');
+    Route::post('/pengajuan-magang/{id}/approve', [PengajuanLokasiMagangController::class, 'approve'])->name('pengajuanmagang.approve');
+    Route::post('/pengajuan-magang/{id}/reject', [PengajuanLokasiMagangController::class, 'reject'])->name('pengajuanmagang.reject');
+
+    // Pembimbing Luar Management
+    Route::get('/pembimbing-luar', [PembimbingLuarController::class, 'index'])->name('pembimbing_luar.index');
+    Route::get('/pembimbing-luar/create', [PembimbingLuarController::class, 'create'])->name('pembimbing_luar.create');
+    Route::post('/pembimbing-luar/store', [PembimbingLuarController::class, 'store'])->name('pembimbing_luar.store');
+    Route::post('/pembimbing-luar/import', [PembimbingLuarController::class, 'import'])->name('pembimbing_luar.import');
+    Route::delete('/pembimbing-luar/{id}', [PembimbingLuarController::class, 'destroy'])->name('pembimbing_luar.delete');
+
+    // Plotting Pembimbing Luar (per kegiatan)
+    Route::get('/assign-pembimbingluar-kkn', [PembimbingLuarController::class, 'assignKKN'])->name('assign.pembimbingluar.kkn');
+    Route::get('/assign-pembimbingluar-ppl', [PembimbingLuarController::class, 'assignPPL'])->name('assign.pembimbingluar.ppl');
+    Route::get('/assign-pembimbingluar-pkl', [PembimbingLuarController::class, 'assignPKL'])->name('assign.pembimbingluar.pkl');
+    Route::get('/assign-pembimbingluar-magang', [PembimbingLuarController::class, 'assignMagang'])->name('assign.pembimbingluar.magang');
+    Route::post('/assign-pembimbingluar', [PembimbingLuarController::class, 'assignStore'])->name('assign.pembimbingluar.store');
+    Route::delete('/assign-pembimbingluar/{id}', [PembimbingLuarController::class, 'assignDelete'])->name('assign.pembimbingluar.delete');
 
 });
 
@@ -161,6 +190,10 @@ Route::middleware(['auth:mahasiswa'])->group(function () {
     Route::get('/pengajuan-pkl', [PengajuanLokasiPKLController::class, 'index'])->name('pengajuanpkl.index');
     Route::get('/pengajuan-pkl/create', [PengajuanLokasiPKLController::class, 'create'])->name('pengajuanpkl.create');
     Route::post('/pengajuan-pkl', [PengajuanLokasiPKLController::class, 'store'])->name('pengajuanpkl.store');
+
+    Route::get('/pengajuan-magang', [PengajuanLokasiMagangController::class, 'index'])->name('pengajuanmagang.index');
+    Route::get('/pengajuan-magang/create', [PengajuanLokasiMagangController::class, 'create'])->name('pengajuanmagang.create');
+    Route::post('/pengajuan-magang', [PengajuanLokasiMagangController::class, 'store'])->name('pengajuanmagang.store');
 });
 
 // Routes untuk Dosen Pembimbing
@@ -174,4 +207,12 @@ Route::middleware(['auth:dosen'])->prefix('dosen-pembimbing')->group(function ()
     Route::get('/ujian', [DosenPengujiController::class, 'dosenIndex'])->name('dosen.ujian.index');
     Route::get('/ujian/{nim}', [DosenPengujiController::class, 'detailMahasiswa'])->name('dosen.ujian.detail');
     Route::post('/ujian/{nim}/nilai', [DosenPengujiController::class, 'inputNilai'])->name('dosen.ujian.nilai');
+});
+
+// Routes untuk Pembimbing Luar
+Route::middleware(['auth:pembimbing_luar'])->prefix('pembimbing-luar')->group(function () {
+    Route::get('/dashboard', [PembimbingLuarDashboardController::class, 'beranda'])->name('pembimbing_luar.dashboard');
+    Route::get('/bimbingan', [PembimbingLuarDashboardController::class, 'bimbingan'])->name('pembimbing_luar.bimbingan');
+    Route::get('/mahasiswa/{nim}', [PembimbingLuarDashboardController::class, 'detailMahasiswa'])->name('pembimbing_luar.mahasiswa.detail');
+    Route::post('/mahasiswa/{nim}/nilai', [PembimbingLuarDashboardController::class, 'inputNilai'])->name('pembimbing_luar.mahasiswa.nilai');
 });

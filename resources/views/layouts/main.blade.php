@@ -79,6 +79,8 @@
                 @include('layouts.adminmhs_menu')
             @elseif(Auth::guard('dosen')->check())
                 @include('layouts.dosen_menu')
+            @elseif(Auth::guard('pembimbing_luar')->check())
+                @include('layouts.pembimbing_luar_menu')
             @else
                 @include('layouts.admin_menu')
             @endif

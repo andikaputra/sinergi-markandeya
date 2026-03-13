@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PengajuanLokasiPKL;
+use App\Models\LokasiPkl;
+use App\Models\PenempatanPkl;
 use Illuminate\Support\Facades\Auth;
 
 class PengajuanLokasiPKLController extends Controller
@@ -48,7 +50,20 @@ class PengajuanLokasiPKLController extends Controller
     {
         $pengajuan = PengajuanLokasiPKL::findOrFail($id);
         $pengajuan->update(['status' => 'approved']);
-        return redirect()->back()->with('success', 'Pengajuan PKL disetujui.');
+
+        // Auto-add instansi to master lokasi PKL
+        $lokasi = LokasiPkl::firstOrCreate(
+            ['nama_instansi' => $pengajuan->nama_instansi],
+            ['alamat' => $pengajuan->alamat, 'kontak' => $pengajuan->kontak]
+        );
+
+        // Auto-place student at the location
+        PenempatanPkl::firstOrCreate(
+            ['nim' => $pengajuan->nim],
+            ['lokasi_pkl_id' => $lokasi->id]
+        );
+
+        return redirect()->back()->with('success', 'Pengajuan PKL disetujui dan mahasiswa otomatis ditempatkan.');
     }
 
     public function reject($id)

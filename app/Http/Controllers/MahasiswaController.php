@@ -61,7 +61,7 @@ class MahasiswaController extends Controller
 
     public function showDashboard()
     {
-        $mahasiswa = Mahasiswa::with(['dosenPembimbing.dosen', 'dosenPenguji.dosen'])
+        $mahasiswa = Mahasiswa::with(['dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar'])
             ->where('nim', Auth::user()->nim)->first();
     
         // Ambil lokasi KKN, PPL, atau PKL berdasarkan NIM yang login

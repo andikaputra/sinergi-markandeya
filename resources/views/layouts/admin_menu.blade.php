@@ -46,25 +46,44 @@
     <span class="font-medium text-sm">Data Dosen</span>
 </a>
 
+<a href="{{ route('pembimbing_luar.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-200">
+    <i class="fas fa-user-friends text-lg"></i>
+    <span class="font-medium text-sm">Pembimbing Luar</span>
+</a>
+
 <div x-data="{ open: false }" class="space-y-1">
     <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
         <div class="flex items-center space-x-3">
-            <i class="fas fa-map-marked-alt text-lg"></i>
-            <span class="font-medium text-sm">Pengaturan Lokasi</span>
+            <i class="fas fa-database text-lg"></i>
+            <span class="font-medium text-sm">Master Lokasi</span>
         </div>
         <i class="fas fa-chevron-down text-[10px] transform transition-transform" :class="open ? 'rotate-180' : ''"></i>
     </button>
     <div x-show="open" class="pl-12 space-y-1 border-l-2 border-slate-50 ml-6">
         @if(Auth::user()?->canManage('KKN'))
-        <a href="{{ route('lokasikkn.index') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Master Lokasi KKN</a>
+        <a href="{{ route('lokasikkn.index') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Lokasi KKN</a>
         @endif
         @if(Auth::user()?->canManage('PPL'))
-        <a href="{{ route('lokasippl.index') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Master Sekolah PPL</a>
+        <a href="{{ route('lokasippl.index') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Sekolah PPL</a>
         @endif
         @if(Auth::user()?->canManage('PKL'))
-        <a href="{{ route('lokasipkl.index') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Master Instansi PKL</a>
+        <a href="{{ route('lokasipkl.index') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Instansi PKL</a>
         @endif
-        <div class="h-px bg-slate-50 my-2 mr-4"></div>
+        @if(Auth::user()?->canManage('Magang'))
+        <a href="{{ route('lokasimagang.index') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Instansi Magang</a>
+        @endif
+    </div>
+</div>
+
+<div x-data="{ open: false }" class="space-y-1">
+    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-map-marked-alt text-lg"></i>
+            <span class="font-medium text-sm">Penempatan Lokasi</span>
+        </div>
+        <i class="fas fa-chevron-down text-[10px] transform transition-transform" :class="open ? 'rotate-180' : ''"></i>
+    </button>
+    <div x-show="open" class="pl-12 space-y-1 border-l-2 border-slate-50 ml-6">
         @if(Auth::user()?->canManage('KKN'))
         <a href="{{ route('assign.lokasikkn') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Penempatan KKN</a>
         @endif
@@ -79,6 +98,9 @@
         @endif
         @if(Auth::user()?->canManage('PKL'))
         <a href="{{ route('pengajuanpkl.adminindex') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Persetujuan PKL</a>
+        @endif
+        @if(Auth::user()?->canManage('Magang'))
+        <a href="{{ route('pengajuanmagang.adminindex') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Persetujuan Magang</a>
         @endif
     </div>
 </div>
@@ -105,6 +127,30 @@
         <a href="{{ route('assign.dosenmagang') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Plot Dosen Magang</a>
         @endif
         <a href="{{ route('assign.dosenpenguji') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Plot Dosen Penguji</a>
+    </div>
+</div>
+
+<div x-data="{ open: false }" class="space-y-1">
+    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-200">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-user-friends text-lg"></i>
+            <span class="font-medium text-sm">Plotting Pemb. Luar</span>
+        </div>
+        <i class="fas fa-chevron-down text-[10px] transform transition-transform" :class="open ? 'rotate-180' : ''"></i>
+    </button>
+    <div x-show="open" class="pl-12 space-y-1 border-l-2 border-slate-50 ml-6">
+        @if(Auth::user()?->canManage('KKN'))
+        <a href="{{ route('assign.pembimbingluar.kkn') }}" class="block py-2 text-sm text-gray-500 hover:text-emerald-600">Plot Pemb. Luar KKN</a>
+        @endif
+        @if(Auth::user()?->canManage('PPL'))
+        <a href="{{ route('assign.pembimbingluar.ppl') }}" class="block py-2 text-sm text-gray-500 hover:text-emerald-600">Plot Pemb. Luar PPL</a>
+        @endif
+        @if(Auth::user()?->canManage('PKL'))
+        <a href="{{ route('assign.pembimbingluar.pkl') }}" class="block py-2 text-sm text-gray-500 hover:text-emerald-600">Plot Pemb. Luar PKL</a>
+        @endif
+        @if(Auth::user()?->canManage('Magang'))
+        <a href="{{ route('assign.pembimbingluar.magang') }}" class="block py-2 text-sm text-gray-500 hover:text-emerald-600">Plot Pemb. Luar Magang</a>
+        @endif
     </div>
 </div>
 

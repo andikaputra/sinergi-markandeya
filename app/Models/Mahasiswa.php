@@ -54,9 +54,16 @@ class Mahasiswa extends Authenticatable
     {
         $nilaiPembimbing = $this->dosenPembimbing?->nilai;
         $nilaiPenguji = $this->dosenPenguji?->nilai;
+        $nilaiPembimbingLuar = $this->pembimbingLuarMahasiswa?->nilai;
 
-        if (is_numeric($nilaiPembimbing) && is_numeric($nilaiPenguji)) {
-            $rata = ($nilaiPembimbing + $nilaiPenguji) / 2;
+        $nilaiList = array_filter([
+            $nilaiPembimbing,
+            $nilaiPenguji,
+            $nilaiPembimbingLuar,
+        ], fn($v) => is_numeric($v));
+
+        if (count($nilaiList) >= 2) {
+            $rata = array_sum($nilaiList) / count($nilaiList);
 
             if ($rata >= 85) return "A";
             if ($rata >= 70) return "B";
@@ -64,7 +71,7 @@ class Mahasiswa extends Authenticatable
             return "D";
         }
 
-        return $nilaiPembimbing ?? $nilaiPenguji ?? '-';
+        return $nilaiPembimbing ?? $nilaiPenguji ?? $nilaiPembimbingLuar ?? '-';
     }
 
     public function jurnals()
@@ -105,5 +112,10 @@ class Mahasiswa extends Authenticatable
     public function dosenPembimbing()
     {
         return $this->hasOne(DosenPembimbing::class, 'nim', 'nim');
+    }
+
+    public function pembimbingLuarMahasiswa()
+    {
+        return $this->hasOne(PembimbingLuarMahasiswa::class, 'nim', 'nim');
     }
 }

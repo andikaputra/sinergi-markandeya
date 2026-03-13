@@ -30,6 +30,12 @@ class AuthController extends Controller
                 $request->session()->regenerate();
                 return redirect()->route('dashboard')->with('success', 'Login berhasil!');
             }
+
+            // Cek kredensial untuk pembimbing luar (menggunakan email)
+            if (Auth::guard('pembimbing_luar')->attempt($request->only('email', 'password'))) {
+                $request->session()->regenerate();
+                return redirect()->route('pembimbing_luar.dashboard')->with('success', 'Login Pembimbing Luar berhasil!');
+            }
         } else {
             // Cek kredensial untuk dosen (menggunakan nidn)
             if (Auth::guard('dosen')->attempt(['nidn' => $request->email, 'password' => $request->password])) {
@@ -37,7 +43,7 @@ class AuthController extends Controller
                 return redirect()->route('dosen.dashboard')->with('success', 'Login Dosen berhasil!');
             }
         }
-    
+
         return back()->withErrors(['email' => 'Kredensial tidak ditemukan!']);
     }
 
@@ -48,6 +54,8 @@ class AuthController extends Controller
             Auth::guard('mahasiswa')->logout();
         } elseif (Auth::guard('dosen')->check()) {
             Auth::guard('dosen')->logout();
+        } elseif (Auth::guard('pembimbing_luar')->check()) {
+            Auth::guard('pembimbing_luar')->logout();
         } else {
             Auth::logout();
         }
@@ -81,9 +89,13 @@ class AuthController extends Controller
         return back()->withErrors(['email' => 'Email atau password salah!']);
     }
 
-    public function logoutadmin()
+    public function logoutadmin(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/admin')->with('success', 'Anda telah logout.');
     }
 
@@ -104,6 +116,8 @@ class AuthController extends Controller
             $user = Auth::guard('mahasiswa')->user();
         } elseif (Auth::guard('dosen')->check()) {
             $user = Auth::guard('dosen')->user();
+        } elseif (Auth::guard('pembimbing_luar')->check()) {
+            $user = Auth::guard('pembimbing_luar')->user();
         } else {
             $user = Auth::user();
         }

@@ -167,7 +167,7 @@
                 <i class="fas fa-graduation-cap text-indigo-500 mr-3"></i>
                 Rekap Nilai Akhir
             </h4>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-{{ $mahasiswa->pembimbingLuarMahasiswa ? '3' : '2' }} gap-4">
                 <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100 text-center">
                     <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">Nilai Pembimbing</p>
                     <h5 class="text-3xl font-black text-blue-700">{{ $mahasiswa->dosenPembimbing?->nilai ?? '-' }}</h5>
@@ -176,6 +176,12 @@
                     <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">Nilai Penguji</p>
                     <h5 class="text-3xl font-black text-indigo-700">{{ $mahasiswa->dosenPenguji?->nilai ?? '-' }}</h5>
                 </div>
+                @if($mahasiswa->pembimbingLuarMahasiswa)
+                <div class="p-6 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
+                    <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2">Nilai Pemb. Luar</p>
+                    <h5 class="text-3xl font-black text-emerald-700">{{ $mahasiswa->pembimbingLuarMahasiswa?->nilai ?? '-' }}</h5>
+                </div>
+                @endif
             </div>
             <div class="mt-4 p-6 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl text-white text-center shadow-lg shadow-blue-200">
                 <p class="text-[10px] font-black text-blue-100 uppercase tracking-widest mb-1 opacity-80">Nilai Akhir</p>
@@ -184,9 +190,9 @@
         </div>
     </div>
 
-    <!-- Dosen Pembimbing & Penguji -->
-    @if($mahasiswa->dosenPembimbing || $mahasiswa->dosenPenguji)
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Dosen Pembimbing, Penguji & Pembimbing Luar -->
+    @if($mahasiswa->dosenPembimbing || $mahasiswa->dosenPenguji || $mahasiswa->pembimbingLuarMahasiswa)
+    <div class="grid grid-cols-1 lg:grid-cols-{{ $mahasiswa->pembimbingLuarMahasiswa ? '3' : '2' }} gap-8">
         @if($mahasiswa->dosenPembimbing?->dosen)
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
             <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
@@ -218,6 +224,24 @@
                 <div class="min-w-0">
                     <p class="text-base font-bold text-gray-800 truncate">{{ $mahasiswa->dosenPenguji->dosen->nama }}</p>
                     <p class="text-xs text-indigo-600 font-mono font-bold">NIDN: {{ $mahasiswa->dosenPenguji->dosen->nidn }}</p>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        @if($mahasiswa->pembimbingLuarMahasiswa?->pembimbingLuar)
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+            <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-user-friends text-emerald-500 mr-3"></i>
+                Pembimbing Luar
+            </h4>
+            <div class="flex items-center space-x-4 p-5 bg-emerald-50 rounded-2xl border border-emerald-100">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl font-black flex-shrink-0 shadow-lg shadow-emerald-200">
+                    {{ substr($mahasiswa->pembimbingLuarMahasiswa->pembimbingLuar->nama, 0, 1) }}
+                </div>
+                <div class="min-w-0">
+                    <p class="text-base font-bold text-gray-800 truncate">{{ $mahasiswa->pembimbingLuarMahasiswa->pembimbingLuar->nama }}</p>
+                    <p class="text-xs text-emerald-600 font-bold">{{ $mahasiswa->pembimbingLuarMahasiswa->pembimbingLuar->instansi }}</p>
                 </div>
             </div>
         </div>

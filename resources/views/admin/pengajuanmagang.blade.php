@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Penempatan PKL')
+@section('title', 'Manajemen Pengajuan Magang')
 
 @section('content')
 <div class="space-y-8">
@@ -19,11 +19,11 @@
 
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
         <div>
-            <h2 class="text-2xl font-black text-gray-800 tracking-tight">Pengajuan Lokasi PKL</h2>
-            <p class="text-sm text-gray-500 font-medium">Verifikasi dan kelola penempatan mandiri mahasiswa PKL.</p>
+            <h2 class="text-2xl font-black text-gray-800 tracking-tight">Pengajuan Lokasi Magang</h2>
+            <p class="text-sm text-gray-500 font-medium">Verifikasi dan kelola penempatan mandiri mahasiswa Magang.</p>
         </div>
         <div class="flex items-center space-x-2">
-            <span class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black border border-blue-100">
+            <span class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100">
                 TOTAL: {{ $pengajuans->count() }}
             </span>
         </div>
@@ -31,7 +31,7 @@
 
     <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 overflow-x-auto">
-            <table class="w-full text-left border-separate border-spacing-0" id="pklTable">
+            <table class="w-full text-left border-separate border-spacing-0" id="magangPengajuanTable">
                 <thead>
                     <tr>
                         <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
@@ -45,7 +45,7 @@
                     <tr class="hover:bg-slate-50/30 transition-colors group">
                         <td class="px-6 py-5">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs border border-amber-100 group-hover:scale-110 transition-transform">
+                                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs border border-indigo-100 group-hover:scale-110 transition-transform">
                                     {{ substr($pengajuan->mahasiswa->nama, 0, 1) }}
                                 </div>
                                 <div>
@@ -75,13 +75,13 @@
                         <td class="px-6 py-5 text-right">
                             @if($pengajuan->status == 'pending')
                             <div class="flex items-center justify-end space-x-2">
-                                <form action="{{ route('pengajuanpkl.approve', $pengajuan->id) }}" method="POST">
+                                <form action="{{ route('pengajuanmagang.approve', $pengajuan->id) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black rounded-lg transition-all shadow-md shadow-emerald-100 uppercase tracking-widest">
                                         Approve
                                     </button>
                                 </form>
-                                <form action="{{ route('pengajuanpkl.reject', $pengajuan->id) }}" method="POST">
+                                <form action="{{ route('pengajuanmagang.reject', $pengajuan->id) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="px-4 py-2 bg-white border border-gray-200 text-red-600 text-[10px] font-black rounded-lg hover:bg-red-50 transition-all uppercase tracking-widest">
                                         Reject
@@ -102,7 +102,7 @@
 
 <script>
     $(document).ready(function() {
-        $('#pklTable').DataTable({
+        $('#magangPengajuanTable').DataTable({
             "language": {
                 "search": "",
                 "searchPlaceholder": "Cari pengajuan..."

@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Seed Admin (Super Admin)
         User::updateOrCreate(
-            ['email' => 'admin@gmail.com'],
+            ['email' => 'admin@markandeya.ac.id'],
             [
                 'name' => 'Administrator',
                 'password' => Hash::make('password'),
