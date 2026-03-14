@@ -47,15 +47,35 @@
                 </div>
             </div>
 
-            <!-- Input Nilai -->
+            <!-- Input Nilai Kriteria Ujian -->
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
                 <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
                     <i class="fas fa-star text-amber-400 mr-2"></i>
                     Penilaian Ujian
+                    <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-black rounded-lg uppercase">{{ $mahasiswa->kegiatan }}</span>
                 </h4>
+
+                @if(session('success'))
+                <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-700 text-sm font-bold">
+                    <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+                </div>
+                @endif
+
+                @if($isUjian->nilai !== null)
+                <div class="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl text-center">
+                    <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">
+                        Nilai Akhir {{ $mahasiswa->kegiatan !== 'PPL' ? '(Rata-rata)' : '' }}
+                    </span>
+                    <p class="text-3xl font-black text-blue-700 mt-1">{{ $isUjian->nilai }}</p>
+                </div>
+                @endif
+
                 <form action="{{ route('dosen.ujian.nilai', $mahasiswa->nim) }}" method="POST">
                     @csrf
                     <div class="space-y-4">
+
+                    @if($mahasiswa->kegiatan === 'PPL')
+                        {{-- PPL: nilai langsung --}}
                         <label class="block">
                             <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Nilai Ujian (0-100)</span>
                             <input type="number" name="nilai" value="{{ $isUjian->nilai }}" min="0" max="100" step="0.1"
@@ -65,8 +85,51 @@
                         @error('nilai')
                             <p class="text-red-500 text-xs">{{ $message }}</p>
                         @enderror
-                        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-100 transition-all">
-                            Simpan Nilai
+                    @else
+                        {{-- KKN/PKL/Magang: 5 kriteria --}}
+                        <label class="block">
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">1. Keterlaksanaan Program</span>
+                            <input type="number" name="nilai_keterlaksanaan" value="{{ $isUjian->nilai_keterlaksanaan }}" min="0" max="100" step="0.1"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold"
+                                placeholder="0 - 100">
+                            @error('nilai_keterlaksanaan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </label>
+
+                        <label class="block">
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">2. Kontribusi Terhadap Masyarakat</span>
+                            <input type="number" name="nilai_kontribusi" value="{{ $isUjian->nilai_kontribusi }}" min="0" max="100" step="0.1"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold"
+                                placeholder="0 - 100">
+                            @error('nilai_kontribusi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </label>
+
+                        <label class="block">
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">3. Kerjasama Tim</span>
+                            <input type="number" name="nilai_kerjasama" value="{{ $isUjian->nilai_kerjasama }}" min="0" max="100" step="0.1"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold"
+                                placeholder="0 - 100">
+                            @error('nilai_kerjasama') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </label>
+
+                        <label class="block">
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">4. Kreativitas dan Inovasi</span>
+                            <input type="number" name="nilai_kreativitas" value="{{ $isUjian->nilai_kreativitas }}" min="0" max="100" step="0.1"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold"
+                                placeholder="0 - 100">
+                            @error('nilai_kreativitas') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </label>
+
+                        <label class="block">
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">5. Partisipasi, Komunikasi, Etika & Kedisiplinan</span>
+                            <input type="number" name="nilai_partisipasi" value="{{ $isUjian->nilai_partisipasi }}" min="0" max="100" step="0.1"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold"
+                                placeholder="0 - 100">
+                            @error('nilai_partisipasi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </label>
+                    @endif
+
+                        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-100 transition-all mt-2">
+                            <i class="fas fa-save mr-2"></i> Simpan Nilai
                         </button>
                     </div>
                 </form>

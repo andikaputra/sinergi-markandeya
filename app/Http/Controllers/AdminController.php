@@ -32,7 +32,7 @@ class AdminController extends Controller
 
     public function pesertaKKN(Request $request)
     {
-        $query = Mahasiswa::where('kegiatan', 'KKN')->with(['penempatankkn.lokasikkn', 'publikasis']);
+        $query = Mahasiswa::where('kegiatan', 'KKN')->with(['penempatankkn.lokasikkn', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen']);
         
         if ($request->has('ta') && $request->ta != '') {
             $query->where('tahun_akademik', $request->ta);
@@ -46,7 +46,7 @@ class AdminController extends Controller
 
     public function pesertaPPL(Request $request)
     {
-        $query = Mahasiswa::where('kegiatan', 'PPL')->with(['penempatanppl.lokasippl', 'publikasis']);
+        $query = Mahasiswa::where('kegiatan', 'PPL')->with(['penempatanppl.lokasippl', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen']);
         
         if ($request->has('ta') && $request->ta != '') {
             $query->where('tahun_akademik', $request->ta);
@@ -60,7 +60,7 @@ class AdminController extends Controller
 
     public function pesertaPKL(Request $request)
     {
-        $query = Mahasiswa::where('kegiatan', 'PKL')->with(['penempatanpkl.lokasipkl', 'publikasis']);
+        $query = Mahasiswa::where('kegiatan', 'PKL')->with(['penempatanpkl.lokasipkl', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen']);
         
         if ($request->has('ta') && $request->ta != '') {
             $query->where('tahun_akademik', $request->ta);
@@ -74,7 +74,7 @@ class AdminController extends Controller
 
     public function pesertaMagang(Request $request)
     {
-        $query = Mahasiswa::where('kegiatan', 'Magang')->with(['penempatanmagang.lokasimagang', 'publikasis']);
+        $query = Mahasiswa::where('kegiatan', 'Magang')->with(['penempatanmagang.lokasimagang', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen']);
         
         if ($request->has('ta') && $request->ta != '') {
             $query->where('tahun_akademik', $request->ta);
@@ -175,7 +175,7 @@ class AdminController extends Controller
             'tahun_akademik' => $request->tahun_akademik,
             'kecamatan' => $request->kecamatan,
             'kampus' => $request->kampus,
-            'password' => $request->nim, // Default: NIM (hashed by model cast)
+            'password' => $request->nidn, // Default: NIDN (hashed by model cast)
             'pembayaranKRS' => 'Lunas (By Admin)',
             'KRS' => 'Aktif (By Admin)'
         ]);
@@ -249,7 +249,7 @@ class AdminController extends Controller
                         'kegiatan' => $kegiatan,
                         'kecamatan' => trim($data[5] ?? '-') ?: '-',
                         'kampus' => trim($data[6] ?? 'Markandeya') ?: 'Markandeya',
-                        'password' => $nim, // Default password = NIM (hashed by model cast)
+                        'password' => $request->nidn, // Default: NIDN (hashed by model cast)
                         'tahun_akademik' => $taString,
                         'pembayaranKRS' => 'Lunas (Import)',
                         'KRS' => 'Aktif (Import)'
@@ -310,7 +310,7 @@ class AdminController extends Controller
                     ['nidn' => $nidn],
                     [
                         'nama' => $nama,
-                        'password' => $nidn, // Default password = NIDN (hashed by model cast)
+                        'password' => $request->nidn, // Default: NIDN (hashed by model cast)
                     ]
                 );
                 $count++;

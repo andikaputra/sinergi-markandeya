@@ -118,4 +118,9 @@ class Mahasiswa extends Authenticatable
     {
         return $this->hasOne(PembimbingLuarMahasiswa::class, 'nim', 'nim');
     }
+
+    public function dosenPenilaiPublikasi()
+    {
+        return $this->hasOne(DosenPenilaiPublikasi::class, 'nim', 'nim');
+    }
 }

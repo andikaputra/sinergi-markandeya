@@ -4,6 +4,24 @@
 
 @section('content')
 <div class="space-y-8">
+    @if(session('success'))
+    <div class="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-700 text-sm font-bold flex items-center">
+        <i class="fas fa-check-circle mr-3 text-lg"></i>{{ session('success') }}
+    </div>
+    @endif
+    @if(session('error'))
+    <div class="p-5 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm font-bold flex items-center">
+        <i class="fas fa-exclamation-triangle mr-3 text-lg"></i>{{ session('error') }}
+    </div>
+    @endif
+
+    @include('admin._import_plotting', [
+        'importRoute' => route('assign.dosen.import'),
+        'label' => 'Plotting Dosen Pembimbing',
+        'formatInfo' => 'nim, nidn',
+        'color' => 'blue',
+    ])
+
     <!-- Assignment Form Card -->
     <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
         <form action="{{ route('assign.dosen.store') }}" method="POST" class="p-8">

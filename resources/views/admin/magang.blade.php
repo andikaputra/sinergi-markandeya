@@ -43,6 +43,9 @@
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 rounded-tl-2xl">No</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Mahasiswa</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Program Studi</th>
+                        <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Penempatan</th>
+                        @include('admin._header_dosen')
+                        <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Publikasi</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Nilai Akhir</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 rounded-tr-2xl">Waktu Daftar</th>
                     </tr>
@@ -66,6 +69,27 @@
                             <span class="text-xs font-semibold text-gray-600 px-3 py-1 bg-gray-100 rounded-full border border-gray-200 uppercase tracking-tighter">
                                 {{ $mahasiswa->prodi_full }}
                             </span>
+                        </td>
+                        <td class="px-6 py-5">
+                            @php $instansi = $mahasiswa->penempatanmagang?->lokasimagang?->nama_instansi; @endphp
+                            @if($instansi)
+                            <div class="flex items-center space-x-2 text-slate-600">
+                                <i class="fas fa-building text-xs text-indigo-500"></i>
+                                <span class="text-sm font-bold">{{ $instansi }}</span>
+                            </div>
+                            @else
+                            <span class="text-xs font-bold text-gray-400 italic bg-gray-50 px-2 py-1 rounded-lg">Belum Di-plot</span>
+                            @endif
+                        </td>
+                        @include('admin._kolom_dosen', ['mahasiswa' => $mahasiswa])
+                        <td class="px-6 py-5 text-center">
+                            @if($mahasiswa->publikasis->isNotEmpty())
+                                <a href="{{ $mahasiswa->publikasis->first()->link }}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold">
+                                    <i class="fas fa-link mr-1"></i> Lihat
+                                </a>
+                            @else
+                                <span class="text-xs text-gray-300 italic">Belum Ada</span>
+                            @endif
                         </td>
                         <td class="px-6 py-5 text-center">
                             <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-black border border-indigo-100">

@@ -6,6 +6,19 @@
         {{ session('success') }}
     </div>
     @endif
+    @if(session('error'))
+    <div class="p-5 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm font-bold flex items-center">
+        <i class="fas fa-exclamation-triangle mr-3 text-lg"></i>
+        {{ session('error') }}
+    </div>
+    @endif
+
+    @include('admin._import_plotting', [
+        'importRoute' => route('assign.pembimbingluar.import'),
+        'label' => 'Plotting Pembimbing Luar',
+        'formatInfo' => 'nim, email_pembimbing_luar',
+        'color' => 'emerald',
+    ])
 
     <!-- Assignment Form Card -->
     <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">

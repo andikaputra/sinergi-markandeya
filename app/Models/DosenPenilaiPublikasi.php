@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DosenPenguji extends Model
+class DosenPenilaiPublikasi extends Model
 {
     use HasFactory;
 
-    protected $table = 'dosen_pengujis';
+    protected $table = 'dosen_penilai_publikasis';
+
     protected $fillable = [
         'nim', 'nidn', 'nilai',
-        'nilai_keterlaksanaan', 'nilai_kontribusi', 'nilai_kerjasama',
-        'nilai_kreativitas', 'nilai_partisipasi',
+        'nilai_ketercapaian', 'nilai_sistematika', 'nilai_kelayakan',
+        'nilai_presentasi', 'nilai_mempertahankan',
     ];
 
     public function mahasiswa()

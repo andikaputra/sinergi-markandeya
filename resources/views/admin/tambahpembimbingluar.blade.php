@@ -55,7 +55,7 @@
 
             <div class="p-4 bg-amber-50 border border-amber-100 rounded-2xl text-amber-700 text-sm">
                 <i class="fas fa-info-circle mr-2"></i>
-                Password default = alamat email. Pembimbing luar dapat mengubah password setelah login.
+                Password default: <strong>markandeyabali{{ date('Y') }}</strong>. Pembimbing luar dapat mengubah password setelah login.
             </div>
 
             <button type="submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-200 transition-all duration-300 transform hover:-translate-y-1 active:scale-[0.98]">

@@ -127,6 +127,7 @@
         <a href="{{ route('assign.dosenmagang') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Plot Dosen Magang</a>
         @endif
         <a href="{{ route('assign.dosenpenguji') }}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Plot Dosen Penguji</a>
+        <a href="{{ route('assign.dosenpenilai') }}" class="block py-2 text-sm text-gray-500 hover:text-purple-600">Plot Penilai Publikasi</a>
     </div>
 </div>
 

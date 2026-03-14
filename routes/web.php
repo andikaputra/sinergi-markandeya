@@ -19,6 +19,7 @@ use App\Http\Controllers\LokasiMagangController;
 use App\Http\Controllers\PembimbingLuarController;
 use App\Http\Controllers\PembimbingLuarDashboardController;
 use App\Http\Controllers\PengajuanLokasiMagangController;
+use App\Http\Controllers\DosenPenilaiPublikasiController;
 
 
 Route::get('/', function () {
@@ -96,12 +97,20 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/assign-dosenpkl', [DosenPembimbingController::class, 'indexpkl'])->name('assign.dosenpkl');
     Route::get('/assign-dosenmagang', [DosenPembimbingController::class, 'indexmagang'])->name('assign.dosenmagang');
     Route::post('/assign-dosenikkn', [DosenPembimbingController::class, 'assign'])->name('assign.dosen.store');
+    Route::post('/assign-dosen/import', [DosenPembimbingController::class, 'import'])->name('assign.dosen.import');
     Route::delete('/assign-dosen/{id}', [DosenPembimbingController::class, 'delete'])->name('assign.dosen.delete');
 
     // Dosen Penguji Plotting
     Route::get('/assign-dosenpenguji', [DosenPengujiController::class, 'adminIndex'])->name('assign.dosenpenguji');
     Route::post('/assign-dosenpenguji', [DosenPengujiController::class, 'adminStore'])->name('assign.dosenpenguji.store');
+    Route::post('/assign-dosenpenguji/import', [DosenPengujiController::class, 'import'])->name('assign.dosenpenguji.import');
     Route::delete('/assign-dosenpenguji/{id}', [DosenPengujiController::class, 'adminDelete'])->name('assign.dosenpenguji.delete');
+
+    // Dosen Penilai Publikasi Plotting
+    Route::get('/assign-dosenpenilai', [DosenPenilaiPublikasiController::class, 'adminIndex'])->name('assign.dosenpenilai');
+    Route::post('/assign-dosenpenilai', [DosenPenilaiPublikasiController::class, 'adminStore'])->name('assign.dosenpenilai.store');
+    Route::post('/assign-dosenpenilai/import', [DosenPenilaiPublikasiController::class, 'import'])->name('assign.dosenpenilai.import');
+    Route::delete('/assign-dosenpenilai/{id}', [DosenPenilaiPublikasiController::class, 'adminDelete'])->name('assign.dosenpenilai.delete');
 
     //KKN
     Route::get('/lokasikkn', [LokasiKKNController::class, 'indexlokasikkn'])->name('lokasikkn.index');
@@ -158,6 +167,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/pembimbing-luar/create', [PembimbingLuarController::class, 'create'])->name('pembimbing_luar.create');
     Route::post('/pembimbing-luar/store', [PembimbingLuarController::class, 'store'])->name('pembimbing_luar.store');
     Route::post('/pembimbing-luar/import', [PembimbingLuarController::class, 'import'])->name('pembimbing_luar.import');
+    Route::get('/pembimbing-luar/export', [PembimbingLuarController::class, 'export'])->name('pembimbing_luar.export');
     Route::delete('/pembimbing-luar/{id}', [PembimbingLuarController::class, 'destroy'])->name('pembimbing_luar.delete');
 
     // Plotting Pembimbing Luar (per kegiatan)
@@ -166,6 +176,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/assign-pembimbingluar-pkl', [PembimbingLuarController::class, 'assignPKL'])->name('assign.pembimbingluar.pkl');
     Route::get('/assign-pembimbingluar-magang', [PembimbingLuarController::class, 'assignMagang'])->name('assign.pembimbingluar.magang');
     Route::post('/assign-pembimbingluar', [PembimbingLuarController::class, 'assignStore'])->name('assign.pembimbingluar.store');
+    Route::post('/assign-pembimbingluar/import', [PembimbingLuarController::class, 'assignImport'])->name('assign.pembimbingluar.import');
     Route::delete('/assign-pembimbingluar/{id}', [PembimbingLuarController::class, 'assignDelete'])->name('assign.pembimbingluar.delete');
 
 });
@@ -207,6 +218,11 @@ Route::middleware(['auth:dosen'])->prefix('dosen-pembimbing')->group(function ()
     Route::get('/ujian', [DosenPengujiController::class, 'dosenIndex'])->name('dosen.ujian.index');
     Route::get('/ujian/{nim}', [DosenPengujiController::class, 'detailMahasiswa'])->name('dosen.ujian.detail');
     Route::post('/ujian/{nim}/nilai', [DosenPengujiController::class, 'inputNilai'])->name('dosen.ujian.nilai');
+
+    // Fitur Penilai Publikasi & Diseminasi
+    Route::get('/publikasi-penilaian', [DosenPenilaiPublikasiController::class, 'dosenIndex'])->name('dosen.publikasi.index');
+    Route::get('/publikasi-penilaian/{nim}', [DosenPenilaiPublikasiController::class, 'detailMahasiswa'])->name('dosen.publikasi.detail');
+    Route::post('/publikasi-penilaian/{nim}/nilai', [DosenPenilaiPublikasiController::class, 'inputNilai'])->name('dosen.publikasi.nilai');
 });
 
 // Routes untuk Pembimbing Luar

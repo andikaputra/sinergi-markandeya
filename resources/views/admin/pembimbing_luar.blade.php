@@ -23,6 +23,10 @@
             <p class="text-sm text-gray-400">Kelola data pembimbing dari luar institusi</p>
         </div>
         <div class="flex space-x-2">
+            <a href="{{ route('pembimbing_luar.export') }}" class="inline-flex items-center justify-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-100 group">
+                <i class="fas fa-file-export mr-2 group-hover:scale-110 transition-transform"></i>
+                Export CSV
+            </a>
             <a href="{{ route('pembimbing_luar.create') }}" class="inline-flex items-center justify-center px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-100 group">
                 <i class="fas fa-plus mr-2 group-hover:scale-110 transition-transform"></i>
                 Tambah Pembimbing Luar
@@ -37,7 +41,7 @@
                 <h5 class="text-sm font-bold text-gray-800 flex items-center mb-1">
                     <i class="fas fa-file-csv text-emerald-500 mr-2"></i> Import Pembimbing Luar via CSV
                 </h5>
-                <p class="text-xs text-gray-400">Format: <code class="bg-gray-100 px-1.5 py-0.5 rounded text-gray-600 font-mono">nama, email, instansi, no_hp</code> &mdash; Password default = Email</p>
+                <p class="text-xs text-gray-400">Format: <code class="bg-gray-100 px-1.5 py-0.5 rounded text-gray-600 font-mono">nama, email, instansi, no_hp</code> &mdash; Password default: <code class="bg-gray-100 px-1.5 py-0.5 rounded text-gray-600 font-mono">markandeyabali{{ date('Y') }}</code></p>
             </div>
             <form action="{{ route('pembimbing_luar.import') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2">
                 @csrf

@@ -93,17 +93,58 @@ class PembimbingLuarDashboardController extends Controller
     {
         $pembimbing = Auth::guard('pembimbing_luar')->user();
 
-        $request->validate([
-            'nilai' => 'required|numeric|min:0|max:100'
-        ]);
-
         $bimbingan = PembimbingLuarMahasiswa::where('pembimbing_luar_id', $pembimbing->id)
             ->where('nim', $nim)
             ->firstOrFail();
 
-        $bimbingan->update([
-            'nilai' => $request->nilai
-        ]);
+        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+
+        if ($mahasiswa->kegiatan === 'PKL' || $mahasiswa->kegiatan === 'Magang') {
+            // PKL/Magang: bobot 15%, 15%, 15%, 15% = total 60%
+            $request->validate([
+                'nilai_pkl_disiplin' => 'required|numeric|min:0|max:100',
+                'nilai_pkl_inisiatif' => 'required|numeric|min:0|max:100',
+                'nilai_pkl_kualitas' => 'required|numeric|min:0|max:100',
+                'nilai_pkl_skill' => 'required|numeric|min:0|max:100',
+            ]);
+
+            // Nilai tertimbang: (score * bobot) / total bobot
+            $nilaiAkhir = round(
+                ($request->nilai_pkl_disiplin * 15
+                + $request->nilai_pkl_inisiatif * 15
+                + $request->nilai_pkl_kualitas * 15
+                + $request->nilai_pkl_skill * 15) / 60,
+                1
+            );
+
+            $bimbingan->update([
+                'nilai_pkl_disiplin' => $request->nilai_pkl_disiplin,
+                'nilai_pkl_inisiatif' => $request->nilai_pkl_inisiatif,
+                'nilai_pkl_kualitas' => $request->nilai_pkl_kualitas,
+                'nilai_pkl_skill' => $request->nilai_pkl_skill,
+                'nilai' => $nilaiAkhir,
+            ]);
+        } else {
+            // KKN/PPL: rata-rata biasa
+            $request->validate([
+                'nilai_kehadiran' => 'required|numeric|min:0|max:100',
+                'nilai_luaran' => 'required|numeric|min:0|max:100',
+                'nilai_keterlibatan' => 'required|numeric|min:0|max:100',
+                'nilai_inovatif' => 'required|numeric|min:0|max:100',
+                'nilai_sosialisasi' => 'required|numeric|min:0|max:100',
+            ]);
+
+            $nilaiRata = round(($request->nilai_kehadiran + $request->nilai_luaran + $request->nilai_keterlibatan + $request->nilai_inovatif + $request->nilai_sosialisasi) / 5, 1);
+
+            $bimbingan->update([
+                'nilai_kehadiran' => $request->nilai_kehadiran,
+                'nilai_luaran' => $request->nilai_luaran,
+                'nilai_keterlibatan' => $request->nilai_keterlibatan,
+                'nilai_inovatif' => $request->nilai_inovatif,
+                'nilai_sosialisasi' => $request->nilai_sosialisasi,
+                'nilai' => $nilaiRata,
+            ]);
+        }
 
         return back()->with('success', 'Nilai mahasiswa berhasil diperbarui!');
     }

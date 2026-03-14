@@ -44,6 +44,7 @@
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Mahasiswa</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Program Studi</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Penempatan</th>
+                        @include('admin._header_dosen')
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Publikasi</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Nilai Akhir</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 rounded-tr-2xl">Waktu Daftar</th>
@@ -80,6 +81,7 @@
                             <span class="text-xs font-bold text-gray-400 italic bg-gray-50 px-2 py-1 rounded-lg">Belum Di-plot</span>
                             @endif
                         </td>
+                        @include('admin._kolom_dosen', ['mahasiswa' => $mahasiswa])
                         <td class="px-6 py-5 text-center">
                             @if($mahasiswa->publikasis->isNotEmpty())
                                 <a href="{{ $mahasiswa->publikasis->first()->link }}" target="_blank" rel="noopener noreferrer" class="text-amber-600 hover:text-amber-800 text-xs font-bold">

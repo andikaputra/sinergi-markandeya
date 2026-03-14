@@ -52,10 +52,62 @@
                 <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
                     <i class="fas fa-star text-amber-400 mr-2"></i>
                     Penilaian Mahasiswa
+                    <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-black rounded-lg uppercase">{{ $mahasiswa->kegiatan }}</span>
                 </h4>
+
+                @if(session('success'))
+                <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-700 text-sm font-bold">
+                    <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+                </div>
+                @endif
+
+                @if($isBimbingan->nilai !== null)
+                <div class="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl text-center">
+                    <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">
+                        Nilai Akhir {{ in_array($mahasiswa->kegiatan, ['PKL', 'Magang']) ? '(Tertimbang)' : '' }}
+                    </span>
+                    <p class="text-3xl font-black text-blue-700 mt-1">{{ $isBimbingan->nilai }}</p>
+                </div>
+                @endif
+
                 <form action="{{ route('dosen.mahasiswa.nilai', $mahasiswa->nim) }}" method="POST">
                     @csrf
                     <div class="space-y-4">
+
+                    @if(in_array($mahasiswa->kegiatan, ['PKL', 'Magang']))
+                        {{-- Kriteria PKL/Magang dengan bobot --}}
+                        <label class="block">
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">1. Kualitas Laporan Akhir <span class="text-blue-500">(15%)</span></span>
+                            <p class="text-[10px] text-gray-400 mb-1">Format, bahasa, dan kelengkapan data</p>
+                            <input type="number" name="nilai_pkl_laporan" value="{{ $isBimbingan->nilai_pkl_laporan }}" min="0" max="100" step="0.1"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold"
+                                placeholder="0 - 100">
+                            @error('nilai_pkl_laporan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </label>
+
+                        <label class="block">
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">2. Relevansi Teori <span class="text-blue-500">(10%)</span></span>
+                            <p class="text-[10px] text-gray-400 mb-1">Kemampuan mengaitkan praktik dengan ilmu kampus</p>
+                            <input type="number" name="nilai_pkl_relevansi" value="{{ $isBimbingan->nilai_pkl_relevansi }}" min="0" max="100" step="0.1"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold"
+                                placeholder="0 - 100">
+                            @error('nilai_pkl_relevansi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </label>
+
+                        <label class="block">
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">3. Presentasi / Ujian <span class="text-blue-500">(15%)</span></span>
+                            <p class="text-[10px] text-gray-400 mb-1">Cara penyampaian dan penguasaan materi</p>
+                            <input type="number" name="nilai_pkl_presentasi" value="{{ $isBimbingan->nilai_pkl_presentasi }}" min="0" max="100" step="0.1"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold"
+                                placeholder="0 - 100">
+                            @error('nilai_pkl_presentasi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </label>
+
+                        <div class="p-3 bg-amber-50 border border-amber-100 rounded-xl text-amber-700 text-xs">
+                            <i class="fas fa-info-circle mr-1"></i> Total bobot: 40%. Nilai akhir dihitung berdasarkan bobot masing-masing kriteria.
+                        </div>
+                    @else
+                        {{-- KKN/PPL: nilai langsung --}}
                         <label class="block">
                             <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Nilai Pembimbing (0-100)</span>
                             <input type="number" name="nilai" value="{{ $isBimbingan->nilai }}" min="0" max="100" step="0.1"
@@ -65,8 +117,10 @@
                         @error('nilai')
                             <p class="text-red-500 text-xs">{{ $message }}</p>
                         @enderror
+                    @endif
+
                         <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-100 transition-all">
-                            Simpan Nilai
+                            <i class="fas fa-save mr-2"></i> Simpan Nilai
                         </button>
                     </div>
                 </form>

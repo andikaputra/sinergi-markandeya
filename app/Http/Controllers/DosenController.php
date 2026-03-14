@@ -105,18 +105,44 @@ class DosenController extends Controller
     public function inputNilai(Request $request, $nim)
     {
         $dosen = Auth::guard('dosen')->user();
-        
-        $request->validate([
-            'nilai' => 'required|numeric|min:0|max:100'
-        ]);
 
         $bimbingan = DosenPembimbing::where('nidn', $dosen->nidn)
             ->where('nim', $nim)
             ->firstOrFail();
 
-        $bimbingan->update([
-            'nilai' => $request->nilai
-        ]);
+        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+
+        if ($mahasiswa->kegiatan === 'PKL' || $mahasiswa->kegiatan === 'Magang') {
+            // PKL/Magang: bobot 15%, 10%, 15% = total 40%
+            $request->validate([
+                'nilai_pkl_laporan' => 'required|numeric|min:0|max:100',
+                'nilai_pkl_relevansi' => 'required|numeric|min:0|max:100',
+                'nilai_pkl_presentasi' => 'required|numeric|min:0|max:100',
+            ]);
+
+            $nilaiAkhir = round(
+                ($request->nilai_pkl_laporan * 15
+                + $request->nilai_pkl_relevansi * 10
+                + $request->nilai_pkl_presentasi * 15) / 40,
+                1
+            );
+
+            $bimbingan->update([
+                'nilai_pkl_laporan' => $request->nilai_pkl_laporan,
+                'nilai_pkl_relevansi' => $request->nilai_pkl_relevansi,
+                'nilai_pkl_presentasi' => $request->nilai_pkl_presentasi,
+                'nilai' => $nilaiAkhir,
+            ]);
+        } else {
+            // KKN/PPL: nilai langsung
+            $request->validate([
+                'nilai' => 'required|numeric|min:0|max:100'
+            ]);
+
+            $bimbingan->update([
+                'nilai' => $request->nilai
+            ]);
+        }
 
         return back()->with('success', 'Nilai mahasiswa berhasil diperbarui!');
     }
