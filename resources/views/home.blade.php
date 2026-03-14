@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sinergi Markandeya - Platform KKN, PPL & PKL Terpadu</title>
+    <title>Sinergi Markandeya - Platform KKN, PPL, PKL & Magang Terpadu</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -72,7 +72,7 @@
                         Wujudkan <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Sinergi</span> Kampus & Masyarakat.
                     </h1>
                     <p class="text-xl text-gray-500 max-w-xl leading-relaxed mx-auto lg:mx-0 font-medium">
-                        Platform digital terpadu ITP Markandeya Bali untuk manajemen program KKN, PPL, dan PKL yang lebih transparan, efisien, dan modern.
+                        Platform digital terpadu ITP Markandeya Bali untuk manajemen program KKN, PPL, PKL, dan Magang yang lebih transparan, efisien, dan modern.
                     </p>
                     <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                         <a href="{{ route('register.form') }}" class="w-full sm:w-auto px-8 py-5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-[2rem] shadow-2xl shadow-blue-200 transition-all flex items-center justify-center group">
@@ -115,7 +115,7 @@
                     <h3 class="text-4xl font-extrabold text-gray-900 tracking-tight">Eksplorasi Berbagai Kesempatan</h3>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div class="group bg-gray-50/50 p-10 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500">
                         <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-blue-600 group-hover:text-white transition-all">
                             <i class="fas fa-users"></i>
@@ -124,7 +124,7 @@
                         <p class="text-gray-500 font-medium">Kuliah Kerja Nyata. Berinteraksi langsung dengan masyarakat desa dan berikan solusi nyata.</p>
                     </div>
 
-                    <div class="group bg-gray-50/50 p-10 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500 md:translate-y-6">
+                    <div class="group bg-gray-50/50 p-10 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500 lg:translate-y-6">
                         <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-emerald-600 group-hover:text-white transition-all">
                             <i class="fas fa-school"></i>
                         </div>
@@ -138,6 +138,14 @@
                         </div>
                         <h4 class="text-2xl font-bold mb-4">PKL</h4>
                         <p class="text-gray-500 font-medium">Praktik Kerja Lapangan. Rasakan dunia kerja sesungguhnya di perusahaan atau instansi ternama.</p>
+                    </div>
+
+                    <div class="group bg-gray-50/50 p-10 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500 lg:translate-y-6">
+                        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold mb-4">Magang</h4>
+                        <p class="text-gray-500 font-medium">Program Magang. Tingkatkan kompetensi profesional melalui pengalaman kerja langsung di industri.</p>
                     </div>
                 </div>
             </div>
