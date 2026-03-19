@@ -70,6 +70,7 @@ Route::middleware(['auth:web'])->group(function () {
     // Mahasiswa Management
     Route::get('/admin/mahasiswa/create', [AdminController::class, 'createMahasiswa'])->name('admin.mahasiswa.create');
     Route::post('/admin/mahasiswa/store', [AdminController::class, 'storeMahasiswa'])->name('admin.mahasiswa.store');
+    Route::post('/admin/mahasiswa/assign-kegiatan', [AdminController::class, 'assignKegiatan'])->name('admin.mahasiswa.assign-kegiatan');
 
     // Import Routes
     Route::post('/admin/import-mahasiswa', [AdminController::class, 'importMahasiswa'])->name('admin.import.mahasiswa');
@@ -185,6 +186,8 @@ Route::middleware(['auth:web'])->group(function () {
 Route::middleware(['auth:mahasiswa'])->group(function () {
 
     Route::get('/dashboard', [MahasiswaController::class, 'showDashboard'])->name('dashboard');
+    Route::post('/daftar-kegiatan', [MahasiswaController::class, 'daftarKegiatan'])->name('mahasiswa.daftar-kegiatan');
+    Route::post('/switch-kegiatan', [MahasiswaController::class, 'switchKegiatan'])->name('mahasiswa.switch-kegiatan');
     Route::post('/save-laporan', [MahasiswaController::class, 'saveLaporan'])->name('mahasiswa.save_laporan');
     Route::get('/teman-selokasi', [MahasiswaController::class, 'temanSeLokasi'])->name('mahasiswa.teman-selokasi');
 

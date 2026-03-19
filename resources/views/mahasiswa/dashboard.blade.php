@@ -48,6 +48,7 @@
         <!-- Status Kegiatan -->
         <div class="lg:col-span-2">
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 h-full flex flex-col">
+                @if($hasActiveKegiatan)
                 <div class="flex items-center justify-between mb-8">
                     <h4 class="text-xl font-bold text-gray-800">Status Kegiatan</h4>
                     <span class="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-black border border-emerald-100 uppercase tracking-wide">
@@ -56,7 +57,6 @@
                 </div>
 
                 <div class="flex-1 bg-gray-50 rounded-[2rem] border border-gray-100 p-8 relative overflow-hidden group">
-                    <!-- Background Pattern -->
                     <div class="absolute right-0 top-0 opacity-5 group-hover:opacity-10 transition-opacity">
                         <i class="fas fa-map-marked-alt text-9xl transform translate-x-10 -translate-y-10"></i>
                     </div>
@@ -105,10 +105,6 @@
                             @else
                                 @include('mahasiswa._belum_ditentukan')
                             @endif
-                        @else
-                            <div class="text-center py-8">
-                                <p class="text-gray-500 italic">Informasi detail lokasi akan muncul setelah proses administrasi selesai.</p>
-                            </div>
                         @endif
                     </div>
                 </div>
@@ -124,9 +120,101 @@
                         Publikasi
                     </a>
                 </div>
+
+                @else
+                <!-- Belum Punya Kegiatan - Form Daftar Kegiatan -->
+                <div class="flex items-center justify-between mb-8">
+                    <h4 class="text-xl font-bold text-gray-800">Pilih Kegiatan</h4>
+                    <span class="px-4 py-2 bg-amber-50 text-amber-700 rounded-xl text-xs font-black border border-amber-100 uppercase tracking-wide">
+                        Belum Terdaftar
+                    </span>
+                </div>
+
+                <div class="flex-1 bg-amber-50/50 rounded-[2rem] border border-amber-100 p-8">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-clipboard-list text-2xl text-amber-600"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Daftar Kegiatan</h3>
+                        <p class="text-sm text-gray-500">Pilih kegiatan yang ingin Anda ikuti di tahun akademik ini{{ $taString ? ' ('.$taString.')' : '' }}.</p>
+                    </div>
+
+                    <form action="{{ route('mahasiswa.daftar-kegiatan') }}" method="POST" class="space-y-4">
+                        @csrf
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="kegiatan" value="KKN" class="peer sr-only" required>
+                                <div class="p-4 bg-white border-2 border-gray-200 rounded-2xl text-center peer-checked:border-blue-600 peer-checked:bg-blue-50 transition-all">
+                                    <i class="fas fa-hands-helping text-2xl text-blue-500 mb-2"></i>
+                                    <p class="text-sm font-bold text-gray-700">KKN</p>
+                                    <p class="text-[10px] text-gray-400">Kuliah Kerja Nyata</p>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="kegiatan" value="PPL" class="peer sr-only">
+                                <div class="p-4 bg-white border-2 border-gray-200 rounded-2xl text-center peer-checked:border-emerald-600 peer-checked:bg-emerald-50 transition-all">
+                                    <i class="fas fa-chalkboard-teacher text-2xl text-emerald-500 mb-2"></i>
+                                    <p class="text-sm font-bold text-gray-700">PPL</p>
+                                    <p class="text-[10px] text-gray-400">Praktik Pengalaman Lapangan</p>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="kegiatan" value="PKL" class="peer sr-only">
+                                <div class="p-4 bg-white border-2 border-gray-200 rounded-2xl text-center peer-checked:border-amber-600 peer-checked:bg-amber-50 transition-all">
+                                    <i class="fas fa-building text-2xl text-amber-500 mb-2"></i>
+                                    <p class="text-sm font-bold text-gray-700">PKL</p>
+                                    <p class="text-[10px] text-gray-400">Praktik Kerja Lapangan</p>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="kegiatan" value="Magang" class="peer sr-only">
+                                <div class="p-4 bg-white border-2 border-gray-200 rounded-2xl text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all">
+                                    <i class="fas fa-briefcase text-2xl text-indigo-500 mb-2"></i>
+                                    <p class="text-sm font-bold text-gray-700">Magang</p>
+                                    <p class="text-[10px] text-gray-400">Internship</p>
+                                </div>
+                            </label>
+                        </div>
+                        <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 transition-all">
+                            <i class="fas fa-check-circle mr-2"></i> Daftar Kegiatan
+                        </button>
+                    </form>
+                </div>
+                @endif
             </div>
         </div>
     </div>
+
+    <!-- Riwayat Kegiatan (jika punya lebih dari 1) -->
+    @if($riwayatKegiatan->count() > 1)
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+        <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+            <i class="fas fa-history text-blue-500 mr-3"></i>
+            Riwayat Kegiatan
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @foreach($riwayatKegiatan as $rk)
+            <div class="p-4 rounded-2xl border {{ $rk->is_active ? 'border-blue-200 bg-blue-50' : 'border-gray-100 bg-gray-50' }}">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-bold {{ $rk->is_active ? 'text-blue-700' : 'text-gray-700' }}">{{ $rk->kegiatan }}</span>
+                    @if($rk->is_active)
+                        <span class="px-2 py-0.5 bg-blue-600 text-white text-[10px] font-bold rounded-full uppercase">Aktif</span>
+                    @else
+                        <form action="{{ route('mahasiswa.switch-kegiatan') }}" method="POST" class="inline">
+                            @csrf
+                            <input type="hidden" name="kegiatan_id" value="{{ $rk->id }}">
+                            <button type="submit" class="px-2 py-0.5 bg-gray-200 hover:bg-blue-600 hover:text-white text-gray-600 text-[10px] font-bold rounded-full uppercase transition-all">
+                                Aktifkan
+                            </button>
+                        </form>
+                    @endif
+                </div>
+                <p class="text-xs text-gray-500">{{ $rk->tahun_akademik ?? '-' }}</p>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 
     <!-- Extra Features: Laporan Akhir & Nilai Akhir -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">

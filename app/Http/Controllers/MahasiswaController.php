@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Mahasiswa;
+use App\Models\MahasiswaKegiatan;
 use App\Models\Penempatankkn;
 use App\Models\Penempatanppl;
 use App\Models\PenempatanPkl;
@@ -23,12 +24,10 @@ class MahasiswaController extends Controller
 
     public function register(Request $request)
     {
-        // Validasi data
         $request->validate([
             'nama' => 'required|string|max:255',
             'nim' => 'required|string|max:20|unique:mahasiswas',
             'kampus' => 'required|string|max:255',
-            'kegiatan' => 'required|in:KKN,PPL,PKL,Magang',
             'kecamatan' => 'required|string|max:255',
             'prodi' => 'required|in:PGSD,PBSI,PBI,SI,ME,PARBUD,HUKUM',
             'pembayaranKRS' => 'required|string|max:255',
@@ -37,49 +36,48 @@ class MahasiswaController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Ambil Tahun Akademik Aktif
-        $activeTA = TahunAkademik::active();
-        $taString = $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null;
-
-        // Simpan data ke database
+        // Simpan data ke database (tanpa kegiatan - dipilih setelah login)
         Mahasiswa::create([
             'nama' => $request->nama,
             'nim' => $request->nim,
             'kampus' => $request->kampus,
-            'kegiatan' => $request->kegiatan,
             'kecamatan' => $request->kecamatan,
             'prodi' => $request->prodi,
             'pembayaranKRS' => $request->pembayaranKRS,
             'KRS' => $request->KRS,
             'email' => $request->email,
-            'password' => $request->password, // hashed by model cast
-            'tahun_akademik' => $taString
+            'password' => $request->password,
         ]);
 
-        return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Silakan login.');
+        return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Silakan login dan pilih kegiatan.');
     }
 
     public function showDashboard()
     {
-        $mahasiswa = Mahasiswa::with(['dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar'])
-            ->where('nim', Auth::user()->nim)->first();
-    
-        // Ambil lokasi KKN, PPL, atau PKL berdasarkan NIM yang login
+        $mahasiswa = Mahasiswa::with([
+            'dosenPembimbing.dosen', 'dosenPenguji.dosen',
+            'pembimbingLuarMahasiswa.pembimbingLuar', 'activeKegiatan',
+            'mahasiswaKegiatan'
+        ])->where('nim', Auth::user()->nim)->first();
+
+        // Cek apakah sudah punya kegiatan aktif
+        $hasActiveKegiatan = $mahasiswa->activeKegiatan !== null;
+        $riwayatKegiatan = $mahasiswa->mahasiswaKegiatan;
+        $activeTA = TahunAkademik::active();
+        $taString = $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null;
+
+        // Ambil lokasi penempatan
         $penempatankknmhs = Penempatankkn::with(['mahasiswa', 'lokasikkn'])
-            ->where('nim', Auth::user()->nim)
-            ->first();
-    
+            ->where('nim', Auth::user()->nim)->first();
+
         $penempatanpplmhs = Penempatanppl::with(['mahasiswa', 'lokasippl'])
-            ->where('nim', Auth::user()->nim)
-            ->first();
+            ->where('nim', Auth::user()->nim)->first();
 
         $penempatanpklmhs = PenempatanPkl::with(['mahasiswa', 'lokasipkl'])
-            ->where('nim', Auth::user()->nim)
-            ->first();
+            ->where('nim', Auth::user()->nim)->first();
 
         $penempatanmagangmhs = PenempatanMagang::with(['mahasiswa', 'lokasimagang'])
-            ->where('nim', Auth::user()->nim)
-            ->first();
+            ->where('nim', Auth::user()->nim)->first();
 
         // Ambil teman satu lokasi
         $temanSeLokasi = collect();
@@ -107,7 +105,75 @@ class MahasiswaController extends Controller
                 ->get()->pluck('mahasiswa');
         }
 
-        return view('mahasiswa.dashboard', compact('penempatankknmhs', 'penempatanpplmhs', 'penempatanpklmhs', 'penempatanmagangmhs', 'mahasiswa', 'temanSeLokasi'));
+        return view('mahasiswa.dashboard', compact(
+            'penempatankknmhs', 'penempatanpplmhs', 'penempatanpklmhs',
+            'penempatanmagangmhs', 'mahasiswa', 'temanSeLokasi',
+            'hasActiveKegiatan', 'riwayatKegiatan', 'taString'
+        ));
+    }
+
+    /**
+     * Daftar kegiatan baru (setelah login)
+     */
+    public function daftarKegiatan(Request $request)
+    {
+        $request->validate([
+            'kegiatan' => 'required|in:KKN,PPL,PKL,Magang',
+        ]);
+
+        $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->firstOrFail();
+        $activeTA = TahunAkademik::active();
+        $taString = $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null;
+
+        // Cek apakah sudah punya kegiatan yang sama di TA yang sama
+        $exists = MahasiswaKegiatan::where('nim', $mahasiswa->nim)
+            ->where('kegiatan', $request->kegiatan)
+            ->where('tahun_akademik', $taString)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->with('error', 'Anda sudah terdaftar di kegiatan ini untuk tahun akademik ini.');
+        }
+
+        // Tambah kegiatan baru (otomatis nonaktifkan yang lama)
+        $mahasiswa->addKegiatan($request->kegiatan, $taString);
+
+        // Dual-write: update kolom lama juga
+        $mahasiswa->update([
+            'kegiatan' => $request->kegiatan,
+            'tahun_akademik' => $taString,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Berhasil mendaftar kegiatan ' . $request->kegiatan . '!');
+    }
+
+    /**
+     * Ganti kegiatan aktif (untuk mahasiswa yang punya beberapa kegiatan)
+     */
+    public function switchKegiatan(Request $request)
+    {
+        $request->validate([
+            'kegiatan_id' => 'required|exists:mahasiswa_kegiatan,id',
+        ]);
+
+        $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->firstOrFail();
+
+        // Pastikan kegiatan ini milik mahasiswa yang login
+        $kegiatan = MahasiswaKegiatan::where('id', $request->kegiatan_id)
+            ->where('nim', $mahasiswa->nim)
+            ->firstOrFail();
+
+        // Nonaktifkan semua, aktifkan yang dipilih
+        $mahasiswa->mahasiswaKegiatan()->update(['is_active' => false]);
+        $kegiatan->update(['is_active' => true]);
+
+        // Dual-write
+        $mahasiswa->update([
+            'kegiatan' => $kegiatan->kegiatan,
+            'tahun_akademik' => $kegiatan->tahun_akademik,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Berhasil beralih ke kegiatan ' . $kegiatan->kegiatan . '.');
     }
 
     public function temanSeLokasi()

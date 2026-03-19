@@ -47,7 +47,7 @@ class LokasiPklController extends Controller
     public function assignIndex()
     {
         // Ambil mahasiswa yang kegiatannya PKL
-        $mahasiswas = Mahasiswa::where('kegiatan', 'PKL')->get();
+        $mahasiswas = Mahasiswa::withKegiatan('PKL')->get();
         $lokasipkls = LokasiPkl::all();
         $assignments = PenempatanPkl::with(['mahasiswa', 'lokasipkl'])->get();
 

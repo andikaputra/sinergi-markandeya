@@ -20,15 +20,15 @@ class PembimbingLuarDashboardController extends Controller
 
         $bimbinganQuery = PembimbingLuarMahasiswa::where('pembimbing_luar_id', $pembimbing->id);
         if ($taString) {
-            $bimbinganQuery->whereHas('mahasiswa', fn($q) => $q->where('tahun_akademik', $taString));
+            $bimbinganQuery->whereHas('mahasiswa', fn($q) => $q->withTahunAkademik($taString));
         }
         $totalBimbingan = $bimbinganQuery->count();
 
         $bimbinganAll = PembimbingLuarMahasiswa::where('pembimbing_luar_id', $pembimbing->id)
-            ->with('mahasiswa')
+            ->with(['mahasiswa.activeKegiatan'])
             ->whereHas('mahasiswa', function ($q) use ($taString) {
                 if ($taString) {
-                    $q->where('tahun_akademik', $taString);
+                    $q->withTahunAkademik($taString);
                 }
             })->get();
 
@@ -57,13 +57,13 @@ class PembimbingLuarDashboardController extends Controller
         $selectedKegiatan = $request->input('kegiatan');
 
         $query = PembimbingLuarMahasiswa::where('pembimbing_luar_id', $pembimbing->id)
-            ->with(['mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang', 'mahasiswa.dosenPenguji', 'mahasiswa.publikasis'])
+            ->with(['mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang', 'mahasiswa.dosenPenguji', 'mahasiswa.publikasis', 'mahasiswa.activeKegiatan'])
             ->whereHas('mahasiswa', function ($q) use ($selectedTA, $selectedKegiatan) {
                 if ($selectedTA) {
-                    $q->where('tahun_akademik', $selectedTA);
+                    $q->withTahunAkademik($selectedTA);
                 }
                 if ($selectedKegiatan) {
-                    $q->where('kegiatan', $selectedKegiatan);
+                    $q->withKegiatan($selectedKegiatan);
                 }
             });
 
@@ -80,7 +80,7 @@ class PembimbingLuarDashboardController extends Controller
             ->where('nim', $nim)
             ->firstOrFail();
 
-        $mahasiswa = Mahasiswa::with(['penempatankkn.lokasikkn', 'penempatanppl.lokasippl', 'penempatanpkl.lokasipkl', 'penempatanmagang.lokasimagang', 'publikasis'])
+        $mahasiswa = Mahasiswa::with(['penempatankkn.lokasikkn', 'penempatanppl.lokasippl', 'penempatanpkl.lokasipkl', 'penempatanmagang.lokasimagang', 'publikasis', 'activeKegiatan'])
             ->where('nim', $nim)
             ->firstOrFail();
 
@@ -97,10 +97,9 @@ class PembimbingLuarDashboardController extends Controller
             ->where('nim', $nim)
             ->firstOrFail();
 
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = Mahasiswa::with('activeKegiatan')->where('nim', $nim)->firstOrFail();
 
         if ($mahasiswa->kegiatan === 'PKL' || $mahasiswa->kegiatan === 'Magang') {
-            // PKL/Magang: bobot 15%, 15%, 15%, 15% = total 60%
             $request->validate([
                 'nilai_pkl_disiplin' => 'required|numeric|min:0|max:100',
                 'nilai_pkl_inisiatif' => 'required|numeric|min:0|max:100',
@@ -108,7 +107,6 @@ class PembimbingLuarDashboardController extends Controller
                 'nilai_pkl_skill' => 'required|numeric|min:0|max:100',
             ]);
 
-            // Nilai tertimbang: (score * bobot) / total bobot
             $nilaiAkhir = round(
                 ($request->nilai_pkl_disiplin * 15
                 + $request->nilai_pkl_inisiatif * 15
@@ -125,7 +123,6 @@ class PembimbingLuarDashboardController extends Controller
                 'nilai' => $nilaiAkhir,
             ]);
         } else {
-            // KKN/PPL: rata-rata biasa
             $request->validate([
                 'nilai_kehadiran' => 'required|numeric|min:0|max:100',
                 'nilai_luaran' => 'required|numeric|min:0|max:100',

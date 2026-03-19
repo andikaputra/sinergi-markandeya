@@ -74,32 +74,21 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Jenis Kegiatan</label>
-                                <select name="kegiatan" required class="block w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all font-bold appearance-none">
-                                    <option value="KKN">KKN (Kuliah Kerja Nyata)</option>
-                                    <option value="PPL">PPL (Praktik Pengalaman Lapangan)</option>
-                                    <option value="PKL">PKL (Praktik Kerja Lapangan)</option>
-                                    <option value="Magang">Magang (Internship)</option>
-                                </select>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Lokasi Kecamatan</label>
-                                <select name="kecamatan" required class="block w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all font-bold appearance-none">
-                                    <option value="Bangli">Bangli</option>
-                                    <option value="Kintamani">Kintamani</option>
-                                    <option value="Susut">Susut</option>
-                                    <option value="Gianyar">Gianyar</option>
-                                    <option value="Tegalalang">Tegalalang</option>
-                                    <option value="Ubud">Ubud</option>
-                                    <option value="Karangasem">Karangasem</option>
-                                    <option value="Klungkung">Klungkung</option>
-                                    <option value="Petang">Petang</option>
-                                    <option value="Abiansemal">Abiansemal</option>
-                                    <option value="Penebel">Penebel</option>
-                                </select>
-                            </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Lokasi Kecamatan</label>
+                            <select name="kecamatan" required class="block w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all font-bold appearance-none">
+                                <option value="Bangli">Bangli</option>
+                                <option value="Kintamani">Kintamani</option>
+                                <option value="Susut">Susut</option>
+                                <option value="Gianyar">Gianyar</option>
+                                <option value="Tegalalang">Tegalalang</option>
+                                <option value="Ubud">Ubud</option>
+                                <option value="Karangasem">Karangasem</option>
+                                <option value="Klungkung">Klungkung</option>
+                                <option value="Petang">Petang</option>
+                                <option value="Abiansemal">Abiansemal</option>
+                                <option value="Penebel">Penebel</option>
+                            </select>
                         </div>
                     </div>
 

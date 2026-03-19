@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Dosen;
 use App\Models\Mahasiswa;
+use App\Models\MahasiswaKegiatan;
 use App\Models\Lokasikkn;
 use App\Models\Lokasippl;
 use App\Models\LokasiPkl;
@@ -250,6 +251,42 @@ class DatabaseSeeder extends Seeder
                 'kecamatan' => 'Gianyar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
                 'tahun_akademik' => $taString,
             ]
+        );
+
+        // ==========================================
+        // 6b. MAHASISWA KEGIATAN (Pivot)
+        // ==========================================
+        MahasiswaKegiatan::updateOrCreate(
+            ['nim' => $mhsKkn1->nim, 'kegiatan' => 'KKN', 'tahun_akademik' => $taString],
+            ['is_active' => true]
+        );
+        MahasiswaKegiatan::updateOrCreate(
+            ['nim' => $mhsKkn2->nim, 'kegiatan' => 'KKN', 'tahun_akademik' => $taString],
+            ['is_active' => true]
+        );
+        MahasiswaKegiatan::updateOrCreate(
+            ['nim' => $mhsPpl1->nim, 'kegiatan' => 'PPL', 'tahun_akademik' => $taString],
+            ['is_active' => true]
+        );
+        MahasiswaKegiatan::updateOrCreate(
+            ['nim' => $mhsPpl2->nim, 'kegiatan' => 'PPL', 'tahun_akademik' => $taString],
+            ['is_active' => true]
+        );
+        MahasiswaKegiatan::updateOrCreate(
+            ['nim' => $mhsPkl1->nim, 'kegiatan' => 'PKL', 'tahun_akademik' => $taString],
+            ['is_active' => true]
+        );
+        MahasiswaKegiatan::updateOrCreate(
+            ['nim' => $mhsPkl2->nim, 'kegiatan' => 'PKL', 'tahun_akademik' => $taString],
+            ['is_active' => true]
+        );
+        MahasiswaKegiatan::updateOrCreate(
+            ['nim' => $mhsMagang1->nim, 'kegiatan' => 'Magang', 'tahun_akademik' => $taString],
+            ['is_active' => true]
+        );
+        MahasiswaKegiatan::updateOrCreate(
+            ['nim' => $mhsMagang2->nim, 'kegiatan' => 'Magang', 'tahun_akademik' => $taString],
+            ['is_active' => true]
         );
 
         // ==========================================

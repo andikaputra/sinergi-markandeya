@@ -58,7 +58,7 @@ class LokasiPPLController extends Controller
     public function indexasignlokasippl()
     {
         // Ambil mahasiswa PPL yang belum punya lokasi
-        $mahasiswas = Mahasiswa::where('kegiatan', 'PPL')
+        $mahasiswas = Mahasiswa::withKegiatan('PPL')
             ->whereDoesntHave('penempatanppl')
             ->get(); 
     
@@ -66,7 +66,7 @@ class LokasiPPLController extends Controller
     
         // Filter penempatan agar hanya muncul data PPL saja
         $assignmentslokasippl = Penempatanppl::whereHas('mahasiswa', function($query) {
-            $query->where('kegiatan', 'PPL');
+            $query->withKegiatan('PPL');
         })->with(['mahasiswa', 'lokasippl'])->get();
     
         return view('admin.assignlokasippl', compact('mahasiswas', 'lokasippls', 'assignmentslokasippl'));

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Mahasiswa;
+use App\Models\MahasiswaKegiatan;
 use App\Models\Dosen;
 use App\Models\DosenPembimbing;
 
@@ -12,16 +13,15 @@ class DosenPembimbingController extends Controller
 {
     public function index()
     {
-        $mahasiswas = Mahasiswa::where('kegiatan', 'KKN')
+        $mahasiswas = Mahasiswa::withKegiatan('KKN')
             ->whereDoesntHave('dosenPembimbing')
             ->orderBy('kecamatan', 'asc')
             ->get();
-        
+
         $dosens = Dosen::all();
-        
-        // Filter assignments hanya untuk mahasiswa KKN
+
         $assignments = DosenPembimbing::whereHas('mahasiswa', function($query) {
-            $query->where('kegiatan', 'KKN');
+            $query->withKegiatan('KKN');
         })->with(['mahasiswa', 'dosen'])->get();
 
         return view('admin.assigndosenkkn', compact('mahasiswas', 'dosens', 'assignments'));
@@ -29,16 +29,15 @@ class DosenPembimbingController extends Controller
 
     public function indexppl()
     {
-        $mahasiswas = Mahasiswa::where('kegiatan', 'PPL')
+        $mahasiswas = Mahasiswa::withKegiatan('PPL')
             ->whereDoesntHave('dosenPembimbing')
             ->orderBy('kecamatan', 'asc')
             ->get();
-        
+
         $dosens = Dosen::all();
-        
-        // Filter assignments hanya untuk mahasiswa PPL
+
         $assignments = DosenPembimbing::whereHas('mahasiswa', function($query) {
-            $query->where('kegiatan', 'PPL');
+            $query->withKegiatan('PPL');
         })->with(['mahasiswa', 'dosen'])->get();
 
         return view('admin.assigndosenppl', compact('mahasiswas', 'dosens', 'assignments'));
@@ -46,15 +45,14 @@ class DosenPembimbingController extends Controller
 
     public function indexpkl()
     {
-        $mahasiswas = Mahasiswa::where('kegiatan', 'PKL')
+        $mahasiswas = Mahasiswa::withKegiatan('PKL')
             ->whereDoesntHave('dosenPembimbing')
             ->get();
-        
+
         $dosens = Dosen::all();
-        
-        // Filter assignments hanya untuk mahasiswa PKL
+
         $assignments = DosenPembimbing::whereHas('mahasiswa', function($query) {
-            $query->where('kegiatan', 'PKL');
+            $query->withKegiatan('PKL');
         })->with(['mahasiswa', 'dosen'])->get();
 
         return view('admin.assigndosenpkl', compact('mahasiswas', 'dosens', 'assignments'));
@@ -62,15 +60,14 @@ class DosenPembimbingController extends Controller
 
     public function indexmagang()
     {
-        $mahasiswas = Mahasiswa::where('kegiatan', 'Magang')
+        $mahasiswas = Mahasiswa::withKegiatan('Magang')
             ->whereDoesntHave('dosenPembimbing')
             ->get();
-        
+
         $dosens = Dosen::all();
-        
-        // Filter assignments hanya untuk mahasiswa Magang
+
         $assignments = DosenPembimbing::whereHas('mahasiswa', function($query) {
-            $query->where('kegiatan', 'Magang');
+            $query->withKegiatan('Magang');
         })->with(['mahasiswa', 'dosen'])->get();
 
         return view('admin.assigndosenmagang', compact('mahasiswas', 'dosens', 'assignments'));
@@ -83,14 +80,14 @@ class DosenPembimbingController extends Controller
             'nims.*' => 'exists:mahasiswas,nim',
             'nidn' => 'required|exists:dosens,nidn',
         ]);
-    
+
         foreach ($request->nims as $nim) {
             DosenPembimbing::create([
                 'nim' => $nim,
                 'nidn' => $request->nidn,
             ]);
         }
-    
+
         return redirect()->back()->with('success', 'Dosen pembimbing berhasil ditetapkan!');
     }
 

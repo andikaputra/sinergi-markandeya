@@ -19,26 +19,23 @@ class DosenController extends Controller
         $activeTA = TahunAkademik::active();
         $taString = $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null;
 
-        // Hitung mahasiswa bimbingan (TA aktif)
         $bimbinganQuery = DosenPembimbing::where('nidn', $dosen->nidn);
         if ($taString) {
-            $bimbinganQuery->whereHas('mahasiswa', fn($q) => $q->where('tahun_akademik', $taString));
+            $bimbinganQuery->whereHas('mahasiswa', fn($q) => $q->withTahunAkademik($taString));
         }
         $totalBimbingan = $bimbinganQuery->count();
 
-        // Hitung mahasiswa ujian (TA aktif)
         $ujianQuery = DosenPenguji::where('nidn', $dosen->nidn);
         if ($taString) {
-            $ujianQuery->whereHas('mahasiswa', fn($q) => $q->where('tahun_akademik', $taString));
+            $ujianQuery->whereHas('mahasiswa', fn($q) => $q->withTahunAkademik($taString));
         }
         $totalUjian = $ujianQuery->count();
 
-        // Hitung per kegiatan (bimbingan TA aktif)
         $bimbinganAll = DosenPembimbing::where('nidn', $dosen->nidn)
-            ->with('mahasiswa')
+            ->with(['mahasiswa.activeKegiatan'])
             ->whereHas('mahasiswa', function ($q) use ($taString) {
                 if ($taString) {
-                    $q->where('tahun_akademik', $taString);
+                    $q->withTahunAkademik($taString);
                 }
             })->get();
 
@@ -47,7 +44,6 @@ class DosenController extends Controller
         $countPKL = $bimbinganAll->filter(fn($i) => $i->mahasiswa->kegiatan == 'PKL')->count();
         $countMagang = $bimbinganAll->filter(fn($i) => $i->mahasiswa->kegiatan == 'Magang')->count();
 
-        // Sudah dinilai vs belum
         $sudahDinilai = $bimbinganAll->filter(fn($i) => $i->nilai !== null)->count();
         $belumDinilai = $totalBimbingan - $sudahDinilai;
 
@@ -64,18 +60,17 @@ class DosenController extends Controller
         $tahunAkademiks = TahunAkademik::orderBy('is_active', 'desc')->orderBy('id', 'desc')->get();
         $activeTA = TahunAkademik::active();
 
-        // Default to active tahun akademik
         $selectedTA = $request->input('tahun_akademik', $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null);
         $selectedKegiatan = $request->input('kegiatan');
 
         $query = DosenPembimbing::where('nidn', $dosen->nidn)
-            ->with(['mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang', 'mahasiswa.dosenPenguji', 'mahasiswa.publikasis'])
+            ->with(['mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang', 'mahasiswa.dosenPenguji', 'mahasiswa.publikasis', 'mahasiswa.activeKegiatan'])
             ->whereHas('mahasiswa', function ($q) use ($selectedTA, $selectedKegiatan) {
                 if ($selectedTA) {
-                    $q->where('tahun_akademik', $selectedTA);
+                    $q->withTahunAkademik($selectedTA);
                 }
                 if ($selectedKegiatan) {
-                    $q->where('kegiatan', $selectedKegiatan);
+                    $q->withKegiatan($selectedKegiatan);
                 }
             });
 
@@ -87,16 +82,15 @@ class DosenController extends Controller
     public function detailMahasiswa($nim)
     {
         $dosen = Auth::guard('dosen')->user();
-        
-        // Verifikasi bahwa mahasiswa ini memang bimbingan dosen tersebut
+
         $isBimbingan = DosenPembimbing::where('nidn', $dosen->nidn)
             ->where('nim', $nim)
             ->firstOrFail();
 
-        $mahasiswa = Mahasiswa::with(['penempatankkn.lokasikkn', 'penempatanppl.lokasippl', 'penempatanpkl.lokasipkl', 'penempatanmagang.lokasimagang', 'publikasis'])
+        $mahasiswa = Mahasiswa::with(['penempatankkn.lokasikkn', 'penempatanppl.lokasippl', 'penempatanpkl.lokasipkl', 'penempatanmagang.lokasimagang', 'publikasis', 'activeKegiatan'])
             ->where('nim', $nim)
             ->firstOrFail();
-            
+
         $jurnals = Jurnal::where('nim', $nim)->orderBy('tanggal', 'desc')->get();
 
         return view('dosen.mahasiswa_detail', compact('mahasiswa', 'jurnals', 'isBimbingan'));
@@ -110,10 +104,9 @@ class DosenController extends Controller
             ->where('nim', $nim)
             ->firstOrFail();
 
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = Mahasiswa::with('activeKegiatan')->where('nim', $nim)->firstOrFail();
 
         if ($mahasiswa->kegiatan === 'PKL' || $mahasiswa->kegiatan === 'Magang') {
-            // PKL/Magang: bobot 15%, 10%, 15% = total 40%
             $request->validate([
                 'nilai_pkl_laporan' => 'required|numeric|min:0|max:100',
                 'nilai_pkl_relevansi' => 'required|numeric|min:0|max:100',
@@ -134,7 +127,6 @@ class DosenController extends Controller
                 'nilai' => $nilaiAkhir,
             ]);
         } else {
-            // KKN/PPL: nilai langsung
             $request->validate([
                 'nilai' => 'required|numeric|min:0|max:100'
             ]);

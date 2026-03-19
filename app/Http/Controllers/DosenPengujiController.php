@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 class DosenPengujiController extends Controller
 {
-    // Admin: List and Form to Assign
     public function adminIndex(Request $request)
     {
         $allowedKegiatan = Auth::user()->getAllowedKegiatan();
@@ -22,13 +21,13 @@ class DosenPengujiController extends Controller
         $filterKegiatan = $selectedKegiatan ? [$selectedKegiatan] : $allowedKegiatan;
 
         $mahasiswas = Mahasiswa::whereDoesntHave('dosenPenguji')
-            ->whereIn('kegiatan', $filterKegiatan)
+            ->withKegiatanIn($filterKegiatan)
             ->orderBy('nama')->get();
 
         $dosens = Dosen::all();
 
         $assignments = DosenPenguji::with(['mahasiswa', 'dosen'])
-            ->whereHas('mahasiswa', fn($q) => $q->whereIn('kegiatan', $filterKegiatan))
+            ->whereHas('mahasiswa', fn($q) => $q->withKegiatanIn($filterKegiatan))
             ->get();
 
         return view('admin.assigndosenpenguji', compact('mahasiswas', 'dosens', 'assignments', 'allowedKegiatan', 'selectedKegiatan'));
@@ -99,7 +98,6 @@ class DosenPengujiController extends Controller
         return redirect()->back()->with('success', $message);
     }
 
-    // Dosen: List Mahasiswa Ujian
     public function dosenIndex(Request $request)
     {
         $dosen = Auth::guard('dosen')->user();
@@ -110,13 +108,13 @@ class DosenPengujiController extends Controller
         $selectedKegiatan = $request->input('kegiatan');
 
         $query = DosenPenguji::where('nidn', $dosen->nidn)
-            ->with(['mahasiswa.publikasis', 'mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang'])
+            ->with(['mahasiswa.publikasis', 'mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang', 'mahasiswa.activeKegiatan'])
             ->whereHas('mahasiswa', function ($q) use ($selectedTA, $selectedKegiatan) {
                 if ($selectedTA) {
-                    $q->where('tahun_akademik', $selectedTA);
+                    $q->withTahunAkademik($selectedTA);
                 }
                 if ($selectedKegiatan) {
-                    $q->where('kegiatan', $selectedKegiatan);
+                    $q->withKegiatan($selectedKegiatan);
                 }
             });
 
@@ -136,7 +134,7 @@ class DosenPengujiController extends Controller
         $mahasiswa = Mahasiswa::with([
             'penempatankkn.lokasikkn', 'penempatanppl.lokasippl',
             'penempatanpkl.lokasipkl', 'penempatanmagang.lokasimagang',
-            'publikasis',
+            'publikasis', 'activeKegiatan',
         ])->where('nim', $nim)->firstOrFail();
 
         $jurnals = Jurnal::where('nim', $nim)->orderBy('tanggal', 'desc')->get();
@@ -152,10 +150,9 @@ class DosenPengujiController extends Controller
             ->where('nim', $nim)
             ->firstOrFail();
 
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = Mahasiswa::with('activeKegiatan')->where('nim', $nim)->firstOrFail();
 
         if ($mahasiswa->kegiatan === 'PPL') {
-            // PPL: nilai langsung
             $request->validate([
                 'nilai' => 'required|numeric|min:0|max:100',
             ]);
@@ -164,7 +161,6 @@ class DosenPengujiController extends Controller
                 'nilai' => $request->nilai,
             ]);
         } else {
-            // KKN/PKL/Magang: 5 kriteria
             $request->validate([
                 'nilai_keterlaksanaan' => 'required|numeric|min:0|max:100',
                 'nilai_kontribusi' => 'required|numeric|min:0|max:100',

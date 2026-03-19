@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Mahasiswa;
+use App\Models\MahasiswaKegiatan;
 use App\Models\Dosen;
 use App\Models\User;
 use App\Models\Penempatankkn;
@@ -22,20 +23,20 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $jumlahKKN = Mahasiswa::where('kegiatan', 'KKN')->count();
-        $jumlahPPL = Mahasiswa::where('kegiatan', 'PPL')->count();
-        $jumlahPKL = Mahasiswa::where('kegiatan', 'PKL')->count();
-        $jumlahMagang = Mahasiswa::where('kegiatan', 'Magang')->count();
+        $jumlahKKN = Mahasiswa::withKegiatan('KKN')->count();
+        $jumlahPPL = Mahasiswa::withKegiatan('PPL')->count();
+        $jumlahPKL = Mahasiswa::withKegiatan('PKL')->count();
+        $jumlahMagang = Mahasiswa::withKegiatan('Magang')->count();
 
         return view('admin.admindashboard', compact('jumlahKKN', 'jumlahPPL', 'jumlahPKL', 'jumlahMagang'));
     }
 
     public function pesertaKKN(Request $request)
     {
-        $query = Mahasiswa::where('kegiatan', 'KKN')->with(['penempatankkn.lokasikkn', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen']);
-        
+        $query = Mahasiswa::withKegiatan('KKN')->with(['penempatankkn.lokasikkn', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen', 'activeKegiatan']);
+
         if ($request->has('ta') && $request->ta != '') {
-            $query->where('tahun_akademik', $request->ta);
+            $query->withKegiatanAndTA('KKN', $request->ta);
         }
 
         $pesertaKKN = $query->orderBy('kecamatan', 'asc')->get();
@@ -46,24 +47,24 @@ class AdminController extends Controller
 
     public function pesertaPPL(Request $request)
     {
-        $query = Mahasiswa::where('kegiatan', 'PPL')->with(['penempatanppl.lokasippl', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen']);
-        
+        $query = Mahasiswa::withKegiatan('PPL')->with(['penempatanppl.lokasippl', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen', 'activeKegiatan']);
+
         if ($request->has('ta') && $request->ta != '') {
-            $query->where('tahun_akademik', $request->ta);
+            $query->withKegiatanAndTA('PPL', $request->ta);
         }
 
         $pesertaPPL = $query->orderBy('kecamatan', 'asc')->get();
         $tahunAkademiks = TahunAkademik::orderBy('tahun', 'desc')->get();
-    
+
         return view('admin.ppl', compact('pesertaPPL', 'tahunAkademiks'));
     }
 
     public function pesertaPKL(Request $request)
     {
-        $query = Mahasiswa::where('kegiatan', 'PKL')->with(['penempatanpkl.lokasipkl', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen']);
-        
+        $query = Mahasiswa::withKegiatan('PKL')->with(['penempatanpkl.lokasipkl', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen', 'activeKegiatan']);
+
         if ($request->has('ta') && $request->ta != '') {
-            $query->where('tahun_akademik', $request->ta);
+            $query->withKegiatanAndTA('PKL', $request->ta);
         }
 
         $pesertaPKL = $query->get();
@@ -74,10 +75,10 @@ class AdminController extends Controller
 
     public function pesertaMagang(Request $request)
     {
-        $query = Mahasiswa::where('kegiatan', 'Magang')->with(['penempatanmagang.lokasimagang', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen']);
-        
+        $query = Mahasiswa::withKegiatan('Magang')->with(['penempatanmagang.lokasimagang', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen', 'activeKegiatan']);
+
         if ($request->has('ta') && $request->ta != '') {
-            $query->where('tahun_akademik', $request->ta);
+            $query->withKegiatanAndTA('Magang', $request->ta);
         }
 
         $pesertaMagang = $query->get();
@@ -89,7 +90,7 @@ class AdminController extends Controller
     // Magang Placement Methods
     public function assignMagangIndex()
     {
-        $mahasiswas = Mahasiswa::where('kegiatan', 'Magang')->whereDoesntHave('penempatanmagang')->get();
+        $mahasiswas = Mahasiswa::withKegiatan('Magang')->whereDoesntHave('penempatanmagang')->get();
         $lokasimagangs = \App\Models\LokasiMagang::all();
         $assignments = PenempatanMagang::with(['mahasiswa', 'lokasimagang'])->get();
 
@@ -140,7 +141,7 @@ class AdminController extends Controller
         Dosen::create([
             'nidn' => $request->nidn,
             'nama' => $request->nama,
-            'password' => $request->nidn, // Default: NIDN (hashed by model cast)
+            'password' => $request->nidn,
         ]);
 
         return redirect()->route('dosen.index')->with('success', 'Dosen berhasil ditambahkan.');
@@ -166,7 +167,7 @@ class AdminController extends Controller
             'kampus' => 'required',
         ]);
 
-        Mahasiswa::create([
+        $mahasiswa = Mahasiswa::create([
             'nama' => $request->nama,
             'nim' => $request->nim,
             'email' => $request->email,
@@ -175,14 +176,55 @@ class AdminController extends Controller
             'tahun_akademik' => $request->tahun_akademik,
             'kecamatan' => $request->kecamatan,
             'kampus' => $request->kampus,
-            'password' => $request->nidn, // Default: NIDN (hashed by model cast)
+            'password' => $request->nim,
             'pembayaranKRS' => 'Lunas (By Admin)',
             'KRS' => 'Aktif (By Admin)'
         ]);
 
-        // Redirect back to specific activity list
+        // Dual-write: tulis juga ke pivot
+        MahasiswaKegiatan::create([
+            'nim' => $mahasiswa->nim,
+            'kegiatan' => $request->kegiatan,
+            'tahun_akademik' => $request->tahun_akademik,
+            'is_active' => true,
+        ]);
+
         $route = 'admin.peserta.' . strtolower($request->kegiatan);
         return redirect()->route($route)->with('success', 'Mahasiswa berhasil ditambahkan manual!');
+    }
+
+    /**
+     * Admin: Assign kegiatan ke mahasiswa
+     */
+    public function assignKegiatan(Request $request)
+    {
+        $request->validate([
+            'nim' => 'required|exists:mahasiswas,nim',
+            'kegiatan' => 'required|in:KKN,PPL,PKL,Magang',
+            'tahun_akademik' => 'required|string',
+        ]);
+
+        $mahasiswa = Mahasiswa::where('nim', $request->nim)->firstOrFail();
+
+        // Cek duplikasi
+        $exists = MahasiswaKegiatan::where('nim', $request->nim)
+            ->where('kegiatan', $request->kegiatan)
+            ->where('tahun_akademik', $request->tahun_akademik)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->with('error', 'Mahasiswa sudah terdaftar di kegiatan ini untuk tahun akademik tersebut.');
+        }
+
+        $mahasiswa->addKegiatan($request->kegiatan, $request->tahun_akademik);
+
+        // Dual-write
+        $mahasiswa->update([
+            'kegiatan' => $request->kegiatan,
+            'tahun_akademik' => $request->tahun_akademik,
+        ]);
+
+        return redirect()->back()->with('success', 'Kegiatan berhasil di-assign ke mahasiswa.');
     }
 
     // Fitur Import Mahasiswa CSV
@@ -211,7 +253,6 @@ class AdminController extends Controller
         try {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 $row++;
-                // Format CSV: nama, nim, email, prodi, kegiatan, kecamatan, kampus
                 if (count($data) < 5) {
                     $errors[] = "Baris $row: kolom kurang dari 5";
                     continue;
@@ -240,7 +281,7 @@ class AdminController extends Controller
                     continue;
                 }
 
-                Mahasiswa::updateOrCreate(
+                $mahasiswa = Mahasiswa::updateOrCreate(
                     ['nim' => $nim],
                     [
                         'nama' => $nama,
@@ -249,12 +290,19 @@ class AdminController extends Controller
                         'kegiatan' => $kegiatan,
                         'kecamatan' => trim($data[5] ?? '-') ?: '-',
                         'kampus' => trim($data[6] ?? 'Markandeya') ?: 'Markandeya',
-                        'password' => $request->nidn, // Default: NIDN (hashed by model cast)
+                        'password' => $nim,
                         'tahun_akademik' => $taString,
                         'pembayaranKRS' => 'Lunas (Import)',
                         'KRS' => 'Aktif (Import)'
                     ]
                 );
+
+                // Dual-write: tulis juga ke pivot
+                MahasiswaKegiatan::updateOrCreate(
+                    ['nim' => $nim, 'kegiatan' => $kegiatan, 'tahun_akademik' => $taString],
+                    ['is_active' => true]
+                );
+
                 $count++;
             }
             DB::commit();
@@ -281,7 +329,6 @@ class AdminController extends Controller
         $file = $request->file('file_csv');
         $handle = fopen($file->getPathname(), 'r');
 
-        // Skip header
         fgetcsv($handle);
 
         $count = 0;
@@ -292,7 +339,6 @@ class AdminController extends Controller
         try {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 $row++;
-                // Format CSV: nidn, nama
                 if (count($data) < 2) {
                     $errors[] = "Baris $row: kolom kurang dari 2";
                     continue;
@@ -310,7 +356,7 @@ class AdminController extends Controller
                     ['nidn' => $nidn],
                     [
                         'nama' => $nama,
-                        'password' => $request->nidn, // Default: NIDN (hashed by model cast)
+                        'password' => $nidn,
                     ]
                 );
                 $count++;
@@ -361,11 +407,12 @@ class AdminController extends Controller
             'PKL' => 'penempatanpkl.lokasipkl',
             'Magang' => 'penempatanmagang.lokasimagang',
         };
-        $query = Mahasiswa::where('kegiatan', $kegiatan)
+
+        $query = Mahasiswa::withKegiatan($kegiatan)
             ->with([$placementRelation, 'dosenPembimbing.dosen', 'dosenPenguji.dosen']);
-        
+
         if ($request->has('ta') && $request->ta != '') {
-            $query->where('tahun_akademik', $request->ta);
+            $query->withKegiatanAndTA($kegiatan, $request->ta);
         }
         $tasks = $query->get();
 
@@ -416,9 +463,9 @@ class AdminController extends Controller
 
     private function viewPrint(Request $request, $kegiatan)
     {
-        $query = Mahasiswa::where('kegiatan', $kegiatan)->with(['dosenPembimbing.dosen', 'dosenPenguji.dosen']);
+        $query = Mahasiswa::withKegiatan($kegiatan)->with(['dosenPembimbing.dosen', 'dosenPenguji.dosen']);
         if ($request->has('ta') && $request->ta != '') {
-            $query->where('tahun_akademik', $request->ta);
+            $query->withKegiatanAndTA($kegiatan, $request->ta);
         }
         $peserta = $query->get();
         $title = "REKAPITULASI PESERTA " . $kegiatan;

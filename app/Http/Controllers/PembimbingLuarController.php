@@ -149,7 +149,7 @@ class PembimbingLuarController extends Controller
 
     private function assignByKegiatan($kegiatan, $viewName)
     {
-        $mahasiswas = Mahasiswa::where('kegiatan', $kegiatan)
+        $mahasiswas = Mahasiswa::withKegiatan($kegiatan)
             ->whereDoesntHave('pembimbingLuarMahasiswa')
             ->orderBy('nama')
             ->get();
@@ -157,7 +157,7 @@ class PembimbingLuarController extends Controller
         $pembimbingLuars = PembimbingLuar::all();
 
         $assignments = PembimbingLuarMahasiswa::whereHas('mahasiswa', function($query) use ($kegiatan) {
-            $query->where('kegiatan', $kegiatan);
+            $query->withKegiatan($kegiatan);
         })->with(['mahasiswa', 'pembimbingLuar'])->get();
 
         return view($viewName, compact('mahasiswas', 'pembimbingLuars', 'assignments', 'kegiatan'));

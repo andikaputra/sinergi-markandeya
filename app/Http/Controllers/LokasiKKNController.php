@@ -63,7 +63,7 @@ class LokasiKKNController extends Controller
     //asign lokasi kkn
     public function indexasignlokasikkn()
     {
-        $mahasiswas = Mahasiswa::where('kegiatan', 'KKN')
+        $mahasiswas = Mahasiswa::withKegiatan('KKN')
         ->whereDoesntHave('penempatankkn')
         ->get();
         $lokasikkns = Lokasikkn::all();
