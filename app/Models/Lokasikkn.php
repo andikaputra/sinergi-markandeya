@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Lokasikkn extends Model
+class LokasiKkn extends Model
 {
 
     use HasFactory;
@@ -15,7 +15,7 @@ class Lokasikkn extends Model
 
     public function penempatankkn()
     {
-        return $this->hasMany(Penempatankkn::class, 'lokasi_kkn_id', 'id');
+        return $this->hasMany(PenempatanKkn::class, 'lokasi_kkn_id', 'id');
     }
 
 }

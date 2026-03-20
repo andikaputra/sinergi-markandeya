@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Penempatankkn extends Model
+class PenempatanKkn extends Model
 {
     use HasFactory;
     protected $table = 'pembagian_lokasi_kkn';
@@ -18,6 +18,6 @@ class Penempatankkn extends Model
 
     public function lokasikkn()
     {
-        return $this->belongsTo(Lokasikkn::class, 'lokasi_kkn_id', 'id');
+        return $this->belongsTo(LokasiKkn::class, 'lokasi_kkn_id', 'id');
     }
 }

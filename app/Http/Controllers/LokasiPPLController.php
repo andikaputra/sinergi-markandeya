@@ -2,74 +2,74 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Lokasippl;
-use App\Models\Penempatanppl;
+use App\Models\LokasiPpl;
+use App\Models\PenempatanPpl;
 use App\Models\Mahasiswa;
 
-class LokasiPPLController extends Controller
+class LokasiPplController extends Controller
 {
-    public function indexlokasippl()
+    public function indexLokasiPpl()
     {
-        $Lokasippl = Lokasippl::all();
-        return view('admin.lokasippl', compact('Lokasippl'));
+        $LokasiPpl = LokasiPpl::all();
+        return view('admin.LokasiPpl', compact('LokasiPpl'));
     }
 
-    public function createlokasippl()
+    public function createLokasiPpl()
     {
-        return view('admin.tambahlokasippl');
+        return view('admin.tambahLokasiPpl');
     }
 
-    public function storelokasippl(Request $request)
+    public function storeLokasiPpl(Request $request)
     {
         $request->validate([
             'Sekolah' => 'required',
         ]);
 
-        Lokasippl::create([
+        LokasiPpl::create([
             'Sekolah' => $request->Sekolah,
         ]);
 
-        return redirect()->route('lokasippl.index')->with('success', 'Tempat PPL berhasil ditambahkan!');
+        return redirect()->route('LokasiPpl.index')->with('success', 'Tempat PPL berhasil ditambahkan!');
     }
 
-    public function editlokasippl(Lokasippl $lokasippl)
+    public function editLokasiPpl(LokasiPpl $LokasiPpl)
     {
-        return view('admin.lokasippl.edit', compact('lokasippl'));
+        return view('admin.LokasiPpl.edit', compact('LokasiPpl'));
     }
 
-    public function update(Request $request, Lokasippl $lokasippl)
+    public function update(Request $request, LokasiPpl $LokasiPpl)
     {
         $request->validate([
             'Sekolah' => 'required',
         ]);
 
-        $lokasippl->update($request->only(['Sekolah']));
+        $LokasiPpl->update($request->only(['Sekolah']));
 
-        return redirect()->route('lokasippl.index')->with('success', 'Tempat PPL berhasil diperbarui!');
+        return redirect()->route('LokasiPpl.index')->with('success', 'Tempat PPL berhasil diperbarui!');
     }
 
-    public function destroylokasippl($id)
+    public function destroyLokasiPpl($id)
     {
-        Lokasippl::findOrFail($id)->delete();
-        return redirect()->route('lokasippl.index')->with('success', 'Tempat PPL berhasil dihapus!');
+        LokasiPpl::findOrFail($id)->delete();
+        return redirect()->route('LokasiPpl.index')->with('success', 'Tempat PPL berhasil dihapus!');
     }
 
     //asign lokasi ppl
-    public function indexasignlokasippl()
+    public function indexasignLokasiPpl()
     {
         // Ambil mahasiswa PPL yang belum punya lokasi
         $mahasiswas = Mahasiswa::withKegiatan('PPL')
-            ->whereDoesntHave('penempatanppl')
+            ->whereDoesntHave('PenempatanPpl')
             ->get(); 
     
-        $lokasippls = Lokasippl::all();
+        $LokasiPpls = LokasiPpl::all();
     
         // Filter penempatan agar hanya muncul data PPL saja
-        $assignmentslokasippl = Penempatanppl::whereHas('mahasiswa', function($query) {
+        $assignmentsLokasiPpl = PenempatanPpl::whereHas('mahasiswa', function($query) {
             $query->withKegiatan('PPL');
-        })->with(['mahasiswa', 'lokasippl'])->get();
+        })->with(['mahasiswa', 'LokasiPpl'])->get();
     
-        return view('admin.assignlokasippl', compact('mahasiswas', 'lokasippls', 'assignmentslokasippl'));
+        return view('admin.assignLokasiPpl', compact('mahasiswas', 'LokasiPpls', 'assignmentsLokasiPpl'));
     }
 
     public function assign(Request $request)
@@ -81,7 +81,7 @@ class LokasiPPLController extends Controller
         ]);
     
         foreach ($request->nims as $nim) {
-            Penempatanppl::updateOrCreate(
+            PenempatanPpl::updateOrCreate(
                 ['nim' => $nim],
                 ['sekolah_id' => $request->sekolah]
             );
@@ -90,9 +90,9 @@ class LokasiPPLController extends Controller
         return redirect()->back()->with('success', 'Sekolah berhasil ditetapkan!');
     }
 
-    public function deletelokasippl($id)
+    public function deleteLokasiPpl($id)
     {
-        Penempatanppl::findOrFail($id)->delete();
+        PenempatanPpl::findOrFail($id)->delete();
         return redirect()->back()->with('success', 'Penetapan Sekolah berhasil dihapus!');
     }
 }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Penempatanppl extends Model
+class PenempatanPpl extends Model
 {
     //
 
@@ -18,6 +18,6 @@ class Penempatanppl extends Model
 
     public function lokasippl()
     {
-        return $this->belongsTo(Lokasippl::class, 'sekolah_id', 'id');
+        return $this->belongsTo(LokasiPpl::class, 'sekolah_id', 'id');
     }
 }

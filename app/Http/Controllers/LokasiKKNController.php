@@ -2,15 +2,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Lokasikkn;
-use App\Models\Penempatankkn;
+use App\Models\LokasiKkn;
+use App\Models\PenempatanKkn;
 use App\Models\Mahasiswa;
 
-class LokasiKKNController extends Controller
+class LokasiKknController extends Controller
 {
     public function indexlokasikkn()
     {
-        $tempatKKNs = Lokasikkn::all();
+        $tempatKKNs = LokasiKkn::all();
         return view('admin.lokasikkn', compact('tempatKKNs'));
     }
 
@@ -29,17 +29,17 @@ class LokasiKKNController extends Controller
             'provinsi' => 'required',
         ]);
 
-        Lokasikkn::create($request->only(['desa', 'alamat', 'kecamatan', 'kabupaten', 'provinsi']));
+        LokasiKkn::create($request->only(['desa', 'alamat', 'kecamatan', 'kabupaten', 'provinsi']));
 
         return redirect()->route('lokasikkn.index')->with('success', 'Tempat KKN berhasil ditambahkan!');
     }
 
-    public function editlokasikkn(Lokasikkn $tempatKKN)
+    public function editlokasikkn(LokasiKkn $tempatKKN)
     {
         return view('admin.tempat_kkn.edit', compact('tempatKKN'));
     }
 
-    public function update(Request $request, Lokasikkn $tempatKKN)
+    public function update(Request $request, LokasiKkn $tempatKKN)
     {
         $request->validate([
             'desa' => 'required',
@@ -56,7 +56,7 @@ class LokasiKKNController extends Controller
 
     public function destroylokasikkn($id)
     {
-        Lokasikkn::findOrFail($id)->delete();
+        LokasiKkn::findOrFail($id)->delete();
         return redirect()->route('lokasikkn.index')->with('success', 'Tempat KKN berhasil dihapus!');
     }
 
@@ -66,8 +66,8 @@ class LokasiKKNController extends Controller
         $mahasiswas = Mahasiswa::withKegiatan('KKN')
         ->whereDoesntHave('penempatankkn')
         ->get();
-        $lokasikkns = Lokasikkn::all();
-        $assignmentslokasikkn = Penempatankkn::with(['mahasiswa', 'lokasikkn'])->get();
+        $lokasikkns = LokasiKkn::all();
+        $assignmentslokasikkn = PenempatanKkn::with(['mahasiswa', 'lokasikkn'])->get();
         return view('admin.assignlokasikkn', compact('mahasiswas', 'lokasikkns', 'assignmentslokasikkn'));
     }
 
@@ -81,7 +81,7 @@ class LokasiKKNController extends Controller
     
         // Loop setiap NIM untuk disimpan
         foreach ($request->nims as $nim) {
-            Penempatankkn::updateOrCreate(
+            PenempatanKkn::updateOrCreate(
                 ['nim' => $nim],
                 ['lokasi_kkn_id' => $request->lokasikkn]
             );
@@ -93,7 +93,7 @@ class LokasiKKNController extends Controller
 
     public function deletelokasikkn($id)
     {
-        Penempatankkn::findOrFail($id)->delete();
+        PenempatanKkn::findOrFail($id)->delete();
         return redirect()->back()->with('success', 'Penetapan Lokasi KKN berhasil dihapus!');
     }
 }

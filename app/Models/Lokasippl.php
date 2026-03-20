@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Lokasippl extends Model
+class LokasiPpl extends Model
 {
     protected $table = 'lokasi_ppl';
     protected $fillable = ['Sekolah'];
@@ -12,6 +12,6 @@ class Lokasippl extends Model
 
     public function penempatanppl()
     {
-        return $this->hasMany(Penempatanppl::class, 'sekolah_id', 'id');
+        return $this->hasMany(PenempatanPpl::class, 'sekolah_id', 'id');
     }
 }
