@@ -6,8 +6,8 @@ use App\Models\User;
 use App\Models\Dosen;
 use App\Models\Mahasiswa;
 use App\Models\MahasiswaKegiatan;
-use App\Models\Lokasikkn;
-use App\Models\Lokasippl;
+use App\Models\LokasiKkn;
+use App\Models\LokasiPpl;
 use App\Models\LokasiPkl;
 use App\Models\LokasiMagang;
 use App\Models\Jurnal;
@@ -18,8 +18,8 @@ use App\Models\DosenPenguji;
 use App\Models\DosenPenilaiPublikasi;
 use App\Models\PembimbingLuar;
 use App\Models\PembimbingLuarMahasiswa;
-use App\Models\Penempatankkn;
-use App\Models\Penempatanppl;
+use App\Models\PenempatanKkn;
+use App\Models\PenempatanPpl;
 use App\Models\PenempatanPkl;
 use App\Models\PenempatanMagang;
 use App\Models\PengajuanLokasiPKL;
@@ -129,18 +129,18 @@ class DatabaseSeeder extends Seeder
         // 5. LOKASI
         // ==========================================
         // KKN
-        $lokasiKkn1 = Lokasikkn::updateOrCreate(
+        $lokasiKkn1 = LokasiKkn::updateOrCreate(
             ['desa' => 'Taro'],
             ['kecamatan' => 'Tegalalang', 'kabupaten' => 'Gianyar', 'provinsi' => 'Bali']
         );
-        $lokasiKkn2 = Lokasikkn::updateOrCreate(
+        $lokasiKkn2 = LokasiKkn::updateOrCreate(
             ['desa' => 'Penglipuran'],
             ['kecamatan' => 'Bangli', 'kabupaten' => 'Bangli', 'provinsi' => 'Bali']
         );
 
         // PPL
-        $lokasiPpl1 = Lokasippl::updateOrCreate(['Sekolah' => 'SMA Negeri 1 Bangli']);
-        $lokasiPpl2 = Lokasippl::updateOrCreate(['Sekolah' => 'SMP Negeri 2 Gianyar']);
+        $lokasiPpl1 = LokasiPpl::updateOrCreate(['Sekolah' => 'SMA Negeri 1 Bangli']);
+        $lokasiPpl2 = LokasiPpl::updateOrCreate(['Sekolah' => 'SMP Negeri 2 Gianyar']);
 
         // PKL
         $lokasiPkl1 = LokasiPkl::updateOrCreate(
@@ -292,10 +292,10 @@ class DatabaseSeeder extends Seeder
         // ==========================================
         // 7. PENEMPATAN LOKASI
         // ==========================================
-        Penempatankkn::updateOrCreate(['nim' => $mhsKkn1->nim], ['lokasi_kkn_id' => $lokasiKkn1->id]);
-        Penempatankkn::updateOrCreate(['nim' => $mhsKkn2->nim], ['lokasi_kkn_id' => $lokasiKkn1->id]);
-        Penempatanppl::updateOrCreate(['nim' => $mhsPpl1->nim], ['sekolah_id' => $lokasiPpl1->id]);
-        Penempatanppl::updateOrCreate(['nim' => $mhsPpl2->nim], ['sekolah_id' => $lokasiPpl2->id]);
+        PenempatanKkn::updateOrCreate(['nim' => $mhsKkn1->nim], ['lokasi_kkn_id' => $lokasiKkn1->id]);
+        PenempatanKkn::updateOrCreate(['nim' => $mhsKkn2->nim], ['lokasi_kkn_id' => $lokasiKkn1->id]);
+        PenempatanPpl::updateOrCreate(['nim' => $mhsPpl1->nim], ['sekolah_id' => $lokasiPpl1->id]);
+        PenempatanPpl::updateOrCreate(['nim' => $mhsPpl2->nim], ['sekolah_id' => $lokasiPpl2->id]);
         PenempatanPkl::updateOrCreate(['nim' => $mhsPkl1->nim], ['lokasi_pkl_id' => $lokasiPkl1->id]);
         PenempatanPkl::updateOrCreate(['nim' => $mhsPkl2->nim], ['lokasi_pkl_id' => $lokasiPkl2->id]);
         PenempatanMagang::updateOrCreate(['nim' => $mhsMagang1->nim], ['lokasi_magang_id' => $lokasiMagang1->id]);
