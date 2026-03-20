@@ -1,4 +1,4 @@
-# Gunakan 8.4 agar sesuai dengan kebutuhan composer.lock kamu
+# PHP 8.4 FPM Alpine
 FROM php:8.4-fpm-alpine
 
 # Install dependencies
