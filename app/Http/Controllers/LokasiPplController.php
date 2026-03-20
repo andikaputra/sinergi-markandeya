@@ -10,13 +10,13 @@ class LokasiPplController extends Controller
 {
     public function indexLokasiPpl()
     {
-        $LokasiPpl = LokasiPpl::all();
-        return view('admin.LokasiPpl', compact('LokasiPpl'));
+        $lokasippl = LokasiPpl::all();
+        return view('admin.lokasippl', compact('lokasippl'));
     }
 
     public function createLokasiPpl()
     {
-        return view('admin.tambahLokasiPpl');
+        return view('admin.tambahlokasippl');
     }
 
     public function storeLokasiPpl(Request $request)
@@ -29,7 +29,7 @@ class LokasiPplController extends Controller
             'Sekolah' => $request->Sekolah,
         ]);
 
-        return redirect()->route('LokasiPpl.index')->with('success', 'Tempat PPL berhasil ditambahkan!');
+        return redirect()->route('lokasippl.index')->with('success', 'Tempat PPL berhasil ditambahkan!');
     }
 
     public function editLokasiPpl(LokasiPpl $LokasiPpl)
@@ -45,31 +45,29 @@ class LokasiPplController extends Controller
 
         $LokasiPpl->update($request->only(['Sekolah']));
 
-        return redirect()->route('LokasiPpl.index')->with('success', 'Tempat PPL berhasil diperbarui!');
+        return redirect()->route('lokasippl.index')->with('success', 'Tempat PPL berhasil diperbarui!');
     }
 
     public function destroyLokasiPpl($id)
     {
         LokasiPpl::findOrFail($id)->delete();
-        return redirect()->route('LokasiPpl.index')->with('success', 'Tempat PPL berhasil dihapus!');
+        return redirect()->route('lokasippl.index')->with('success', 'Tempat PPL berhasil dihapus!');
     }
 
     //asign lokasi ppl
     public function indexasignLokasiPpl()
     {
-        // Ambil mahasiswa PPL yang belum punya lokasi
         $mahasiswas = Mahasiswa::withKegiatan('PPL')
-            ->whereDoesntHave('PenempatanPpl')
-            ->get(); 
-    
-        $LokasiPpls = LokasiPpl::all();
-    
-        // Filter penempatan agar hanya muncul data PPL saja
-        $assignmentsLokasiPpl = PenempatanPpl::whereHas('mahasiswa', function($query) {
+            ->whereDoesntHave('penempatanppl')
+            ->get();
+
+        $lokasippls = LokasiPpl::all();
+
+        $assignmentslokasippl = PenempatanPpl::whereHas('mahasiswa', function($query) {
             $query->withKegiatan('PPL');
-        })->with(['mahasiswa', 'LokasiPpl'])->get();
-    
-        return view('admin.assignLokasiPpl', compact('mahasiswas', 'LokasiPpls', 'assignmentsLokasiPpl'));
+        })->with(['mahasiswa', 'lokasippl'])->get();
+
+        return view('admin.assignlokasippl', compact('mahasiswas', 'lokasippls', 'assignmentslokasippl'));
     }
 
     public function assign(Request $request)

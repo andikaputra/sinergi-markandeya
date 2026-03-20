@@ -22,14 +22,14 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @foreach ($Lokasippl as $lokasippl)
+                    @foreach ($lokasippl as $item)
                     <tr class="hover:bg-slate-50/50 transition-colors group">
                         <td class="px-6 py-5">
                             <div class="flex items-center space-x-3">
                                 <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold border border-emerald-100 group-hover:scale-110 transition-transform">
                                     <i class="fas fa-university text-xs"></i>
                                 </div>
-                                <span class="text-sm font-bold text-slate-700">{{ $lokasippl->Sekolah }}</span>
+                                <span class="text-sm font-bold text-slate-700">{{ $item->Sekolah }}</span>
                             </div>
                         </td>
                         <td class="px-6 py-5 text-center">
@@ -37,7 +37,7 @@
                                 <a href="#" class="p-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all">
                                     <i class="fas fa-edit text-xs"></i>
                                 </a>
-                                <form action="{{ route('lokasippl.delete', $lokasippl->id) }}" method="POST" class="inline">
+                                <form action="{{ route('lokasippl.delete', $item->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all" onclick="return confirm('Hapus sekolah ini?')">
