@@ -28,8 +28,6 @@ COPY . .
 # Install dependencies
 RUN composer install --optimize-autoloader --no-dev
 RUN npm install && npm run build
-RUN php artisan migrate --force
-RUN php artisan db:seed --force
 RUN php artisan optimize
 
 # Set permissions
@@ -39,8 +37,10 @@ RUN chown -R www-data:www-data /var/www \
 # Pastikan folder config nginx & supervisor ada di repo kamu
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose port sesuai keinginanmu
 EXPOSE 8001
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
