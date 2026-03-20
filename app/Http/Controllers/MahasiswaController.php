@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Mahasiswa;
 use App\Models\MahasiswaKegiatan;
-use App\Models\Penempatankkn;
-use App\Models\Penempatanppl;
+use App\Models\PenempatanKkn;
+use App\Models\PenempatanPpl;
 use App\Models\PenempatanPkl;
 use App\Models\PenempatanMagang;
 use App\Models\TahunAkademik;
@@ -67,10 +67,10 @@ class MahasiswaController extends Controller
         $taString = $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null;
 
         // Ambil lokasi penempatan
-        $penempatankknmhs = Penempatankkn::with(['mahasiswa', 'lokasikkn'])
+        $penempatankknmhs = PenempatanKkn::with(['mahasiswa', 'lokasikkn'])
             ->where('nim', Auth::user()->nim)->first();
 
-        $penempatanpplmhs = Penempatanppl::with(['mahasiswa', 'lokasippl'])
+        $penempatanpplmhs = PenempatanPpl::with(['mahasiswa', 'lokasippl'])
             ->where('nim', Auth::user()->nim)->first();
 
         $penempatanpklmhs = PenempatanPkl::with(['mahasiswa', 'lokasipkl'])
@@ -84,12 +84,12 @@ class MahasiswaController extends Controller
         $nim = Auth::user()->nim;
 
         if ($penempatankknmhs) {
-            $temanSeLokasi = Penempatankkn::with('mahasiswa')
+            $temanSeLokasi = PenempatanKkn::with('mahasiswa')
                 ->where('lokasi_kkn_id', $penempatankknmhs->lokasi_kkn_id)
                 ->where('nim', '!=', $nim)
                 ->get()->pluck('mahasiswa');
         } elseif ($penempatanpplmhs) {
-            $temanSeLokasi = Penempatanppl::with('mahasiswa')
+            $temanSeLokasi = PenempatanPpl::with('mahasiswa')
                 ->where('sekolah_id', $penempatanpplmhs->sekolah_id)
                 ->where('nim', '!=', $nim)
                 ->get()->pluck('mahasiswa');
@@ -184,19 +184,19 @@ class MahasiswaController extends Controller
         $namaLokasi = null;
 
         if ($kegiatan == 'KKN') {
-            $penempatan = Penempatankkn::with('lokasikkn')->where('nim', $nim)->first();
+            $penempatan = PenempatanKkn::with('lokasikkn')->where('nim', $nim)->first();
             if ($penempatan) {
                 $namaLokasi = 'Desa ' . $penempatan->lokasikkn->desa;
-                $temanSeLokasi = Penempatankkn::with('mahasiswa')
+                $temanSeLokasi = PenempatanKkn::with('mahasiswa')
                     ->where('lokasi_kkn_id', $penempatan->lokasi_kkn_id)
                     ->where('nim', '!=', $nim)
                     ->get()->pluck('mahasiswa');
             }
         } elseif ($kegiatan == 'PPL') {
-            $penempatan = Penempatanppl::with('lokasippl')->where('nim', $nim)->first();
+            $penempatan = PenempatanPpl::with('lokasippl')->where('nim', $nim)->first();
             if ($penempatan) {
                 $namaLokasi = $penempatan->lokasippl->Sekolah;
-                $temanSeLokasi = Penempatanppl::with('mahasiswa')
+                $temanSeLokasi = PenempatanPpl::with('mahasiswa')
                     ->where('sekolah_id', $penempatan->sekolah_id)
                     ->where('nim', '!=', $nim)
                     ->get()->pluck('mahasiswa');

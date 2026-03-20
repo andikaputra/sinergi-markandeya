@@ -75,14 +75,14 @@
 
         <!-- Navigation -->
         <nav class="flex-1 px-4 space-y-1 overflow-y-auto sidebar-scroll py-2">
-            @if(Auth::guard('mahasiswa')->check())
-                @include('layouts.adminmhs_menu')
+            @if(Auth::guard('web')->check())
+                @include('layouts.admin_menu')
             @elseif(Auth::guard('dosen')->check())
                 @include('layouts.dosen_menu')
             @elseif(Auth::guard('pembimbing_luar')->check())
                 @include('layouts.pembimbing_luar_menu')
-            @else
-                @include('layouts.admin_menu')
+            @elseif(Auth::guard('mahasiswa')->check())
+                @include('layouts.adminmhs_menu')
             @endif
         </nav>
 

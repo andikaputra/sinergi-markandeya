@@ -209,12 +209,12 @@ class Mahasiswa extends Authenticatable
 
     public function penempatankkn()
     {
-        return $this->hasOne(Penempatankkn::class, 'nim', 'nim');
+        return $this->hasOne(PenempatanKkn::class, 'nim', 'nim');
     }
 
     public function penempatanppl()
     {
-        return $this->hasOne(Penempatanppl::class, 'nim', 'nim');
+        return $this->hasOne(PenempatanPpl::class, 'nim', 'nim');
     }
 
     public function penempatanpkl()

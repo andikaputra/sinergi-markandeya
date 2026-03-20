@@ -9,8 +9,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\DosenPembimbingController;
 use App\Http\Controllers\DosenPengujiController;
-use App\Http\Controllers\LokasiKKNController;
-use App\Http\Controllers\LokasiPPLController;
+use App\Http\Controllers\LokasiKknController;
+use App\Http\Controllers\LokasiPplController;
 use App\Http\Controllers\LokasiPklController;
 use App\Http\Controllers\PublikasiController;
 use App\Http\Controllers\PengajuanLokasiPKLController;
@@ -114,22 +114,22 @@ Route::middleware(['auth:web'])->group(function () {
     Route::delete('/assign-dosenpenilai/{id}', [DosenPenilaiPublikasiController::class, 'adminDelete'])->name('assign.dosenpenilai.delete');
 
     //KKN
-    Route::get('/lokasikkn', [LokasiKKNController::class, 'indexlokasikkn'])->name('lokasikkn.index');
-    Route::get('/lokasikkn/create', [LokasiKKNController::class, 'createlokasikkn'])->name('lokasikkn.create');
-    Route::post('/lokasikkn/store', [LokasiKKNController::class, 'storelokasikkn'])->name('lokasikkn.store');
-    Route::delete('/lokasikkn/{id}', [LokasiKKNController::class, 'destroylokasikkn'])->name('lokasikkn.delete');
+    Route::get('/lokasikkn', [LokasiKknController::class, 'indexlokasikkn'])->name('lokasikkn.index');
+    Route::get('/lokasikkn/create', [LokasiKknController::class, 'createlokasikkn'])->name('lokasikkn.create');
+    Route::post('/lokasikkn/store', [LokasiKknController::class, 'storelokasikkn'])->name('lokasikkn.store');
+    Route::delete('/lokasikkn/{id}', [LokasiKknController::class, 'destroylokasikkn'])->name('lokasikkn.delete');
 
 
-    Route::get('/assign-lokasikkn', [LokasiKKNController::class, 'indexasignlokasikkn'])->name('assign.lokasikkn');
-    Route::post('/assign-lokasikkn', [LokasiKKNController::class, 'assign'])->name('assign.lokasikkn.store');
-    Route::delete('/assign-lokasikkn/{id}', [LokasiKKNController::class, 'deletelokasikkn'])->name('assign.lokasikkn.delete');
+    Route::get('/assign-lokasikkn', [LokasiKknController::class, 'indexasignlokasikkn'])->name('assign.lokasikkn');
+    Route::post('/assign-lokasikkn', [LokasiKknController::class, 'assign'])->name('assign.lokasikkn.store');
+    Route::delete('/assign-lokasikkn/{id}', [LokasiKknController::class, 'deletelokasikkn'])->name('assign.lokasikkn.delete');
 
 
     //PPL
-    Route::get('/lokasippl', [LokasiPPLController::class, 'indexlokasippl'])->name('lokasippl.index');
-    Route::get('/lokasippl/create', [LokasiPPLController::class, 'createlokasippl'])->name('lokasippl.create');
-    Route::post('/lokasippl/store', [LokasiPPLController::class, 'storelokasippl'])->name('lokasippl.store');
-    Route::delete('/lokasippl/{id}', [LokasiPPLController::class, 'destroylokasippl'])->name('lokasippl.delete');
+    Route::get('/lokasippl', [LokasiPplController::class, 'indexlokasippl'])->name('lokasippl.index');
+    Route::get('/lokasippl/create', [LokasiPplController::class, 'createlokasippl'])->name('lokasippl.create');
+    Route::post('/lokasippl/store', [LokasiPplController::class, 'storelokasippl'])->name('lokasippl.store');
+    Route::delete('/lokasippl/{id}', [LokasiPplController::class, 'destroylokasippl'])->name('lokasippl.delete');
 
     //PKL (Master Data)
     Route::get('/lokasipkl', [LokasiPklController::class, 'index'])->name('lokasipkl.index');
@@ -151,9 +151,9 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/assign-lokasimagang', [AdminController::class, 'assignMagangStore'])->name('assign.lokasimagang.store');
     Route::delete('/assign-lokasimagang/{id}', [AdminController::class, 'assignMagangDelete'])->name('assign.lokasimagang.delete');
 
-    Route::get('/assign-lokasippl', [LokasiPPLController::class, 'indexasignlokasippl'])->name('assign.lokasippl');
-    Route::post('/assign-lokasippl', [LokasiPPLController::class, 'assign'])->name('assign.lokasippl.store');
-    Route::delete('/assign-lokasippl/{id}', [LokasiPPLController::class, 'deletelokasippl'])->name('assign.lokasippl.delete');
+    Route::get('/assign-lokasippl', [LokasiPplController::class, 'indexasignlokasippl'])->name('assign.lokasippl');
+    Route::post('/assign-lokasippl', [LokasiPplController::class, 'assign'])->name('assign.lokasippl.store');
+    Route::delete('/assign-lokasippl/{id}', [LokasiPplController::class, 'deletelokasippl'])->name('assign.lokasippl.delete');
 
     Route::get('/pengajuan-pkladmin', [PengajuanLokasiPKLController::class, 'adminindex'])->name('pengajuanpkl.adminindex');
     Route::post('/pengajuan-pkl/{id}/approve', [PengajuanLokasiPKLController::class, 'approve'])->name('pengajuanpkl.approve');
