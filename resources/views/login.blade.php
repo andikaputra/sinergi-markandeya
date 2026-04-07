@@ -12,8 +12,8 @@
 <div class="min-h-screen flex flex-col items-center justify-center p-4">
     <div class="max-w-md w-full">
         <div class="text-center mb-10">
-            <img src="https://markandeyabali.ac.id/wp-content/uploads/2023/06/cropped-cropped-logo-1.png" alt="Logo Markandeya" class="h-20 w-auto mx-auto mb-4">
-            <h2 class="text-3xl font-black text-gray-800 tracking-tight">Sinergi Markandeya</h2>
+            <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya" class="h-20 w-auto mx-auto mb-4">
+            <h2 class="text-3xl font-black text-gray-800 tracking-tight">Sinergi Universitas Markandeya</h2>
             <p class="text-gray-500 mt-2 font-medium">Silakan masuk untuk melanjutkan</p>
         </div>
 
@@ -81,7 +81,7 @@
         </div>
         
         <p class="mt-8 text-center text-xs text-gray-400 font-medium tracking-wide">
-            &copy; {{ date('Y') }} Sinergi Markandeya. All rights reserved.
+            &copy; {{ date('Y') }} Universitas Markandeya. All rights reserved.
         </p>
     </div>
 </div>

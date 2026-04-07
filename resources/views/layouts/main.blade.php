@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Sinergi Markandeya')</title>
+    <title>@yield('title', 'Sinergi Universitas Markandeya')</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -54,7 +54,7 @@
     <!-- Mobile Header -->
     <div class="lg:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 z-50">
         <div class="flex items-center space-x-3">
-            <img src="https://markandeyabali.ac.id/wp-content/uploads/2023/06/cropped-cropped-logo-1.png" alt="Logo Markandeya" class="h-10 w-auto">
+            <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya" class="h-10 w-auto">
             <span class="font-black text-xl tracking-tight text-gray-900">Sinergi<span class="text-blue-600">.</span></span>
         </div>
         <button id="mobile-menu-button" class="text-gray-500 hover:text-blue-600 transition-colors">
@@ -66,7 +66,7 @@
     <aside id="sidebar" class="hidden lg:flex flex-col w-72 bg-white border-r border-gray-100 h-full fixed lg:static z-50 transition-transform duration-300 transform -translate-x-full lg:translate-x-0 shadow-xl lg:shadow-none">
         <!-- Brand Logo -->
         <div class="px-8 py-8 flex items-center space-x-3">
-            <img src="https://markandeyabali.ac.id/wp-content/uploads/2023/06/cropped-cropped-logo-1.png" alt="Logo Markandeya" class="h-12 w-auto">
+            <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya" class="h-12 w-auto">
             <div>
                 <h1 class="font-black text-2xl tracking-tighter text-gray-900 leading-none">Sinergi<span class="text-blue-600">.</span></h1>
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">@yield('user_type', 'Panel')</p>
@@ -134,7 +134,7 @@
         </div>
         
         <div class="px-10 py-6 text-center lg:text-left text-xs font-bold text-gray-300 uppercase tracking-widest">
-            &copy; {{ date('Y') }} Sinergi Markandeya System.
+            &copy; {{ date('Y') }} Universitas Markandeya System.
         </div>
     </main>
 

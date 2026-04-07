@@ -45,7 +45,7 @@
 
     <div class="header">
         <h1>{{ $title }}</h1>
-        <h1>ITP MARKANDEYA BALI</h1>
+        <h1>UNIVERSITAS MARKANDEYA</h1>
         <p>Tahun Akademik {{ date('Y') }}</p>
     </div>
 

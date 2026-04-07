@@ -17,9 +17,9 @@
     <div class="max-w-2xl mx-auto relative z-10">
         <!-- Logo & Header -->
         <div class="text-center mb-10">
-            <img src="https://markandeyabali.ac.id/wp-content/uploads/2023/06/cropped-cropped-logo-1.png" alt="Logo Markandeya" class="h-20 w-auto mx-auto mb-6 transform hover:scale-105 transition-transform">
+            <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya" class="h-20 w-auto mx-auto mb-6 transform hover:scale-105 transition-transform">
             <h2 class="text-3xl font-black text-gray-900 tracking-tight">Formulir Pendaftaran</h2>
-            <p class="text-gray-400 mt-2 font-bold uppercase tracking-[0.2em] text-[10px]">Portal Akademik Sinergi Markandeya</p>
+            <p class="text-gray-400 mt-2 font-bold uppercase tracking-[0.2em] text-[10px]">Portal Akademik Sinergi Universitas Markandeya</p>
         </div>
 
         <!-- Register Card -->
@@ -54,7 +54,7 @@
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Pilih Kampus</label>
                                 <select name="kampus" required class="block w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all font-bold appearance-none">
-                                    <option value="ITP Markandeya Bali">ITP Markandeya Bali (Pusat)</option>
+                                    <option value="Universitas Markandeya">Universitas Markandeya (Pusat)</option>
                                     <option value="PKMB Tabanan">PKMB Tabanan</option>
                                     <option value="PKMB Widyagiri Petang">PKMB Widyagiri Petang</option>
                                     <option value="PKBM Abiansemal">PKBM Abiansemal</option>

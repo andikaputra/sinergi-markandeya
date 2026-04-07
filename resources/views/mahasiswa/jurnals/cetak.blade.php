@@ -42,7 +42,7 @@
     <div class="page">
         <div class="header">
             <h1>Laporan Jurnal Harian Mahasiswa</h1>
-            <h1>ITP Markandeya Bali</h1>
+            <h1>Universitas Markandeya</h1>
             <p>Program: {{ $mahasiswa->kegiatan }} | Tahun Akademik {{ date('Y') }}</p>
         </div>
 

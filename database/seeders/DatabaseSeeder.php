@@ -171,7 +171,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'I Kadek Budi Santoso', 'email' => 'budi@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'SI',
-                'kampus' => 'ITP Markandeya Bali', 'kegiatan' => 'KKN',
+                'kampus' => 'Universitas Markandeya', 'kegiatan' => 'KKN',
                 'kecamatan' => 'Tegalalang', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
                 'tahun_akademik' => $taString,
             ]
@@ -181,7 +181,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'Ni Putu Ayu Lestari', 'email' => 'ayu@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'PGSD',
-                'kampus' => 'ITP Markandeya Bali', 'kegiatan' => 'KKN',
+                'kampus' => 'Universitas Markandeya', 'kegiatan' => 'KKN',
                 'kecamatan' => 'Tegalalang', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
                 'tahun_akademik' => $taString,
             ]
@@ -193,7 +193,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'Siti Aminah', 'email' => 'siti@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'PGSD',
-                'kampus' => 'ITP Markandeya Bali', 'kegiatan' => 'PPL',
+                'kampus' => 'Universitas Markandeya', 'kegiatan' => 'PPL',
                 'kecamatan' => 'Bangli', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
                 'tahun_akademik' => $taString,
             ]
@@ -203,7 +203,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'I Wayan Dharma Putra', 'email' => 'dharma@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'PBI',
-                'kampus' => 'ITP Markandeya Bali', 'kegiatan' => 'PPL',
+                'kampus' => 'Universitas Markandeya', 'kegiatan' => 'PPL',
                 'kecamatan' => 'Gianyar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
                 'tahun_akademik' => $taString,
             ]
@@ -215,7 +215,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'Andi Wijaya', 'email' => 'andi@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'SI',
-                'kampus' => 'ITP Markandeya Bali', 'kegiatan' => 'PKL',
+                'kampus' => 'Universitas Markandeya', 'kegiatan' => 'PKL',
                 'kecamatan' => 'Denpasar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
                 'tahun_akademik' => $taString,
             ]
@@ -225,7 +225,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'Ni Made Rina Dewi', 'email' => 'rina@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'ME',
-                'kampus' => 'ITP Markandeya Bali', 'kegiatan' => 'PKL',
+                'kampus' => 'Universitas Markandeya', 'kegiatan' => 'PKL',
                 'kecamatan' => 'Gianyar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
                 'tahun_akademik' => $taString,
             ]
@@ -237,7 +237,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'I Gede Surya Pratama', 'email' => 'surya@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'ME',
-                'kampus' => 'ITP Markandeya Bali', 'kegiatan' => 'Magang',
+                'kampus' => 'Universitas Markandeya', 'kegiatan' => 'Magang',
                 'kecamatan' => 'Denpasar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
                 'tahun_akademik' => $taString,
             ]
@@ -247,7 +247,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'Ni Kadek Sri Utami', 'email' => 'sri@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'PARBUD',
-                'kampus' => 'ITP Markandeya Bali', 'kegiatan' => 'Magang',
+                'kampus' => 'Universitas Markandeya', 'kegiatan' => 'Magang',
                 'kecamatan' => 'Gianyar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
                 'tahun_akademik' => $taString,
             ]

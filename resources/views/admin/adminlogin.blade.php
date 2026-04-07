@@ -17,7 +17,7 @@
     <div class="max-w-md w-full relative z-10">
         <!-- Logo & Header -->
         <div class="text-center mb-10">
-            <img src="https://markandeyabali.ac.id/wp-content/uploads/2023/06/cropped-cropped-logo-1.png" alt="Logo Markandeya" class="h-24 w-auto mx-auto mb-6 transform hover:scale-105 transition-transform">
+            <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya" class="h-24 w-auto mx-auto mb-6 transform hover:scale-105 transition-transform">
             <h2 class="text-3xl font-black text-gray-900 tracking-tight">Admin Portal</h2>
             <p class="text-gray-400 mt-2 font-bold uppercase tracking-[0.2em] text-[10px]">Secure Management Access</p>
         </div>

@@ -56,7 +56,7 @@
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Kampus</label>
                     <select name="kampus" required class="block w-full px-6 py-4 bg-slate-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all font-bold appearance-none">
-                        <option value="ITP Markandeya Bali">ITP Markandeya Bali (Pusat)</option>
+                        <option value="Universitas Markandeya">Universitas Markandeya (Pusat)</option>
                         <option value="PKMB Tabanan">PKMB Tabanan</option>
                         <option value="PKMB Widyagiri Petang">PKMB Widyagiri Petang</option>
                         <option value="PKBM Abiansemal">PKBM Abiansemal</option>

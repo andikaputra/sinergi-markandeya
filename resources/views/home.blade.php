@@ -39,7 +39,7 @@
     <header class="glass-header" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img src="https://markandeyabali.ac.id/wp-content/uploads/2023/06/cropped-cropped-logo-1.png" alt="Logo Markandeya" class="h-12 w-auto">
+                <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya" class="h-12 w-auto">
                 <span class="font-black text-2xl tracking-tighter text-gray-900">Sinergi<span class="text-blue-600">.</span></span>
             </div>
             
@@ -72,7 +72,7 @@
                         Wujudkan <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Sinergi</span> Kampus & Masyarakat.
                     </h1>
                     <p class="text-xl text-gray-500 max-w-xl leading-relaxed mx-auto lg:mx-0 font-medium">
-                        Platform digital terpadu ITP Markandeya Bali untuk manajemen program KKN, PPL, PKL, dan Magang yang lebih transparan, efisien, dan modern.
+                        Platform digital terpadu Universitas Markandeya untuk manajemen program KKN, PPL, PKL, dan Magang yang lebih transparan, efisien, dan modern.
                     </p>
                     <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                         <a href="{{ route('register.form') }}" class="w-full sm:w-auto px-8 py-5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-[2rem] shadow-2xl shadow-blue-200 transition-all flex items-center justify-center group">
@@ -228,11 +228,11 @@
     <footer class="bg-white pt-24 pb-12 border-t border-gray-100">
             <div class="md:col-span-1 space-y-6 text-center lg:text-left">
                 <div class="flex items-center justify-center lg:justify-start space-x-3">
-                    <img src="https://markandeyabali.ac.id/wp-content/uploads/2023/06/cropped-cropped-logo-1.png" alt="Logo Markandeya" class="h-10 w-auto">
+                    <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya" class="h-10 w-auto">
                     <span class="font-black text-2xl tracking-tighter italic text-gray-900">Sinergi<span class="text-blue-600">.</span></span>
                 </div>
             <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">
-                &copy; {{ date('Y') }} Institut Teknologi dan Pendidikan Markandeya Bali.
+                &copy; {{ date('Y') }} Universitas Markandeya.
             </p>
         </div>
     </footer>

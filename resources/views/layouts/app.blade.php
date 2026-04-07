@@ -20,7 +20,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="#">Sinergi ITP Markandeya Bali</a>
+            <a class="navbar-brand" href="#">Sinergi Universitas Markandeya</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -56,7 +56,7 @@
 
     <!-- Footer -->
     <footer class="text-center mt-4 py-3 bg-light">
-        <p>&copy; 2025 Sistem sinergi KKN, PPL, PKL - ITP Markandeya Bali</p>
+        <p>&copy; 2025 Sistem Sinergi KKN, PPL, PKL - Universitas Markandeya</p>
     </footer>
 
 </body>
