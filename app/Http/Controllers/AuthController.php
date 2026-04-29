@@ -23,22 +23,34 @@ class AuthController extends Controller
             'email' => 'required',
             'password' => 'required'
         ]);
+
+        $loginValue = $request->email;
+        $password = $request->password;
     
-        // Cek kredensial untuk mahasiswa (menggunakan email)
-        if (filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
-            if (Auth::guard('mahasiswa')->attempt($request->only('email', 'password'))) {
+        // Jika input adalah email
+        if (filter_var($loginValue, FILTER_VALIDATE_EMAIL)) {
+            // Cek mahasiswa
+            if (Auth::guard('mahasiswa')->attempt(['email' => $loginValue, 'password' => $password])) {
                 $request->session()->regenerate();
                 return redirect()->route('dashboard')->with('success', 'Login berhasil!');
             }
 
-            // Cek kredensial untuk pembimbing luar (menggunakan email)
-            if (Auth::guard('pembimbing_luar')->attempt($request->only('email', 'password'))) {
+            // Cek pembimbing luar
+            if (Auth::guard('pembimbing_luar')->attempt(['email' => $loginValue, 'password' => $password])) {
                 $request->session()->regenerate();
                 return redirect()->route('pembimbing_luar.dashboard')->with('success', 'Login Pembimbing Luar berhasil!');
             }
         } else {
-            // Cek kredensial untuk dosen (menggunakan nidn)
-            if (Auth::guard('dosen')->attempt(['nidn' => $request->email, 'password' => $request->password])) {
+            // Jika input bukan email (NIM atau NIDN)
+            
+            // Cek mahasiswa pakai NIM
+            if (Auth::guard('mahasiswa')->attempt(['nim' => $loginValue, 'password' => $password])) {
+                $request->session()->regenerate();
+                return redirect()->route('dashboard')->with('success', 'Login berhasil!');
+            }
+
+            // Cek dosen pakai NIDN
+            if (Auth::guard('dosen')->attempt(['nidn' => $loginValue, 'password' => $password])) {
                 $request->session()->regenerate();
                 return redirect()->route('dosen.dashboard')->with('success', 'Login Dosen berhasil!');
             }

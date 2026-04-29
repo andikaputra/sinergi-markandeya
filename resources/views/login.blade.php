@@ -39,14 +39,14 @@
                 @csrf
                 
                 <div class="space-y-2">
-                    <label for="email" class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Email / NIDN</label>
+                    <label for="email" class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">NIM / Email / NIDN</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
                             <i class="fas fa-user text-sm"></i>
                         </div>
                         <input type="text" name="email" id="email" required
                             class="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all"
-                            placeholder="Masukkan Email atau NIDN">
+                            placeholder="Masukkan NIM, Email atau NIDN">
                     </div>
                 </div>
 
