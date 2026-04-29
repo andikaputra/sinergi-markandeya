@@ -513,4 +513,40 @@ class AdminController extends Controller
         $admin->delete();
         return redirect()->route('admin.kelola')->with('success', 'Admin berhasil dihapus.');
     }
+
+    /**
+     * Admin: Delete Mahasiswa (Peserta) and all related data
+     */
+    public function mahasiswaDestroy($id)
+    {
+        $mahasiswa = Mahasiswa::findOrFail($id);
+        $nim = $mahasiswa->nim;
+
+        DB::beginTransaction();
+        try {
+            // Hapus semua data terkait manual (antisipasi jika foreign key cascade tidak terpasang)
+            DB::table('mahasiswa_kegiatan')->where('nim', $nim)->delete();
+            DB::table('jurnals')->where('nim', $nim)->delete();
+            DB::table('publikasis')->where('nim', $nim)->delete();
+            DB::table('penempatan_kkns')->where('nim', $nim)->delete();
+            DB::table('penempatan_ppls')->where('nim', $nim)->delete();
+            DB::table('penempatan_pkls')->where('nim', $nim)->delete();
+            DB::table('penempatan_magangs')->where('nim', $nim)->delete();
+            DB::table('dosen_pembimbings')->where('nim', $nim)->delete();
+            DB::table('dosen_pengujis')->where('nim', $nim)->delete();
+            DB::table('pembimbing_luar_mahasiswa')->where('nim', $nim)->delete();
+            DB::table('dosen_penilai_publikasis')->where('nim', $nim)->delete();
+            DB::table('pengajuan_lokasi_pkls')->where('nim', $nim)->delete();
+            DB::table('pengajuan_lokasi_magangs')->where('nim', $nim)->delete();
+
+            // Akhirnya hapus mahasiswa
+            $mahasiswa->delete();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Peserta ' . $mahasiswa->nama . ' berhasil dihapus beserta seluruh datanya.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menghapus peserta: ' . $e->getMessage());
+        }
+    }
 }

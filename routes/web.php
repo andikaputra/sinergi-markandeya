@@ -71,6 +71,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/admin/mahasiswa/create', [AdminController::class, 'createMahasiswa'])->name('admin.mahasiswa.create');
     Route::post('/admin/mahasiswa/store', [AdminController::class, 'storeMahasiswa'])->name('admin.mahasiswa.store');
     Route::post('/admin/mahasiswa/assign-kegiatan', [AdminController::class, 'assignKegiatan'])->name('admin.mahasiswa.assign-kegiatan');
+    Route::delete('/admin/mahasiswa/{id}', [AdminController::class, 'mahasiswaDestroy'])->name('admin.mahasiswa.delete');
 
     // Import Routes
     Route::post('/admin/import-mahasiswa', [AdminController::class, 'importMahasiswa'])->name('admin.import.mahasiswa');

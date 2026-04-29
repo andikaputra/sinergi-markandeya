@@ -47,6 +47,7 @@
                         @include('admin._header_dosen')
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Publikasi</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Nilai Akhir</th>
+                        <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Aksi</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 rounded-tr-2xl">Waktu Daftar</th>
                     </tr>
                 </thead>
@@ -95,6 +96,15 @@
                             <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-black border border-indigo-100">
                                 {{ $mahasiswa->nilai_akhir }}
                             </span>
+                        </td>
+                        <td class="px-6 py-5 text-center">
+                            <form action="{{ route('admin.mahasiswa.delete', $mahasiswa->id) }}" method="POST" onsubmit="return confirm('Yakin hapus peserta {{ $mahasiswa->nama }}? Seluruh data jurnal, publikasi, dan penempatan juga akan dihapus.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-500 hover:text-red-700 transition-colors">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
                         </td>
                         <td class="px-6 py-5 text-xs text-gray-400 font-medium">
                             {{ \Carbon\Carbon::parse($mahasiswa->created_at)->translatedFormat('d/m/y H:i') }}
