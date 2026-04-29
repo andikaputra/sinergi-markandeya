@@ -75,13 +75,30 @@
 
         <!-- Navigation -->
         <nav class="flex-1 px-4 space-y-1 overflow-y-auto sidebar-scroll py-2">
-            @if(Auth::guard('web')->check())
+            @php
+                $menuGuard = null;
+                $defaultGuard = auth()->getDefaultDriver();
+                
+                if (Auth::guard($defaultGuard)->check()) {
+                    $menuGuard = $defaultGuard;
+                } else {
+                    foreach (['web', 'dosen', 'pembimbing_luar', 'mahasiswa'] as $g) {
+                        if (Auth::guard($g)->check()) {
+                            $menuGuard = $g;
+                            break;
+                        }
+                    }
+                }
+                $displayUser = $menuGuard ? Auth::guard($menuGuard)->user() : Auth::user();
+            @endphp
+
+            @if($menuGuard === 'web')
                 @include('layouts.admin_menu')
-            @elseif(Auth::guard('dosen')->check())
+            @elseif($menuGuard === 'dosen')
                 @include('layouts.dosen_menu')
-            @elseif(Auth::guard('pembimbing_luar')->check())
+            @elseif($menuGuard === 'pembimbing_luar')
                 @include('layouts.pembimbing_luar_menu')
-            @elseif(Auth::guard('mahasiswa')->check())
+            @elseif($menuGuard === 'mahasiswa')
                 @include('layouts.adminmhs_menu')
             @endif
         </nav>
@@ -90,10 +107,10 @@
         <div class="p-6 border-t border-gray-50">
             <div class="bg-slate-50 p-4 rounded-2xl border border-gray-100 flex items-center space-x-3 mb-4">
                 <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-blue-600 font-bold shadow-sm">
-                    {{ substr(Auth::user()->nama ?? Auth::user()->name ?? 'U', 0, 1) }}
+                    {{ substr($displayUser->nama ?? $displayUser->name ?? 'U', 0, 1) }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-gray-900 truncate">{{ Auth::user()->nama ?? Auth::user()->name ?? 'User' }}</p>
+                    <p class="text-sm font-bold text-gray-900 truncate">{{ $displayUser->nama ?? $displayUser->name ?? 'User' }}</p>
                     <p class="text-xs text-gray-400 truncate font-medium">@yield('user_type', 'Panel')</p>
                 </div>
             </div>
