@@ -528,16 +528,16 @@ class AdminController extends Controller
             DB::table('mahasiswa_kegiatan')->where('nim', $nim)->delete();
             DB::table('jurnals')->where('nim', $nim)->delete();
             DB::table('publikasis')->where('nim', $nim)->delete();
-            DB::table('penempatan_kkns')->where('nim', $nim)->delete();
-            DB::table('penempatan_ppls')->where('nim', $nim)->delete();
+            DB::table('pembagian_lokasi_kkn')->where('nim', $nim)->delete();
+            DB::table('Penempatan_ppl')->where('nim', $nim)->delete();
             DB::table('penempatan_pkls')->where('nim', $nim)->delete();
             DB::table('penempatan_magangs')->where('nim', $nim)->delete();
             DB::table('dosen_pembimbings')->where('nim', $nim)->delete();
             DB::table('dosen_pengujis')->where('nim', $nim)->delete();
             DB::table('pembimbing_luar_mahasiswa')->where('nim', $nim)->delete();
             DB::table('dosen_penilai_publikasis')->where('nim', $nim)->delete();
-            DB::table('pengajuan_lokasi_pkls')->where('nim', $nim)->delete();
-            DB::table('pengajuan_lokasi_magangs')->where('nim', $nim)->delete();
+            DB::table('pengajuan_lokasi_pkl')->where('nim', $nim)->delete();
+            DB::table('pengajuan_lokasi_magang')->where('nim', $nim)->delete();
 
             // Akhirnya hapus mahasiswa
             $mahasiswa->delete();
