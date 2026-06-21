@@ -36,7 +36,11 @@ class DatabaseSeeder extends Seeder
         // ==========================================
         $ta = TahunAkademik::updateOrCreate(
             ['tahun' => '2025/2026', 'semester' => 'Genap'],
-            ['is_active' => true]
+            [
+                'is_active' => true,
+                'tanggal_mulai_daftar' => now()->subDays(3)->toDateString(),
+                'tanggal_selesai_daftar' => now()->addDays(14)->toDateString(),
+            ]
         );
 
         TahunAkademik::updateOrCreate(
@@ -49,6 +53,16 @@ class DatabaseSeeder extends Seeder
         // ==========================================
         // 2. ADMIN (Super Admin + Admin Kegiatan)
         // ==========================================
+        User::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Administrator',
+                'password' => Hash::make('password'),
+                'role' => 'superadmin',
+                'kegiatan' => null,
+            ]
+        );
+
         User::updateOrCreate(
             ['email' => 'admin@markandeya.ac.id'],
             [
@@ -172,8 +186,8 @@ class DatabaseSeeder extends Seeder
                 'nama' => 'I Kadek Budi Santoso', 'email' => 'budi@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'SI',
                 'kampus' => 'Universitas Markandeya', 'kegiatan' => 'KKN',
-                'kecamatan' => 'Tegalalang', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
-                'tahun_akademik' => $taString,
+                'kecamatan' => 'Tegalalang', 'pembayaranKRS' => 'https://drive.google.com/sim-krs-budi', 'KRS' => 'https://drive.google.com/sim-krs-budi',
+                'tahun_akademik' => $taString, 'status' => 'aktif',
             ]
         );
         $mhsKkn2 = Mahasiswa::updateOrCreate(
@@ -182,8 +196,8 @@ class DatabaseSeeder extends Seeder
                 'nama' => 'Ni Putu Ayu Lestari', 'email' => 'ayu@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'PGSD',
                 'kampus' => 'Universitas Markandeya', 'kegiatan' => 'KKN',
-                'kecamatan' => 'Tegalalang', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
-                'tahun_akademik' => $taString,
+                'kecamatan' => 'Tegalalang', 'pembayaranKRS' => 'https://drive.google.com/sim-krs-ayu', 'KRS' => 'https://drive.google.com/sim-krs-ayu',
+                'tahun_akademik' => $taString, 'status' => 'aktif',
             ]
         );
 
@@ -194,8 +208,8 @@ class DatabaseSeeder extends Seeder
                 'nama' => 'Siti Aminah', 'email' => 'siti@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'PGSD',
                 'kampus' => 'Universitas Markandeya', 'kegiatan' => 'PPL',
-                'kecamatan' => 'Bangli', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
-                'tahun_akademik' => $taString,
+                'kecamatan' => 'Bangli', 'pembayaranKRS' => 'https://drive.google.com/sim-krs-siti', 'KRS' => 'https://drive.google.com/sim-krs-siti',
+                'tahun_akademik' => $taString, 'status' => 'aktif',
             ]
         );
         $mhsPpl2 = Mahasiswa::updateOrCreate(
@@ -204,8 +218,8 @@ class DatabaseSeeder extends Seeder
                 'nama' => 'I Wayan Dharma Putra', 'email' => 'dharma@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'PBI',
                 'kampus' => 'Universitas Markandeya', 'kegiatan' => 'PPL',
-                'kecamatan' => 'Gianyar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
-                'tahun_akademik' => $taString,
+                'kecamatan' => 'Gianyar', 'pembayaranKRS' => 'https://drive.google.com/sim-krs-dharma', 'KRS' => 'https://drive.google.com/sim-krs-dharma',
+                'tahun_akademik' => $taString, 'status' => 'aktif',
             ]
         );
 
@@ -216,8 +230,8 @@ class DatabaseSeeder extends Seeder
                 'nama' => 'Andi Wijaya', 'email' => 'andi@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'SI',
                 'kampus' => 'Universitas Markandeya', 'kegiatan' => 'PKL',
-                'kecamatan' => 'Denpasar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
-                'tahun_akademik' => $taString,
+                'kecamatan' => 'Denpasar', 'pembayaranKRS' => 'https://drive.google.com/sim-krs-andi', 'KRS' => 'https://drive.google.com/sim-krs-andi',
+                'tahun_akademik' => $taString, 'status' => 'aktif',
             ]
         );
         $mhsPkl2 = Mahasiswa::updateOrCreate(
@@ -226,8 +240,8 @@ class DatabaseSeeder extends Seeder
                 'nama' => 'Ni Made Rina Dewi', 'email' => 'rina@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'ME',
                 'kampus' => 'Universitas Markandeya', 'kegiatan' => 'PKL',
-                'kecamatan' => 'Gianyar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
-                'tahun_akademik' => $taString,
+                'kecamatan' => 'Gianyar', 'pembayaranKRS' => 'https://drive.google.com/sim-krs-rina', 'KRS' => 'https://drive.google.com/sim-krs-rina',
+                'tahun_akademik' => $taString, 'status' => 'aktif',
             ]
         );
 
@@ -238,8 +252,8 @@ class DatabaseSeeder extends Seeder
                 'nama' => 'I Gede Surya Pratama', 'email' => 'surya@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'ME',
                 'kampus' => 'Universitas Markandeya', 'kegiatan' => 'Magang',
-                'kecamatan' => 'Denpasar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
-                'tahun_akademik' => $taString,
+                'kecamatan' => 'Denpasar', 'pembayaranKRS' => 'https://drive.google.com/sim-krs-surya', 'KRS' => 'https://drive.google.com/sim-krs-surya',
+                'tahun_akademik' => $taString, 'status' => 'aktif',
             ]
         );
         $mhsMagang2 = Mahasiswa::updateOrCreate(
@@ -248,8 +262,42 @@ class DatabaseSeeder extends Seeder
                 'nama' => 'Ni Kadek Sri Utami', 'email' => 'sri@gmail.com',
                 'password' => Hash::make('password'), 'prodi' => 'PARBUD',
                 'kampus' => 'Universitas Markandeya', 'kegiatan' => 'Magang',
-                'kecamatan' => 'Gianyar', 'pembayaranKRS' => 'Lunas', 'KRS' => 'Aktif',
-                'tahun_akademik' => $taString,
+                'kecamatan' => 'Gianyar', 'pembayaranKRS' => 'https://drive.google.com/sim-krs-sri', 'KRS' => 'https://drive.google.com/sim-krs-sri',
+                'tahun_akademik' => $taString, 'status' => 'aktif',
+            ]
+        );
+
+        // ==========================================
+        // MAHASISWA BELUM PUNYA KEGIATAN (siap daftar kegiatan)
+        // ==========================================
+        Mahasiswa::updateOrCreate(
+            ['nim' => '2026009'],
+            [
+                'nama' => 'Putu Eka Saputra', 'email' => 'eka@gmail.com',
+                'password' => Hash::make('password'), 'prodi' => 'SI',
+                'kampus' => 'Universitas Markandeya', 'kecamatan' => 'Bangli',
+                'pembayaranKRS' => '-', 'KRS' => '-', 'status' => 'aktif',
+            ]
+        );
+        Mahasiswa::updateOrCreate(
+            ['nim' => '2026010'],
+            [
+                'nama' => 'Ni Nyoman Dewi Astuti', 'email' => 'dewi@gmail.com',
+                'password' => Hash::make('password'), 'prodi' => 'PGSD',
+                'kampus' => 'PKMB Tabanan', 'kecamatan' => 'Penebel',
+                'pembayaranKRS' => '-', 'KRS' => '-', 'status' => 'aktif',
+            ]
+        );
+        // Satu akun nonaktif (simulasi)
+        Mahasiswa::updateOrCreate(
+            ['nim' => '2026011'],
+            [
+                'nama' => 'I Made Agus Pramana', 'email' => 'agus@gmail.com',
+                'password' => Hash::make('password'), 'prodi' => 'HUKUM',
+                'kampus' => 'Universitas Markandeya', 'kecamatan' => 'Kintamani',
+                'pembayaranKRS' => '-', 'KRS' => '-',
+                'status' => 'nonaktif',
+                'catatan_penolakan' => 'Tidak aktif semester ini.',
             ]
         );
 

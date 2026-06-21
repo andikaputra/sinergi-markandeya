@@ -18,11 +18,13 @@
                 <thead>
                     <tr>
                         <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Nama Sekolah</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-center">Pendaftar / Maks</th>
                         <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-center rounded-tr-2xl">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach ($lokasippl as $item)
+                    @php $jml = $item->jumlahPendaftar(); $maks = $item->maks_peserta; $penuh = $item->isFull(); @endphp
                     <tr class="hover:bg-slate-50/50 transition-colors group">
                         <td class="px-6 py-5">
                             <div class="flex items-center space-x-3">
@@ -33,13 +35,28 @@
                             </div>
                         </td>
                         <td class="px-6 py-5 text-center">
-                            <div class="flex items-center justify-center space-x-2">
-                                <a href="#" class="p-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all">
-                                    <i class="fas fa-edit text-xs"></i>
-                                </a>
+                            @if($maks)
+                                <div class="flex items-center justify-center gap-2">
+                                    <div class="w-24 bg-gray-100 rounded-full h-2">
+                                        <div class="h-2 rounded-full {{ $penuh ? 'bg-red-500' : 'bg-emerald-500' }}" style="width: {{ min(100, ($jml / $maks) * 100) }}%"></div>
+                                    </div>
+                                    <span class="text-xs font-black {{ $penuh ? 'text-red-600' : 'text-slate-600' }}">{{ $jml }}/{{ $maks }}</span>
+                                    @if($penuh)<span class="px-1.5 py-0.5 bg-red-50 text-red-600 text-[10px] font-black rounded border border-red-100">Penuh</span>@endif
+                                </div>
+                            @else
+                                <span class="text-xs text-slate-400">{{ $jml }} pendaftar &bull; <span class="italic">tak terbatas</span></span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-5 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                @if(Auth::guard('web')->user()?->isSuperAdmin())
+                                <button type="button" onclick="openKapasitasModal('{{ route('lokasippl.kapasitas', $item->id) }}', {{ $maks ?? 'null' }}, '{{ addslashes($item->Sekolah) }}')"
+                                    class="px-3 py-1.5 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-lg hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-1">
+                                    <i class="fas fa-users-cog text-[10px]"></i> Kuota
+                                </button>
+                                @endif
                                 <form action="{{ route('lokasippl.delete', $item->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
+                                    @csrf @method('DELETE')
                                     <button type="submit" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all" onclick="return confirm('Hapus sekolah ini?')">
                                         <i class="fas fa-trash-alt text-xs"></i>
                                     </button>

@@ -13,9 +13,7 @@
                 </div>
                 <div class="px-8 pb-8 text-center relative">
                     <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto -mt-12 mb-4 shadow-lg">
-                        <div class="w-full h-full bg-blue-50 rounded-full flex items-center justify-center text-3xl font-black text-blue-600">
-                            {{ substr($dosen->nama, 0, 1) }}
-                        </div>
+                        <x-avatar :foto="$dosen->foto" :nama="$dosen->nama" />
                     </div>
 
                     <h4 class="text-xl font-black text-gray-800 tracking-tight mb-1">{{ $dosen->nama }}</h4>

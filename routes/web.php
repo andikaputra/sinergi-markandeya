@@ -20,19 +20,29 @@ use App\Http\Controllers\PembimbingLuarController;
 use App\Http\Controllers\PembimbingLuarDashboardController;
 use App\Http\Controllers\PengajuanLokasiMagangController;
 use App\Http\Controllers\DosenPenilaiPublikasiController;
+use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\NotifikasiController;
 
 
 Route::get('/', function () {
-    return view('home');
+    $pengumuman = \App\Models\TahunAkademik::whereNotNull('tanggal_mulai_daftar')
+        ->whereNotNull('tanggal_selesai_daftar')
+        ->where('tanggal_selesai_daftar', '>=', now()->toDateString())
+        ->orderBy('tanggal_mulai_daftar', 'asc')
+        ->get();
+    return view('home', compact('pengumuman'));
 });
 
-
-Route::get('/register', [MahasiswaController::class, 'showRegisterForm'])->name('register.form');
-Route::post('/register', [MahasiswaController::class, 'register'])->name('register.submit')->middleware('throttle:3,1');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit')->middleware('throttle:5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Lupa Password
+Route::get('/lupa-password', [AuthController::class, 'showLupaPasswordForm'])->name('lupa-password');
+Route::post('/lupa-password', [AuthController::class, 'lupaPassword'])->name('lupa-password.submit')->middleware('throttle:5,1');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset-password');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('reset-password.submit');
 
 // Change Password Routes (Universal)
 Route::middleware(['auth:web,mahasiswa,dosen,pembimbing_luar'])->group(function() {
@@ -52,6 +62,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/tahun-akademik', [TahunAkademikController::class, 'index'])->name('tahun_akademik.index');
     Route::post('/tahun-akademik', [TahunAkademikController::class, 'store'])->name('tahun_akademik.store');
     Route::post('/tahun-akademik/{id}/active', [TahunAkademikController::class, 'setActive'])->name('tahun_akademik.active');
+    Route::post('/tahun-akademik/{id}/periode', [TahunAkademikController::class, 'setPeriode'])->name('tahun_akademik.periode');
     Route::delete('/tahun-akademik/{id}', [TahunAkademikController::class, 'destroy'])->name('tahun_akademik.delete');
 
     Route::get('/admindashboard', [AdminController::class, 'dashboard'])->name('admindashboard');
@@ -65,6 +76,7 @@ Route::middleware(['auth:web'])->group(function () {
     // Kelola Admin (Superadmin Only)
     Route::get('/admin/kelola', [AdminController::class, 'adminIndex'])->name('admin.kelola')->middleware('superadmin');
     Route::post('/admin/kelola', [AdminController::class, 'adminStore'])->name('admin.kelola.store')->middleware('superadmin');
+    Route::put('/admin/kelola/{id}', [AdminController::class, 'adminUpdate'])->name('admin.kelola.update')->middleware('superadmin');
     Route::delete('/admin/kelola/{id}', [AdminController::class, 'adminDestroy'])->name('admin.kelola.delete')->middleware('superadmin');
 
     // Mahasiswa Management
@@ -72,6 +84,21 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/admin/mahasiswa/store', [AdminController::class, 'storeMahasiswa'])->name('admin.mahasiswa.store');
     Route::post('/admin/mahasiswa/assign-kegiatan', [AdminController::class, 'assignKegiatan'])->name('admin.mahasiswa.assign-kegiatan');
     Route::delete('/admin/mahasiswa/{id}', [AdminController::class, 'mahasiswaDestroy'])->name('admin.mahasiswa.delete');
+
+    // Verifikasi Akun Mahasiswa
+    Route::get('/admin/mahasiswa/pending', [AdminController::class, 'mahasiswaPending'])->name('admin.mahasiswa.pending');
+    Route::post('/admin/mahasiswa/{id}/approve', [AdminController::class, 'approveMahasiswa'])->name('admin.mahasiswa.approve');
+    Route::post('/admin/mahasiswa/{id}/reject', [AdminController::class, 'rejectMahasiswa'])->name('admin.mahasiswa.reject');
+
+    // Status Kegiatan Mahasiswa
+    Route::post('/admin/kegiatan/{id}/status', [AdminController::class, 'updateStatusKegiatan'])->name('admin.kegiatan.status');
+
+    // Pengumuman
+    Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman.index');
+    Route::post('/pengumuman', [PengumumanController::class, 'store'])->name('pengumuman.store');
+    Route::post('/pengumuman/{id}/publish', [PengumumanController::class, 'publish'])->name('pengumuman.publish');
+    Route::post('/pengumuman/{id}/unpublish', [PengumumanController::class, 'unpublish'])->name('pengumuman.unpublish');
+    Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
 
     // Import Routes
     Route::post('/admin/import-mahasiswa', [AdminController::class, 'importMahasiswa'])->name('admin.import.mahasiswa');
@@ -118,6 +145,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/lokasikkn', [LokasiKknController::class, 'indexlokasikkn'])->name('lokasikkn.index');
     Route::get('/lokasikkn/create', [LokasiKknController::class, 'createlokasikkn'])->name('lokasikkn.create');
     Route::post('/lokasikkn/store', [LokasiKknController::class, 'storelokasikkn'])->name('lokasikkn.store');
+    Route::put('/lokasikkn/{id}/kapasitas', [LokasiKknController::class, 'updateKapasitas'])->name('lokasikkn.kapasitas')->middleware('superadmin');
     Route::delete('/lokasikkn/{id}', [LokasiKknController::class, 'destroylokasikkn'])->name('lokasikkn.delete');
 
 
@@ -130,12 +158,14 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/lokasippl', [LokasiPplController::class, 'indexlokasippl'])->name('lokasippl.index');
     Route::get('/lokasippl/create', [LokasiPplController::class, 'createlokasippl'])->name('lokasippl.create');
     Route::post('/lokasippl/store', [LokasiPplController::class, 'storelokasippl'])->name('lokasippl.store');
+    Route::put('/lokasippl/{id}/kapasitas', [LokasiPplController::class, 'updateKapasitas'])->name('lokasippl.kapasitas')->middleware('superadmin');
     Route::delete('/lokasippl/{id}', [LokasiPplController::class, 'destroylokasippl'])->name('lokasippl.delete');
 
     //PKL (Master Data)
     Route::get('/lokasipkl', [LokasiPklController::class, 'index'])->name('lokasipkl.index');
     Route::get('/lokasipkl/create', [LokasiPklController::class, 'create'])->name('lokasipkl.create');
     Route::post('/lokasipkl/store', [LokasiPklController::class, 'store'])->name('lokasipkl.store');
+    Route::put('/lokasipkl/{id}/kapasitas', [LokasiPklController::class, 'updateKapasitas'])->name('lokasipkl.kapasitas')->middleware('superadmin');
     Route::delete('/lokasipkl/{id}', [LokasiPklController::class, 'destroy'])->name('lokasipkl.delete');
 
     Route::get('/assign-lokasipkl', [LokasiPklController::class, 'assignIndex'])->name('assign.lokasipkl');
@@ -146,6 +176,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/lokasimagang', [LokasiMagangController::class, 'index'])->name('lokasimagang.index');
     Route::get('/lokasimagang/create', [LokasiMagangController::class, 'create'])->name('lokasimagang.create');
     Route::post('/lokasimagang/store', [LokasiMagangController::class, 'store'])->name('lokasimagang.store');
+    Route::put('/lokasimagang/{id}/kapasitas', [LokasiMagangController::class, 'updateKapasitas'])->name('lokasimagang.kapasitas')->middleware('superadmin');
     Route::delete('/lokasimagang/{id}', [LokasiMagangController::class, 'destroy'])->name('lokasimagang.delete');
 
     Route::get('/assign-lokasimagang', [AdminController::class, 'assignMagangIndex'])->name('assign.lokasimagang');
@@ -187,6 +218,7 @@ Route::middleware(['auth:web'])->group(function () {
 Route::middleware(['auth:mahasiswa'])->group(function () {
 
     Route::get('/dashboard', [MahasiswaController::class, 'showDashboard'])->name('dashboard');
+    Route::get('/daftar-kegiatan', [MahasiswaController::class, 'showDaftarKegiatan'])->name('mahasiswa.daftar-kegiatan.page');
     Route::post('/daftar-kegiatan', [MahasiswaController::class, 'daftarKegiatan'])->name('mahasiswa.daftar-kegiatan');
     Route::post('/switch-kegiatan', [MahasiswaController::class, 'switchKegiatan'])->name('mahasiswa.switch-kegiatan');
     Route::post('/save-laporan', [MahasiswaController::class, 'saveLaporan'])->name('mahasiswa.save_laporan');
@@ -209,6 +241,17 @@ Route::middleware(['auth:mahasiswa'])->group(function () {
     Route::get('/pengajuan-magang', [PengajuanLokasiMagangController::class, 'index'])->name('pengajuanmagang.index');
     Route::get('/pengajuan-magang/create', [PengajuanLokasiMagangController::class, 'create'])->name('pengajuanmagang.create');
     Route::post('/pengajuan-magang', [PengajuanLokasiMagangController::class, 'store'])->name('pengajuanmagang.store');
+
+    // Batalkan kegiatan
+    Route::post('/batalkan-kegiatan/{id}', [MahasiswaController::class, 'batalkanKegiatan'])->name('mahasiswa.batalkan-kegiatan');
+
+    // Edit Profil Mahasiswa
+    Route::get('/profil/edit', [MahasiswaController::class, 'editProfil'])->name('mahasiswa.profil.edit');
+    Route::post('/profil/update', [MahasiswaController::class, 'updateProfil'])->name('mahasiswa.profil.update');
+
+    // Notifikasi
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('mahasiswa.notifikasi');
+    Route::post('/notifikasi/{id}/read', [NotifikasiController::class, 'markRead'])->name('mahasiswa.notifikasi.read');
 });
 
 // Routes untuk Dosen Pembimbing

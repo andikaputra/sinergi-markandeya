@@ -54,6 +54,13 @@ class LokasiKknController extends Controller
         return redirect()->route('lokasikkn.index')->with('success', 'Tempat KKN berhasil diperbarui!');
     }
 
+    public function updateKapasitas(Request $request, $id)
+    {
+        $request->validate(['maks_peserta' => 'nullable|integer|min:1|max:9999']);
+        LokasiKkn::findOrFail($id)->update(['maks_peserta' => $request->maks_peserta ?: null]);
+        return redirect()->route('lokasikkn.index')->with('success', 'Kapasitas KKN berhasil diperbarui!');
+    }
+
     public function destroylokasikkn($id)
     {
         LokasiKkn::findOrFail($id)->delete();

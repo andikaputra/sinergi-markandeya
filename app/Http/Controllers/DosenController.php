@@ -10,12 +10,21 @@ use App\Models\DosenPembimbing;
 use App\Models\DosenPenguji;
 use App\Models\TahunAkademik;
 use Illuminate\Support\Facades\Auth;
+use App\Services\AisService;
 
 class DosenController extends Controller
 {
-    public function beranda()
+    public function __construct(private AisService $ais) {}
+
+    public function beranda(Request $request)
     {
         $dosen = Auth::guard('dosen')->user();
+
+        // Sync profile from AIS once per login session
+        if ($dosen->ais_token && !$request->session()->get('ais_profil_synced_dosen')) {
+            $dosen = $this->ais->syncDosenFromProfil($dosen);
+            $request->session()->put('ais_profil_synced_dosen', true);
+        }
         $activeTA = TahunAkademik::active();
         $taString = $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null;
 

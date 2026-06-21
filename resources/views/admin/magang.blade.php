@@ -47,6 +47,8 @@
                         @include('admin._header_dosen')
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Publikasi</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Nilai Akhir</th>
+                        <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Status</th>
+                        <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Dokumen</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">Aksi</th>
                         <th class="px-6 py-4 bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 rounded-tr-2xl">Waktu Daftar</th>
                     </tr>
@@ -96,6 +98,44 @@
                             <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-black border border-indigo-100">
                                 {{ $mahasiswa->nilai_akhir }}
                             </span>
+                        </td>
+                                                <td class="px-6 py-5 text-center">
+                            @php $mk = $mahasiswa->activeKegiatan; @endphp
+                            @if($mk)
+                            <form action="{{ route('admin.kegiatan.status', $mk->id) }}" method="POST" class="inline">
+                                @csrf
+                                <select name="status_kegiatan" onchange="this.form.submit()"
+                                    class="text-xs font-bold rounded-xl border px-2 py-1.5 focus:outline-none cursor-pointer
+                                    {{ $mk->status_kegiatan === 'selesai' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($mk->status_kegiatan === 'dibatalkan' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200') }}">
+                                    <option value="aktif"      {{ $mk->status_kegiatan === 'aktif'      ? 'selected' : '' }}>Berlangsung</option>
+                                    <option value="selesai"    {{ $mk->status_kegiatan === 'selesai'    ? 'selected' : '' }}>Selesai</option>
+                                    <option value="dibatalkan" {{ $mk->status_kegiatan === 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                                </select>
+                            </form>
+                            @else
+                            <span class="text-xs text-gray-300">-</span>
+                            @endif
+                        </td>
+                                                <td class="px-6 py-5 text-center">
+                            @if($mk && ($mk->link_dokumen_1 || $mk->link_dokumen_2 || $mk->link_dokumen_3))
+                            <div class="relative inline-block" x-data="{ open: false }">
+                                <button @click="open = !open" class="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors">
+                                    <i class="fas fa-file-alt mr-1"></i>Dok
+                                </button>
+                                <div x-show="open" @click.away="open = false" x-cloak
+                                    class="absolute right-0 mt-1 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 p-3 space-y-2">
+                                    @foreach([['Transkip', $mk->link_dokumen_1],['Surat', $mk->link_dokumen_2],['CV/Ket.', $mk->link_dokumen_3]] as [$lbl, $lnk])
+                                    @if($lnk)
+                                    <a href="{{ $lnk }}" target="_blank" class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-xl text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                                        <span>{{ $lbl }}</span><i class="fas fa-external-link-alt text-[9px]"></i>
+                                    </a>
+                                    @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                            @else
+                            <span class="text-xs text-gray-300">—</span>
+                            @endif
                         </td>
                         <td class="px-6 py-5 text-center">
                             <form action="{{ route('admin.mahasiswa.delete', $mahasiswa->id) }}" method="POST" onsubmit="return confirm('Yakin hapus peserta {{ $mahasiswa->nama }}? Seluruh data jurnal, publikasi, dan penempatan juga akan dihapus.')">

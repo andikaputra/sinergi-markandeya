@@ -15,6 +15,7 @@ use App\Models\DosenPembimbing;
 use App\Models\DosenPenguji;
 use App\Models\TahunAkademik;
 use App\Models\Publikasi;
+use App\Models\Notifikasi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -23,12 +24,39 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $jumlahKKN = Mahasiswa::withKegiatan('KKN')->count();
-        $jumlahPPL = Mahasiswa::withKegiatan('PPL')->count();
-        $jumlahPKL = Mahasiswa::withKegiatan('PKL')->count();
+        $jumlahKKN    = Mahasiswa::withKegiatan('KKN')->count();
+        $jumlahPPL    = Mahasiswa::withKegiatan('PPL')->count();
+        $jumlahPKL    = Mahasiswa::withKegiatan('PKL')->count();
         $jumlahMagang = Mahasiswa::withKegiatan('Magang')->count();
 
-        return view('admin.admindashboard', compact('jumlahKKN', 'jumlahPPL', 'jumlahPKL', 'jumlahMagang'));
+        // Akun nonaktif
+        $jumlahPending = Mahasiswa::where('status', 'nonaktif')->count();
+
+        // Belum dapat penempatan (sudah daftar tapi belum ada di tabel penempatan)
+        $belumPenempatanKKN    = Mahasiswa::withKegiatan('KKN')->whereDoesntHave('penempatankkn')->count();
+        $belumPenempatanPPL    = Mahasiswa::withKegiatan('PPL')->whereDoesntHave('penempatanppl')->count();
+        $belumPenempatanPKL    = Mahasiswa::withKegiatan('PKL')->whereDoesntHave('penempatanpkl')->count();
+        $belumPenempatanMagang = Mahasiswa::withKegiatan('Magang')->whereDoesntHave('penempatanmagang')->count();
+
+        // Mahasiswa pending terbaru (5)
+        $pendingTerbaru = Mahasiswa::where('status', 'pending')->latest()->limit(5)->get();
+
+        // Pendaftaran kegiatan terbaru (10)
+        $pendaftaranTerbaru = \App\Models\MahasiswaKegiatan::with('mahasiswa')
+            ->latest()->limit(10)->get();
+
+        // Pengumuman aktif
+        $jumlahPengumuman = \App\Models\Pengumuman::where('is_published', true)->count();
+
+        // TA aktif
+        $activeTA = TahunAkademik::active();
+
+        return view('admin.admindashboard', compact(
+            'jumlahKKN', 'jumlahPPL', 'jumlahPKL', 'jumlahMagang',
+            'jumlahPending', 'belumPenempatanKKN', 'belumPenempatanPPL',
+            'belumPenempatanPKL', 'belumPenempatanMagang',
+            'pendingTerbaru', 'pendaftaranTerbaru', 'jumlahPengumuman', 'activeTA'
+        ));
     }
 
     public function pesertaKKN(Request $request)
@@ -157,40 +185,21 @@ class AdminController extends Controller
     public function storeMahasiswa(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'nim' => 'required|string|unique:mahasiswas,nim',
-            'email' => 'required|email|unique:mahasiswas,email',
+            'nama'  => 'required|string|max:255',
+            'nim'   => 'required|string|max:20|unique:mahasiswas,nim',
             'prodi' => 'required|in:PGSD,PBSI,PBI,SI,ME,PARBUD,HUKUM',
-            'kegiatan' => 'required|in:KKN,PPL,PKL,Magang',
-            'tahun_akademik' => 'required',
-            'kecamatan' => 'required',
-            'kampus' => 'required',
         ]);
 
-        $mahasiswa = Mahasiswa::create([
-            'nama' => $request->nama,
-            'nim' => $request->nim,
-            'email' => $request->email,
-            'prodi' => $request->prodi,
-            'kegiatan' => $request->kegiatan,
-            'tahun_akademik' => $request->tahun_akademik,
-            'kecamatan' => $request->kecamatan,
-            'kampus' => $request->kampus,
+        Mahasiswa::create([
+            'nama'     => $request->nama,
+            'nim'      => $request->nim,
+            'prodi'    => $request->prodi,
             'password' => $request->nim,
-            'pembayaranKRS' => 'Lunas (By Admin)',
-            'KRS' => 'Aktif (By Admin)'
+            'status'   => 'aktif',
         ]);
 
-        // Dual-write: tulis juga ke pivot
-        MahasiswaKegiatan::create([
-            'nim' => $mahasiswa->nim,
-            'kegiatan' => $request->kegiatan,
-            'tahun_akademik' => $request->tahun_akademik,
-            'is_active' => true,
-        ]);
-
-        $route = 'admin.peserta.' . strtolower($request->kegiatan);
-        return redirect()->route($route)->with('success', 'Mahasiswa berhasil ditambahkan manual!');
+        return redirect()->route('admin.mahasiswa.pending')
+            ->with('success', 'Mahasiswa ' . $request->nama . ' berhasil ditambahkan. Password default: ' . $request->nim);
     }
 
     /**
@@ -284,16 +293,17 @@ class AdminController extends Controller
                 $mahasiswa = Mahasiswa::updateOrCreate(
                     ['nim' => $nim],
                     [
-                        'nama' => $nama,
-                        'email' => $email,
-                        'prodi' => $prodi,
-                        'kegiatan' => $kegiatan,
-                        'kecamatan' => trim($data[5] ?? '-') ?: '-',
-                        'kampus' => trim($data[6] ?? 'Markandeya') ?: 'Markandeya',
-                        'password' => $nim,
+                        'nama'           => $nama,
+                        'email'          => $email,
+                        'prodi'          => $prodi,
+                        'kegiatan'       => $kegiatan,
+                        'kecamatan'      => trim($data[5] ?? '-') ?: '-',
+                        'kampus'         => trim($data[6] ?? 'Markandeya') ?: 'Markandeya',
+                        'password'       => $nim,
                         'tahun_akademik' => $taString,
-                        'pembayaranKRS' => 'Lunas (Import)',
-                        'KRS' => 'Aktif (Import)'
+                        'pembayaranKRS'  => '-',
+                        'KRS'            => '-',
+                        'status'         => 'aktif',
                     ]
                 );
 
@@ -502,6 +512,38 @@ class AdminController extends Controller
         return redirect()->route('admin.kelola')->with('success', 'Admin baru berhasil ditambahkan!');
     }
 
+    public function adminUpdate(Request $request, $id)
+    {
+        $admin = User::findOrFail($id);
+
+        $rules = [
+            'name'     => 'required|string|max:255',
+            'role'     => 'required|in:superadmin,admin',
+            'kegiatan' => 'nullable|array',
+            'kegiatan.*' => 'in:KKN,PPL,PKL,Magang',
+        ];
+
+        if ($request->filled('password')) {
+            $rules['password'] = 'string|min:8';
+        }
+
+        $request->validate($rules);
+
+        $data = [
+            'name'     => $request->name,
+            'role'     => $request->role,
+            'kegiatan' => $request->role === 'superadmin' ? null : ($request->kegiatan ?? []),
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = $request->password;
+        }
+
+        $admin->update($data);
+
+        return redirect()->route('admin.kelola')->with('success', 'Data admin ' . $admin->name . ' berhasil diperbarui!');
+    }
+
     public function adminDestroy($id)
     {
         $admin = User::findOrFail($id);
@@ -517,6 +559,67 @@ class AdminController extends Controller
     /**
      * Admin: Delete Mahasiswa (Peserta) and all related data
      */
+    public function mahasiswaPending()
+    {
+        $mahasiswas = Mahasiswa::orderByRaw("FIELD(status,'nonaktif','aktif') ASC")
+            ->orderBy('nama')->paginate(20);
+        $jumlahNonaktif = Mahasiswa::where('status', 'nonaktif')->count();
+        return view('admin.mahasiswa.pending', compact('mahasiswas', 'jumlahNonaktif'));
+    }
+
+    public function approveMahasiswa($id)
+    {
+        $mahasiswa = Mahasiswa::findOrFail($id);
+        $mahasiswa->update(['status' => 'aktif', 'catatan_penolakan' => null]);
+
+        Notifikasi::kirim(
+            $mahasiswa->nim,
+            'Akun Diaktifkan',
+            'Akun Anda telah diaktifkan oleh admin. Silakan login.',
+            'sukses'
+        );
+
+        return redirect()->back()->with('success', 'Akun ' . $mahasiswa->nama . ' berhasil diaktifkan!');
+    }
+
+    public function rejectMahasiswa(Request $request, $id)
+    {
+        $request->validate(['catatan' => 'nullable|string|max:500']);
+        $mahasiswa = Mahasiswa::findOrFail($id);
+        $mahasiswa->update(['status' => 'nonaktif', 'catatan_penolakan' => $request->catatan]);
+
+        Notifikasi::kirim(
+            $mahasiswa->nim,
+            'Akun Dinonaktifkan',
+            'Akun Anda dinonaktifkan oleh admin.' . ($request->catatan ? ' Alasan: ' . $request->catatan : ''),
+            'peringatan'
+        );
+
+        return redirect()->back()->with('success', 'Akun ' . $mahasiswa->nama . ' dinonaktifkan.');
+    }
+
+    public function updateStatusKegiatan(Request $request, $id)
+    {
+        $request->validate(['status_kegiatan' => 'required|in:aktif,selesai,dibatalkan']);
+        $mk = MahasiswaKegiatan::findOrFail($id);
+        $mk->update(['status_kegiatan' => $request->status_kegiatan]);
+
+        $label = match($request->status_kegiatan) {
+            'selesai'    => 'Selesai',
+            'dibatalkan' => 'Dibatalkan',
+            default      => 'Berlangsung',
+        };
+
+        Notifikasi::kirim(
+            $mk->nim,
+            'Status Kegiatan Diperbarui',
+            'Status kegiatan ' . $mk->kegiatan . ' (' . $mk->tahun_akademik . ') Anda diubah menjadi: ' . $label . '.',
+            $request->status_kegiatan === 'selesai' ? 'sukses' : 'peringatan'
+        );
+
+        return redirect()->back()->with('success', 'Status kegiatan berhasil diperbarui.');
+    }
+
     public function mahasiswaDestroy($id)
     {
         $mahasiswa = Mahasiswa::findOrFail($id);

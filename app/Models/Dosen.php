@@ -14,7 +14,10 @@ class Dosen extends Authenticatable
 
     protected $fillable = [
         'nidn',
+        'nip',
         'nama',
+        'foto',
+        'ais_token',
         'password',
     ];
 

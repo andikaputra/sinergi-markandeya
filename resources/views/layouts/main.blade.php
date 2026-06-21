@@ -106,8 +106,8 @@
         <!-- User Profile (Bottom) -->
         <div class="p-6 border-t border-gray-50">
             <div class="bg-slate-50 p-4 rounded-2xl border border-gray-100 flex items-center space-x-3 mb-4">
-                <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-blue-600 font-bold shadow-sm">
-                    {{ substr($displayUser->nama ?? $displayUser->name ?? 'U', 0, 1) }}
+                <div class="w-10 h-10 rounded-full overflow-hidden bg-white border border-gray-200 shadow-sm flex-shrink-0">
+                    <x-avatar :foto="$displayUser->foto ?? null" :nama="$displayUser->nama ?? $displayUser->name ?? 'U'" size="w-full h-full" />
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-bold text-gray-900 truncate">{{ $displayUser->nama ?? $displayUser->name ?? 'User' }}</p>
@@ -136,10 +136,22 @@
                 <p class="text-sm text-gray-400 font-medium">{{ now()->translatedFormat('l, d F Y') }}</p>
             </div>
             
-            <div class="flex items-center space-x-4">
-                <div class="h-10 w-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-200 transition-all cursor-pointer shadow-sm">
+            <div class="flex items-center space-x-3">
+                @if(Auth::guard('mahasiswa')->check())
+                @php $jumlahNotif = \App\Models\Notifikasi::jumlahBelumDibaca(Auth::guard('mahasiswa')->user()->nim); @endphp
+                <a href="{{ route('mahasiswa.notifikasi') }}" class="relative h-10 w-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm">
+                    <i class="far fa-bell"></i>
+                    @if($jumlahNotif > 0)
+                    <span class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                        {{ $jumlahNotif > 9 ? '9+' : $jumlahNotif }}
+                    </span>
+                    @endif
+                </a>
+                @else
+                <div class="h-10 w-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-400 shadow-sm">
                     <i class="far fa-bell"></i>
                 </div>
+                @endif
             </div>
         </header>
 

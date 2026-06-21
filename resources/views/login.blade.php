@@ -53,6 +53,7 @@
                 <div class="space-y-2">
                     <div class="flex justify-between items-center ml-1">
                         <label for="password" class="text-xs font-bold text-gray-400 uppercase tracking-widest">Kata Sandi</label>
+                        <a href="{{ route('lupa-password') }}" class="text-xs text-blue-500 hover:text-blue-700 font-bold">Lupa Password?</a>
                     </div>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
@@ -71,8 +72,7 @@
 
             <div class="mt-10 pt-8 border-t border-gray-50 text-center">
                 <p class="text-sm text-gray-500">
-                    Belum punya akun? 
-                    <a href="{{ route('register.form') }}" class="text-blue-600 font-bold hover:underline">Daftar Mahasiswa</a>
+                    Hubungi admin jika belum memiliki akun.
                 </p>
                 <div class="mt-4">
                     <a href="{{ route('loginadmin') }}" class="text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-tighter">Login sebagai Admin</a>

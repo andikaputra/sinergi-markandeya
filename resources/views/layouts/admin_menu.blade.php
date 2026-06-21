@@ -8,9 +8,25 @@
     <span class="font-medium text-sm">Tahun Akademik</span>
 </a>
 
+<a href="{{ route('pengumuman.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200">
+    <i class="fas fa-bullhorn text-lg"></i>
+    <span class="font-medium text-sm">Pengumuman</span>
+</a>
+
 <div class="pt-4 pb-2">
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Manajemen Peserta</p>
 </div>
+
+@php $jumlahNonaktif = \App\Models\Mahasiswa::where('status','nonaktif')->count(); @endphp
+<a href="{{ route('admin.mahasiswa.pending') }}" class="flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-slate-50 hover:text-gray-800 transition-all duration-200">
+    <div class="flex items-center space-x-3">
+        <i class="fas fa-user-cog text-lg"></i>
+        <span class="font-medium text-sm">Kelola Akun</span>
+    </div>
+    @if($jumlahNonaktif > 0)
+    <span class="px-2 py-0.5 bg-red-500 text-white text-[10px] font-black rounded-full">{{ $jumlahNonaktif }}</span>
+    @endif
+</a>
 
 @if(Auth::guard('web')->user()?->canManage('KKN'))
 <a href="{{ route('admin.peserta.kkn') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">

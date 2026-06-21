@@ -48,6 +48,13 @@ class LokasiPplController extends Controller
         return redirect()->route('lokasippl.index')->with('success', 'Tempat PPL berhasil diperbarui!');
     }
 
+    public function updateKapasitas(Request $request, $id)
+    {
+        $request->validate(['maks_peserta' => 'nullable|integer|min:1|max:9999']);
+        LokasiPpl::findOrFail($id)->update(['maks_peserta' => $request->maks_peserta ?: null]);
+        return redirect()->route('lokasippl.index')->with('success', 'Kapasitas PPL berhasil diperbarui!');
+    }
+
     public function destroyLokasiPpl($id)
     {
         LokasiPpl::findOrFail($id)->delete();

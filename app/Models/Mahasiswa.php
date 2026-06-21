@@ -23,7 +23,13 @@ class Mahasiswa extends Authenticatable
         'pembayaranKRS',
         'KRS',
         'email',
+        'foto',
+        'ais_token',
         'password',
+        'status',
+        'catatan_penolakan',
+        'reset_token',
+        'reset_token_expires_at',
     ];
 
     protected $hidden = [
@@ -33,6 +39,7 @@ class Mahasiswa extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
+        'reset_token_expires_at' => 'datetime',
     ];
 
     // ==================== KEGIATAN PIVOT ====================

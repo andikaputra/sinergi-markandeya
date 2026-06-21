@@ -13,9 +13,7 @@
                 </div>
                 <div class="px-8 pb-8 text-center relative">
                     <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto -mt-12 mb-4 shadow-lg">
-                        <div class="w-full h-full bg-blue-50 rounded-full flex items-center justify-center text-3xl font-black text-blue-600">
-                            {{ substr(Auth::user()->nama ?? 'M', 0, 1) }}
-                        </div>
+                        <x-avatar :foto="Auth::user()->foto" :nama="Auth::user()->nama ?? 'M'" />
                     </div>
 
                     <h4 class="text-xl font-black text-gray-800 tracking-tight mb-1">{{ Auth::user()->nama }}</h4>
@@ -122,68 +120,66 @@
                 </div>
 
                 @else
-                <!-- Belum Punya Kegiatan - Form Daftar Kegiatan -->
+                <!-- Belum Punya Kegiatan Aktif -->
                 <div class="flex items-center justify-between mb-8">
-                    <h4 class="text-xl font-bold text-gray-800">Pilih Kegiatan</h4>
+                    <h4 class="text-xl font-bold text-gray-800">Status Kegiatan</h4>
                     <span class="px-4 py-2 bg-amber-50 text-amber-700 rounded-xl text-xs font-black border border-amber-100 uppercase tracking-wide">
                         Belum Terdaftar
                     </span>
                 </div>
-
-                <div class="flex-1 bg-amber-50/50 rounded-[2rem] border border-amber-100 p-8">
-                    <div class="text-center mb-6">
-                        <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-clipboard-list text-2xl text-amber-600"></i>
+                <div class="flex-1 flex items-center justify-center">
+                    @if($openTahunAkademiks->count() > 0)
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-clipboard-list text-2xl text-emerald-600"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-800 mb-2">Daftar Kegiatan</h3>
-                        <p class="text-sm text-gray-500">Pilih kegiatan yang ingin Anda ikuti di tahun akademik ini{{ $taString ? ' ('.$taString.')' : '' }}.</p>
+                        <p class="text-sm font-bold text-gray-700 mb-1">Pendaftaran sedang dibuka!</p>
+                        <p class="text-xs text-gray-400 mb-4">{{ $openTahunAkademiks->count() }} periode tersedia.</p>
+                        <a href="{{ route('mahasiswa.daftar-kegiatan.page') }}"
+                            class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-blue-200 transition-all">
+                            <i class="fas fa-arrow-right"></i> Daftar Sekarang
+                        </a>
                     </div>
-
-                    <form action="{{ route('mahasiswa.daftar-kegiatan') }}" method="POST" class="space-y-4">
-                        @csrf
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="relative cursor-pointer">
-                                <input type="radio" name="kegiatan" value="KKN" class="peer sr-only" required>
-                                <div class="p-4 bg-white border-2 border-gray-200 rounded-2xl text-center peer-checked:border-blue-600 peer-checked:bg-blue-50 transition-all">
-                                    <i class="fas fa-hands-helping text-2xl text-blue-500 mb-2"></i>
-                                    <p class="text-sm font-bold text-gray-700">KKN</p>
-                                    <p class="text-[10px] text-gray-400">Kuliah Kerja Nyata</p>
-                                </div>
-                            </label>
-                            <label class="relative cursor-pointer">
-                                <input type="radio" name="kegiatan" value="PPL" class="peer sr-only">
-                                <div class="p-4 bg-white border-2 border-gray-200 rounded-2xl text-center peer-checked:border-emerald-600 peer-checked:bg-emerald-50 transition-all">
-                                    <i class="fas fa-chalkboard-teacher text-2xl text-emerald-500 mb-2"></i>
-                                    <p class="text-sm font-bold text-gray-700">PPL</p>
-                                    <p class="text-[10px] text-gray-400">Praktik Pengalaman Lapangan</p>
-                                </div>
-                            </label>
-                            <label class="relative cursor-pointer">
-                                <input type="radio" name="kegiatan" value="PKL" class="peer sr-only">
-                                <div class="p-4 bg-white border-2 border-gray-200 rounded-2xl text-center peer-checked:border-amber-600 peer-checked:bg-amber-50 transition-all">
-                                    <i class="fas fa-building text-2xl text-amber-500 mb-2"></i>
-                                    <p class="text-sm font-bold text-gray-700">PKL</p>
-                                    <p class="text-[10px] text-gray-400">Praktik Kerja Lapangan</p>
-                                </div>
-                            </label>
-                            <label class="relative cursor-pointer">
-                                <input type="radio" name="kegiatan" value="Magang" class="peer sr-only">
-                                <div class="p-4 bg-white border-2 border-gray-200 rounded-2xl text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all">
-                                    <i class="fas fa-briefcase text-2xl text-indigo-500 mb-2"></i>
-                                    <p class="text-sm font-bold text-gray-700">Magang</p>
-                                    <p class="text-[10px] text-gray-400">Internship</p>
-                                </div>
-                            </label>
+                    @else
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-clock text-2xl text-gray-400"></i>
                         </div>
-                        <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 transition-all">
-                            <i class="fas fa-check-circle mr-2"></i> Daftar Kegiatan
-                        </button>
-                    </form>
+                        <p class="text-sm font-bold text-gray-600">Belum ada pendaftaran dibuka</p>
+                        <p class="text-xs text-gray-400 mt-1">Pantau pengumuman dari admin.</p>
+                    </div>
+                    @endif
                 </div>
                 @endif
             </div>
         </div>
     </div>
+
+    <!-- Notifikasi error/success -->
+    @if(session('error'))
+    <div class="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-sm font-bold flex items-center">
+        <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
+    </div>
+    @endif
+    @if(session('success'))
+    <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-emerald-700 text-sm font-bold flex items-center">
+        <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+    </div>
+    @endif
+
+    {{-- Banner jika ada pendaftaran terbuka --}}
+    @if($openTahunAkademiks->count() > 0)
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-6 flex items-center justify-between gap-4 shadow-lg shadow-blue-200">
+        <div class="text-white">
+            <p class="font-black text-lg">Pendaftaran Kegiatan Dibuka!</p>
+            <p class="text-blue-100 text-sm mt-0.5">{{ $openTahunAkademiks->count() }} periode tersedia. Segera daftarkan diri Anda.</p>
+        </div>
+        <a href="{{ route('mahasiswa.daftar-kegiatan.page') }}"
+            class="shrink-0 px-6 py-3 bg-white text-blue-600 font-black rounded-2xl shadow-md hover:shadow-xl transition-all text-sm whitespace-nowrap hover:-translate-y-0.5">
+            Daftar Sekarang →
+        </a>
+    </div>
+    @endif
 
     <!-- Riwayat Kegiatan (jika punya lebih dari 1) -->
     @if($riwayatKegiatan->count() > 1)
@@ -210,6 +206,30 @@
                     @endif
                 </div>
                 <p class="text-xs text-gray-500">{{ $rk->tahun_akademik ?? '-' }}</p>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    <!-- Pengumuman -->
+    @if($pengumumanList->count() > 0)
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+        <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+            <i class="fas fa-bullhorn text-purple-500 mr-3"></i>
+            Pengumuman
+        </h4>
+        <div class="space-y-4">
+            @foreach($pengumumanList as $p)
+            <div class="p-5 bg-purple-50/50 rounded-2xl border border-purple-100">
+                <div class="flex items-start justify-between gap-3 mb-2">
+                    <h5 class="font-bold text-gray-800 text-sm">{{ $p->judul }}</h5>
+                    @if($p->target !== 'semua')
+                    <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-bold uppercase shrink-0">{{ $p->target }}</span>
+                    @endif
+                </div>
+                <p class="text-sm text-gray-600 leading-relaxed">{{ $p->isi }}</p>
+                <p class="text-[10px] text-gray-400 mt-2">{{ $p->published_at->format('d/m/Y H:i') }}</p>
             </div>
             @endforeach
         </div>

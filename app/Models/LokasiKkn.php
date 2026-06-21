@@ -10,7 +10,20 @@ class LokasiKkn extends Model
 
     use HasFactory;
     protected $table = 'lokasi_kkn';
-    protected $fillable = ['desa', 'alamat', 'kecamatan', 'kabupaten', 'provinsi'];
+    protected $fillable = ['desa', 'alamat', 'kecamatan', 'kabupaten', 'provinsi', 'maks_peserta'];
+
+    public function jumlahPendaftar(): int
+    {
+        return \App\Models\MahasiswaKegiatan::where('kegiatan', 'KKN')
+            ->where('preferensi_lokasi_id', $this->id)
+            ->where('status_kegiatan', 'aktif')
+            ->count();
+    }
+
+    public function isFull(): bool
+    {
+        return $this->maks_peserta !== null && $this->jumlahPendaftar() >= $this->maks_peserta;
+    }
 
 
     public function penempatankkn()

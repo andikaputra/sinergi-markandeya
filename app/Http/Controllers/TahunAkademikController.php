@@ -41,6 +41,22 @@ class TahunAkademikController extends Controller
         return redirect()->back()->with('success', 'Tahun Akademik aktif berhasil diubah!');
     }
 
+    public function setPeriode(Request $request, $id)
+    {
+        $request->validate([
+            'tanggal_mulai_daftar' => 'required|date',
+            'tanggal_selesai_daftar' => 'required|date|after_or_equal:tanggal_mulai_daftar',
+        ]);
+
+        $tahun = TahunAkademik::findOrFail($id);
+        $tahun->update([
+            'tanggal_mulai_daftar' => $request->tanggal_mulai_daftar,
+            'tanggal_selesai_daftar' => $request->tanggal_selesai_daftar,
+        ]);
+
+        return redirect()->back()->with('success', 'Periode pendaftaran berhasil diatur!');
+    }
+
     public function destroy($id)
     {
         $tahun = TahunAkademik::findOrFail($id);
