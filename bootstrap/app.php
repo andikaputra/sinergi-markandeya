@@ -21,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->web(append: [
+            \App\Http\Middleware\TrackLastLogin::class,
+        ]);
+
         $middleware->alias([
             'kegiatan'     => \App\Http\Middleware\CheckKegiatan::class,
             'superadmin'   => \App\Http\Middleware\SuperAdmin::class,

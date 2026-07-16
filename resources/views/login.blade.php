@@ -1,88 +1,266 @@
-@extends('layouts.main')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sinergi Markandeya</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-@section('title', 'Masuk ke Sistem')
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a5d4d 0%, #0f2d26 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-{{-- Menghilangkan Sidebar untuk halaman login --}}
-<style>
-    #sidebar, header, footer { display: none !important; }
-    main { margin-left: 0 !important; }
-</style>
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+        }
 
-@section('content')
-<div class="min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="max-w-md w-full">
-        <div class="text-center mb-10">
-            <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya" class="h-20 w-auto mx-auto mb-4">
-            <h2 class="text-3xl font-black text-gray-800 tracking-tight">Sinergi Universitas Markandeya</h2>
-            <p class="text-gray-500 mt-2 font-medium">Silakan masuk untuk melanjutkan</p>
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background-color: #d4a574;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+        }
+
+        .login-header h1 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: #d4a574;
+            font-size: 14px;
+        }
+
+        .login-card {
+            background-color: rgba(245, 230, 211, 0.95);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #1a5d4d;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: #ffffff;
+            border: 2px solid #d4a574;
+            border-radius: 10px;
+            color: #1a5d4d;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #c9905c;
+            box-shadow: 0 0 0 4px rgba(212, 165, 116, 0.1);
+            background-color: #ffffff;
+        }
+
+        .form-group input::placeholder {
+            color: #998877;
+        }
+
+        .password-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .forgot-link {
+            color: #1a5d4d;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .forgot-link:hover {
+            color: #d4a574;
+        }
+
+        .alert {
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #d4f1d4;
+            color: #1a5d4d;
+            border: 1px solid #b3d9b3;
+        }
+
+        .alert-error {
+            background-color: #ffd4d4;
+            color: #8b0000;
+            border: 1px solid #ffb3b3;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #1a5d4d;
+            color: #f5e6d3;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0f2d26;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(26, 93, 77, 0.3);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(26, 93, 77, 0.2);
+            color: #1a5d4d;
+            font-size: 13px;
+        }
+
+        .footer-link {
+            color: #d4a574;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            display: block;
+            margin-top: 12px;
+        }
+
+        .footer-link:hover {
+            color: #c9905c;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(245, 230, 211, 0.7);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Header -->
+        <div class="login-header">
+            <div class="logo">📚</div>
+            <h1>Sinergi Markandeya</h1>
+            <p>Sistem Manajemen KKN, PPL, PKL</p>
         </div>
 
         <!-- Login Card -->
-        <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden p-8 sm:p-12 transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50">
+        <div class="login-card">
             @if (session('success'))
-                <div class="mb-8 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-emerald-700 text-sm font-medium flex items-center">
-                    <i class="fas fa-check-circle mr-2"></i>
-                    <span>{{ session('success') }}</span>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    {{ session('success') }}
                 </div>
             @endif
 
             @if ($errors->any())
-                <div class="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium animate-shake">
-                    <div class="flex items-center">
-                        <i class="fas fa-exclamation-circle mr-2"></i>
-                        <span>{{ $errors->first() }}</span>
-                    </div>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {{ $errors->first() }}
                 </div>
             @endif
 
-            <form action="{{ route('login.submit') }}" method="POST" class="space-y-6">
+            <form action="{{ route('login.submit') }}" method="POST">
                 @csrf
-                
-                <div class="space-y-2">
-                    <label for="email" class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">NIM / Email / NIDN</label>
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
-                            <i class="fas fa-user text-sm"></i>
-                        </div>
-                        <input type="text" name="email" id="email" required
-                            class="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all"
-                            placeholder="Masukkan NIM, Email atau NIDN">
-                    </div>
+
+                <div class="form-group">
+                    <label for="email">NIM / Email / NIDN</label>
+                    <input
+                        type="text"
+                        name="email"
+                        id="email"
+                        required
+                        placeholder="Masukkan NIM, Email, atau NIDN"
+                        value="{{ old('email') }}"
+                    >
                 </div>
 
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center ml-1">
-                        <label for="password" class="text-xs font-bold text-gray-400 uppercase tracking-widest">Kata Sandi</label>
-                        <a href="{{ route('lupa-password') }}" class="text-xs text-blue-500 hover:text-blue-700 font-bold">Lupa Password?</a>
+                <div class="form-group">
+                    <div class="password-group">
+                        <label for="password">Kata Sandi</label>
+                        <a href="{{ route('lupa-password') }}" class="forgot-link">Lupa Password?</a>
                     </div>
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
-                            <i class="fas fa-lock text-sm"></i>
-                        </div>
-                        <input type="password" name="password" id="password" required
-                            class="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all"
-                            placeholder="••••••••">
-                    </div>
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        required
+                        placeholder="••••••••"
+                    >
                 </div>
 
-                <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 transition-all duration-300 transform hover:-translate-y-1 active:scale-[0.98]">
-                    Masuk Sekarang
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-sign-in-alt"></i> Masuk Sekarang
                 </button>
             </form>
 
-            <div class="mt-10 pt-8 border-t border-gray-50 text-center">
-                <p class="text-sm text-gray-500">
-                    Hubungi admin jika belum memiliki akun.
-                </p>
-                <div class="mt-4">
-                    <a href="{{ route('loginadmin') }}" class="text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-tighter">Login sebagai Admin</a>
-                </div>
+            <div class="login-footer">
+                <p>Belum punya akun? Hubungi admin untuk pendaftaran.</p>
+                <a href="{{ route('loginadmin') }}" class="footer-link">
+                    <i class="fas fa-lock"></i> Login sebagai Admin
+                </a>
             </div>
         </div>
-        
-        <p class="mt-8 text-center text-xs text-gray-400 font-medium tracking-wide">
-            &copy; {{ date('Y') }} Universitas Markandeya. All rights reserved.
-        </p>
+
+        <!-- Copyright -->
+        <div class="copyright">
+            &copy; {{ date('Y') }} Universitas Markandeya | Sinergi Sistem
+        </div>
     </div>
-</div>
-@endsection
+</body>
+</html>
+

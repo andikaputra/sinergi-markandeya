@@ -17,23 +17,57 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        body { font-family: 'Instrument Sans', sans-serif; }
+        :root {
+            --primary: #1a5d4d;
+            --gold: #d4a574;
+            --cream: #f5e6d3;
+            --dark-primary: #0f2d26;
+        }
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background-color: #f5f3f0;
+        }
         .glass-header {
             position: sticky;
             top: 0;
             z-index: 50;
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: var(--primary);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid #f3f4f6;
+            border-bottom: 2px solid var(--gold);
             transition: all 0.3s;
         }
+        .glass-header a, .glass-header span {
+            color: var(--cream);
+        }
+        .glass-header button {
+            background-color: var(--gold);
+            color: var(--primary);
+        }
         .hero-gradient {
-            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent),
-                        radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.05), transparent);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark-primary) 100%);
+            color: white;
+        }
+        .hero-gradient h1, .hero-gradient h2 {
+            color: var(--cream);
+        }
+        .btn-primary {
+            background-color: var(--gold);
+            color: var(--primary);
+        }
+        .btn-primary:hover {
+            background-color: #c9905c;
+        }
+        .section-title {
+            color: var(--primary);
+            border-bottom: 3px solid var(--gold);
+        }
+        .card-accent {
+            border-top: 4px solid var(--gold);
+            background-color: white;
         }
     </style>
 </head>
-<body class="text-gray-900 bg-white selection:bg-blue-100 selection:text-blue-700">
+<body class="text-gray-900 selection:bg-gold selection:text-primary">
 
     <!-- Navigation -->
     <header class="glass-header" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)">

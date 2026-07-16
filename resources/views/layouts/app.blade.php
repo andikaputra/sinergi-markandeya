@@ -3,60 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Sistem Sinergi')</title>
+    <title>@yield('title', 'Sinergi Markandeya')</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-    </style>
+    <!-- Styles / Scripts -->
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @else
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif; background-color: #f5e6d3; color: #1a5d4d; }
+        </style>
+    @endif
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="#">Sinergi Universitas Markandeya</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('register.form') }}">Pendaftaran</a>
-                    </li>
-                    @if (Route::has('login'))
+    <!-- Navbar with Markandeya Theme -->
+    <nav class="sticky top-0 z-50 bg-primary text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="{{ url('/') }}" class="flex items-center gap-2 font-bold text-xl hover:opacity-80 transition">
+                <div class="w-10 h-10 bg-gold rounded-full flex items-center justify-center">
+                    📚
+                </div>
+                <span class="hidden sm:inline">Sinergi Markandeya</span>
+            </a>
+
+            <div class="flex items-center gap-4">
+                <a href="{{ url('/') }}" class="hover:text-gold transition">Beranda</a>
+                <a href="{{ route('register.form') }}" class="hover:text-gold transition">Pendaftaran</a>
+
+                @if (Route::has('login'))
                     @auth
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/dashboard') }}">Dashboard</a>
-                    </li>
+                        <a href="{{ url('/dashboard') }}" class="px-4 py-2 bg-gold text-primary font-semibold rounded-lg hover:bg-gold-600 transition">
+                            Dashboard
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="hover:text-gold transition">Logout</button>
+                        </form>
                     @else
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">Login</a>
-                    </li>
-                    @endif
+                        <a href="{{ route('login') }}" class="px-4 py-2 border-2 border-gold text-gold hover:bg-gold hover:text-primary transition rounded-lg font-semibold">
+                            Login
+                        </a>
                     @endauth
-                    
-                </ul>
+                @endif
             </div>
         </div>
     </nav>
 
-    <!-- Konten Halaman -->
-    <div class="container mt-4">
+    <!-- Main Content -->
+    <main class="min-h-screen">
         @yield('content')
-    </div>
+    </main>
 
     <!-- Footer -->
-    <footer class="text-center mt-4 py-3 bg-light">
-        <p>&copy; 2025 Sistem Sinergi KKN, PPL, PKL - Universitas Markandeya</p>
+    <footer class="bg-primary text-cream py-8">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-sm opacity-90">&copy; 2025 Sinergi KKN, PPL, PKL - Universitas Markandeya</p>
+            <p class="text-xs opacity-75 mt-2">Pusat Literasi dan Pengetahuan untuk Civitas Akademika</p>
+        </div>
     </footer>
 
 </body>

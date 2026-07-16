@@ -25,12 +25,7 @@ use App\Http\Controllers\NotifikasiController;
 
 
 Route::get('/', function () {
-    $pengumuman = \App\Models\TahunAkademik::whereNotNull('tanggal_mulai_daftar')
-        ->whereNotNull('tanggal_selesai_daftar')
-        ->where('tanggal_selesai_daftar', '>=', now()->toDateString())
-        ->orderBy('tanggal_mulai_daftar', 'asc')
-        ->get();
-    return view('home', compact('pengumuman'));
+    return view('home');
 });
 
 
@@ -99,6 +94,22 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/pengumuman/{id}/publish', [PengumumanController::class, 'publish'])->name('pengumuman.publish');
     Route::post('/pengumuman/{id}/unpublish', [PengumumanController::class, 'unpublish'])->name('pengumuman.unpublish');
     Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
+
+    // Monitoring Bimbingan
+    Route::get('/admin/bimbingan', [\App\Http\Controllers\Admin\BimbinganMonitoringController::class, 'dashboard'])->name('admin.bimbingan.dashboard');
+    Route::get('/admin/bimbingan/belum-bimbingan', [\App\Http\Controllers\Admin\BimbinganMonitoringController::class, 'mahasiswaBelumBimbingan'])->name('admin.bimbingan.belum-bimbingan');
+    Route::get('/admin/bimbingan/belum-direview', [\App\Http\Controllers\Admin\BimbinganMonitoringController::class, 'permohonanBelumDireview'])->name('admin.bimbingan.belum-direview');
+    Route::get('/admin/bimbingan/perlu-revisi', [\App\Http\Controllers\Admin\BimbinganMonitoringController::class, 'permohonanPerluRevisi'])->name('admin.bimbingan.perlu-revisi');
+    Route::get('/admin/bimbingan/dosen-performa', [\App\Http\Controllers\Admin\BimbinganMonitoringController::class, 'dosenPembimbingPerforma'])->name('admin.bimbingan.dosen-performa');
+    Route::get('/admin/bimbingan/laporan', [\App\Http\Controllers\Admin\BimbinganMonitoringController::class, 'laporan'])->name('admin.bimbingan.laporan');
+
+    // Monitoring Login Activity
+    Route::get('/admin/login-activity', [\App\Http\Controllers\Admin\LoginActivityController::class, 'dashboard'])->name('admin.login-activity.dashboard');
+    Route::get('/admin/login-activity/mahasiswa-belum-login', [\App\Http\Controllers\Admin\LoginActivityController::class, 'mahasiswaBelumLogin'])->name('admin.login-activity.mahasiswa-belum-login');
+    Route::get('/admin/login-activity/mahasiswa-tidak-aktif', [\App\Http\Controllers\Admin\LoginActivityController::class, 'mahasiswaTidakAktif'])->name('admin.login-activity.mahasiswa-tidak-aktif');
+    Route::get('/admin/login-activity/dosen-belum-login', [\App\Http\Controllers\Admin\LoginActivityController::class, 'dosenBelumLogin'])->name('admin.login-activity.dosen-belum-login');
+    Route::get('/admin/login-activity/dosen-tidak-aktif', [\App\Http\Controllers\Admin\LoginActivityController::class, 'dosenTidakAktif'])->name('admin.login-activity.dosen-tidak-aktif');
+    Route::get('/admin/login-activity/laporan', [\App\Http\Controllers\Admin\LoginActivityController::class, 'aktivitasLogin'])->name('admin.login-activity.laporan');
 
     // Import Routes
     Route::post('/admin/import-mahasiswa', [AdminController::class, 'importMahasiswa'])->name('admin.import.mahasiswa');
@@ -232,6 +243,11 @@ Route::middleware(['auth:mahasiswa'])->group(function () {
     Route::get('/publikasi', [PublikasiController::class, 'index'])->name('publikasi.index');
     Route::get('/publikasi/create', [PublikasiController::class, 'create'])->name('publikasi.create');
     Route::post('/publikasi', [PublikasiController::class, 'store'])->name('publikasi.store');
+
+    Route::get('/bimbingan', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'dashboard'])->name('bimbingan.dashboard');
+    Route::get('/bimbingan/create', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'create'])->name('bimbingan.create');
+    Route::post('/bimbingan', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'store'])->name('bimbingan.store');
+    Route::get('/bimbingan/{bimbingan}', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'show'])->name('bimbingan.show');
     Route::delete('/publikasi/{id}', [PublikasiController::class, 'destroy'])->name('publikasi.destroy');
 
     Route::get('/pengajuan-pkl', [PengajuanLokasiPKLController::class, 'index'])->name('pengajuanpkl.index');
