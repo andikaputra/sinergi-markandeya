@@ -7,7 +7,7 @@
     <div style="max-width: 1200px; margin: 0 auto;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #1a5d4d 0%, #0f2d26 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 40px;">
-            <h1 style="font-size: 2.5rem; margin: 0 0 10px 0; font-weight: 700;">Dashboard Bimbingan</h1>
+            <h1 style="font-size: 2.5rem; margin: 0 0 10px 0; font-weight: 700; color: #ffffff;">Dashboard Bimbingan</h1>
             <p style="margin: 0; color: #d4a574; font-size: 1.1rem;">Kelola permohonan bimbingan dengan dosen pembimbing Anda</p>
         </div>
 
@@ -71,7 +71,7 @@
                 <div style="font-size: 3rem; margin-bottom: 15px;">📋</div>
                 <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 700;">Ajukan Bimbingan</h3>
                 <p style="margin: 0 0 20px 0; color: #d4a574;">Buat permohonan bimbingan baru dengan dosen pembimbing Anda</p>
-                <a href="{{ route('bimbingan.create') }}" style="background-color: #d4a574; color: #1a5d4d; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; transition: all 0.3s; display: inline-block;">
+                <a href="{{ route('bimbingan.create') }}" style="background-color: #d4a574; color: #1a5d4d; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; transition: all 0.3s; display: inline-block; box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);" onmouseover="this.style.backgroundColor='#c9905c'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(212, 165, 116, 0.3)';" onmouseout="this.style.backgroundColor='#d4a574'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(212, 165, 116, 0.2)';">
                     + Ajukan Bimbingan
                 </a>
             </div>

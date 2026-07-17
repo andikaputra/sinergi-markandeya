@@ -1,4 +1,4 @@
-<a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
+<a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-home text-lg"></i>
     <span class="font-medium text-sm">Beranda</span>
 </a>
@@ -10,13 +10,13 @@
         ->where('tanggal_selesai_daftar', '>=', now()->toDateString())
         ->count();
 @endphp
-<a href="{{ route('mahasiswa.daftar-kegiatan.page') }}" class="flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-200">
+<a href="{{ route('mahasiswa.daftar-kegiatan.page') }}" class="flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gold-50 hover:text-gold-600 transition-all duration-200">
     <div class="flex items-center space-x-3">
         <i class="fas fa-clipboard-list text-lg"></i>
         <span class="font-medium text-sm">Daftar Kegiatan</span>
     </div>
     @if($jumlahPendaftaranTerbuka > 0)
-    <span class="px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-black rounded-full animate-pulse">Buka</span>
+    <span class="px-2 py-0.5 bg-gold-500 text-white text-[10px] font-black rounded-full animate-pulse">Buka</span>
     @endif
 </a>
 
@@ -24,11 +24,11 @@
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Aktivitas</p>
 </div>
 
-<a href="{{ route('jurnal.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
+<a href="{{ route('jurnal.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-book text-lg"></i>
     <span class="font-medium text-sm">Jurnal Harian</span>
 </a>
-<a href="{{ route('publikasi.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
+<a href="{{ route('publikasi.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-paper-plane text-lg"></i>
     <span class="font-medium text-sm">Publikasi</span>
 </a>
@@ -43,7 +43,7 @@
     };
 @endphp
 @if($labelTeman)
-<a href="{{ route('mahasiswa.teman-selokasi') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
+<a href="{{ route('mahasiswa.teman-selokasi') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-users text-lg"></i>
     <span class="font-medium text-sm">{{ $labelTeman }}</span>
 </a>
@@ -54,13 +54,13 @@
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Pengajuan Lokasi</p>
 </div>
 @if(Auth::guard('mahasiswa')->user()->kegiatan == 'PKL')
-<a href="{{ route('pengajuanpkl.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
+<a href="{{ route('pengajuanpkl.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-file-signature text-lg"></i>
     <span class="font-medium text-sm">Pengajuan Lokasi PKL</span>
 </a>
 @endif
 @if(Auth::guard('mahasiswa')->user()->kegiatan == 'Magang')
-<a href="{{ route('pengajuanmagang.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+<a href="{{ route('pengajuanmagang.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-file-signature text-lg"></i>
     <span class="font-medium text-sm">Pengajuan Lokasi Magang</span>
 </a>
@@ -71,7 +71,7 @@
 <div class="pt-4 pb-2">
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Informasi</p>
 </div>
-<a href="{{ route('mahasiswa.notifikasi') }}" class="flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
+<a href="{{ route('mahasiswa.notifikasi') }}" class="flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <div class="flex items-center space-x-3">
         <i class="fas fa-bell text-lg"></i>
         <span class="font-medium text-sm">Notifikasi</span>
@@ -84,11 +84,11 @@
 <div class="pt-4 pb-2">
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Akun</p>
 </div>
-<a href="{{ route('mahasiswa.profil.edit') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
+<a href="{{ route('mahasiswa.profil.edit') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-user-edit text-lg"></i>
     <span class="font-medium text-sm">Edit Profil</span>
 </a>
-<a href="{{ route('password.change') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
+<a href="{{ route('password.change') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-user-lock text-lg"></i>
     <span class="font-medium text-sm">Ubah Password</span>
 </a>

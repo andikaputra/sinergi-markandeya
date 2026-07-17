@@ -31,15 +31,18 @@
         }
 
         .logo {
-            width: 60px;
-            height: 60px;
-            background-color: #d4a574;
-            border-radius: 50%;
+            width: 80px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            font-size: 32px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .login-header h1 {
@@ -68,8 +71,8 @@
 
         .form-group label {
             display: block;
-            color: #1a5d4d;
-            font-size: 12px;
+            color: #0f2d26;
+            font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -140,11 +143,11 @@
         .submit-btn {
             width: 100%;
             padding: 14px;
-            background-color: #1a5d4d;
-            color: #f5e6d3;
+            background-color: #d4a574;
+            color: #0f2d26;
             border: none;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -154,9 +157,9 @@
         }
 
         .submit-btn:hover {
-            background-color: #0f2d26;
+            background-color: #c9905c;
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(26, 93, 77, 0.3);
+            box-shadow: 0 10px 25px rgba(212, 165, 116, 0.3);
         }
 
         .login-footer {
@@ -193,7 +196,9 @@
     <div class="login-container">
         <!-- Header -->
         <div class="login-header">
-            <div class="logo">📚</div>
+            <div class="logo">
+                <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya">
+            </div>
             <h1>Sinergi Markandeya</h1>
             <p>Sistem Manajemen KKN, PPL, PKL</p>
         </div>

@@ -13,16 +13,16 @@
 
         <!-- Quick Links -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 40px;">
-            <a href="{{ route('admin.bimbingan.belum-bimbingan') }}" style="background: linear-gradient(135deg, #d4a574 0%, #c9905c 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="{{ route('admin.bimbingan.belum-bimbingan') }}" style="background: linear-gradient(135deg, #d4a574 0%, #c9905c 100%); color: #1a5d4d; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; transition: transform 0.3s; box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(212, 165, 116, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(212, 165, 116, 0.2)';">
                 👤 Belum Bimbingan
             </a>
-            <a href="{{ route('admin.bimbingan.belum-direview') }}" style="background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="{{ route('admin.bimbingan.belum-direview') }}" style="background: linear-gradient(135deg, #d4a574 0%, #c9905c 100%); color: #1a5d4d; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; transition: transform 0.3s; box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(212, 165, 116, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(212, 165, 116, 0.2)';">
                 ⏳ Belum Direview
             </a>
-            <a href="{{ route('admin.bimbingan.perlu-revisi') }}" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="{{ route('admin.bimbingan.perlu-revisi') }}" style="background: linear-gradient(135deg, #d4a574 0%, #c9905c 100%); color: #1a5d4d; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; transition: transform 0.3s; box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(212, 165, 116, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(212, 165, 116, 0.2)';">
                 ⚠️ Perlu Revisi
             </a>
-            <a href="{{ route('admin.bimbingan.dosen-performa') }}" style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="{{ route('admin.bimbingan.dosen-performa') }}" style="background: linear-gradient(135deg, #d4a574 0%, #c9905c 100%); color: #1a5d4d; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; transition: transform 0.3s; box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(212, 165, 116, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(212, 165, 116, 0.2)';">
                 👨‍🏫 Performa Dosen
             </a>
         </div>

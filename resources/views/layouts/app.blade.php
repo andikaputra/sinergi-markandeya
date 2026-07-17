@@ -25,9 +25,7 @@
     <nav class="sticky top-0 z-50 bg-primary text-white shadow-lg">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <a href="{{ url('/') }}" class="flex items-center gap-2 font-bold text-xl hover:opacity-80 transition">
-                <div class="w-10 h-10 bg-gold rounded-full flex items-center justify-center">
-                    📚
-                </div>
+                <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo" style="width: 40px; height: 40px; object-fit: contain;">
                 <span class="hidden sm:inline">Sinergi Markandeya</span>
             </a>
 

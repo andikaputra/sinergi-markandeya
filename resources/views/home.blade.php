@@ -48,15 +48,31 @@
             color: white;
         }
         .hero-gradient h1, .hero-gradient h2 {
-            color: var(--cream);
+            color: #ffffff;
+        }
+        .hero-gradient p {
+            color: rgba(255, 255, 255, 0.95);
         }
         .btn-primary {
-            background-color: var(--gold);
-            color: var(--primary);
+            background-color: #d4a574;
+            color: #1a5d4d;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
         }
         .btn-primary:hover {
             background-color: #c9905c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 165, 116, 0.3);
         }
+        /* Override Tailwind button colors */
+        .bg-primary-600 { background-color: #d4a574 !important; color: #1a5d4d !important; }
+        .bg-primary-600:hover { background-color: #c9905c !important; }
+        .bg-primary-700 { background-color: #c9905c !important; color: #1a5d4d !important; }
+        .bg-primary-700:hover { background-color: #b87b44 !important; }
         .section-title {
             color: var(--primary);
             border-bottom: 3px solid var(--gold);
@@ -74,21 +90,21 @@
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya" class="h-12 w-auto">
-                <span class="font-black text-2xl tracking-tighter text-gray-900">Sinergi<span class="text-blue-600">.</span></span>
+                <span class="font-black text-2xl tracking-tighter text-gray-900">Sinergi<span class="text-primary-600">.</span></span>
             </div>
             
             <nav class="hidden md:flex items-center space-x-8 text-sm font-bold text-gray-500 uppercase tracking-widest">
                 @if($pengumuman->count() > 0)
-                <a href="#pendaftaran" class="text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>Pendaftaran
+                <a href="#pendaftaran" class="text-gold-600 hover:text-gold-700 transition-colors flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 bg-gold-500 rounded-full animate-pulse"></span>Pendaftaran
                 </a>
                 @endif
-                <a href="#program" class="hover:text-blue-600 transition-colors">Program</a>
-                <a href="#faq" class="hover:text-blue-600 transition-colors">FAQ</a>
+                <a href="#program" class="hover:text-primary-600 transition-colors">Program</a>
+                <a href="#faq" class="hover:text-primary-600 transition-colors">FAQ</a>
             </nav>
 
             <div class="flex items-center space-x-4">
-                <a href="{{ route('login') }}" class="hidden sm:inline-flex px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-blue-100 transition-all hover:-translate-y-0.5 active:scale-95">
+                <a href="{{ route('login') }}" class="hidden sm:inline-flex px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-primary-100 transition-all hover:-trangray-y-0.5 active:scale-95">
                     <i class="fas fa-sign-in-alt mr-2"></i>Masuk ke Sistem
                 </a>
             </div>
@@ -100,18 +116,18 @@
         <section class="relative pt-20 pb-32 overflow-hidden">
             <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div class="relative z-10 space-y-8 text-center lg:text-left">
-                    <div class="inline-flex items-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest border border-blue-100">
-                        <span class="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
+                    <div class="inline-flex items-center space-x-2 px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-xs font-black uppercase tracking-widest border border-primary-100">
+                        <span class="flex h-2 w-2 rounded-full bg-primary-600 animate-pulse"></span>
                         <span>Sistem Terintegrasi 2026</span>
                     </div>
                     <h1 class="text-5xl lg:text-7xl font-black text-gray-900 leading-[1.1] tracking-tight">
-                        Wujudkan <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Sinergi</span> Kampus & Masyarakat.
+                        Wujudkan <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-600">Sinergi</span> Kampus & Masyarakat.
                     </h1>
                     <p class="text-xl text-gray-500 max-w-xl leading-relaxed mx-auto lg:mx-0 font-medium">
                         Platform digital terpadu Universitas Markandeya untuk manajemen program KKN, PPL, PKL, dan Magang yang lebih transparan, efisien, dan modern.
                     </p>
                     <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                        <a href="{{ route('login') }}" class="w-full sm:w-auto px-8 py-5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-[2rem] shadow-2xl shadow-blue-200 transition-all flex items-center justify-center group">
+                        <a href="{{ route('login') }}" class="w-full sm:w-auto px-8 py-5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-[2rem] shadow-2xl shadow-primary-200 transition-all flex items-center justify-center group">
                             <i class="fas fa-sign-in-alt mr-3"></i>Masuk ke Sistem
                         </a>
                         <a href="#program" class="w-full sm:w-auto px-8 py-5 bg-white border border-gray-100 text-gray-700 font-bold rounded-[2rem] shadow-sm hover:shadow-lg transition-all text-center">
@@ -122,16 +138,16 @@
 
                 <div class="relative hidden lg:block">
                     <div class="relative w-full aspect-square bg-white rounded-[3rem] shadow-2xl border border-gray-100 overflow-hidden transform rotate-3">
-                        <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 p-12">
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary-50 to-primary-50 p-12">
                             <div class="space-y-6 text-gray-300">
-                                <div class="h-6 w-32 bg-blue-200 rounded-full"></div>
+                                <div class="h-6 w-32 bg-primary-200 rounded-full"></div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="h-40 bg-white rounded-3xl border border-gray-100 p-6 flex flex-col justify-end">
-                                        <div class="w-8 h-8 rounded-lg bg-blue-100 mb-2"></div>
+                                        <div class="w-8 h-8 rounded-lg bg-primary-100 mb-2"></div>
                                         <div class="h-3 w-full bg-gray-100 rounded-full"></div>
                                     </div>
-                                    <div class="h-40 bg-white rounded-3xl border border-gray-100 p-6 flex flex-col justify-end translate-y-8">
-                                        <div class="w-8 h-8 rounded-lg bg-emerald-100 mb-2"></div>
+                                    <div class="h-40 bg-white rounded-3xl border border-gray-100 p-6 flex flex-col justify-end trangray-y-8">
+                                        <div class="w-8 h-8 rounded-lg bg-gold-100 mb-2"></div>
                                         <div class="h-3 w-full bg-gray-100 rounded-full"></div>
                                     </div>
                                 </div>
@@ -147,8 +163,8 @@
         <section id="pendaftaran" class="py-20 bg-white border-t border-gray-50">
             <div class="max-w-7xl mx-auto px-6">
                 <div class="text-center max-w-2xl mx-auto mb-12 space-y-3">
-                    <div class="inline-flex items-center space-x-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-full text-xs font-black uppercase tracking-widest border border-emerald-100">
-                        <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <div class="inline-flex items-center space-x-2 px-4 py-2 bg-gold-50 text-gold-600 rounded-full text-xs font-black uppercase tracking-widest border border-gold-100">
+                        <span class="flex h-2 w-2 rounded-full bg-gold-500 animate-pulse"></span>
                         <span>Pengumuman Pendaftaran</span>
                     </div>
                     <h3 class="text-3xl font-extrabold text-gray-900 tracking-tight">Pendaftaran Kegiatan Dibuka</h3>
@@ -161,19 +177,19 @@
                         $isOpen = $ta->isPendaftaranOpen();
                         $isComing = !$isOpen && $ta->tanggal_mulai_daftar->isFuture();
                     @endphp
-                    <div class="bg-white rounded-[2rem] border {{ $isOpen ? 'border-emerald-100 shadow-lg shadow-emerald-50' : 'border-gray-100' }} p-8 hover:shadow-xl transition-all">
+                    <div class="bg-white rounded-[2rem] border {{ $isOpen ? 'border-gold-100 shadow-lg shadow-gold-50' : 'border-gray-100' }} p-8 hover:shadow-xl transition-all">
                         <div class="flex items-start justify-between mb-6">
                             <div>
                                 <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tahun Akademik</p>
                                 <h4 class="text-xl font-black text-gray-900">{{ $ta->tahun }}</h4>
-                                <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase">{{ $ta->semester }}</span>
+                                <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-[10px] font-bold uppercase">{{ $ta->semester }}</span>
                             </div>
                             @if($isOpen)
-                            <span class="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black border border-emerald-100 uppercase tracking-widest whitespace-nowrap">
+                            <span class="px-3 py-1.5 bg-gold-50 text-gold-600 rounded-xl text-[10px] font-black border border-gold-100 uppercase tracking-widest whitespace-nowrap">
                                 <i class="fas fa-circle text-[6px] mr-1 animate-pulse"></i>Buka
                             </span>
                             @else
-                            <span class="px-3 py-1.5 bg-amber-50 text-amber-600 rounded-xl text-[10px] font-black border border-amber-100 uppercase tracking-widest whitespace-nowrap">
+                            <span class="px-3 py-1.5 bg-gold-50 text-gold-600 rounded-xl text-[10px] font-black border border-gold-100 uppercase tracking-widest whitespace-nowrap">
                                 <i class="fas fa-clock text-[10px] mr-1"></i>Segera
                             </span>
                             @endif
@@ -181,7 +197,7 @@
 
                         <div class="space-y-2 mb-6">
                             <div class="flex items-center text-sm text-gray-500">
-                                <i class="fas fa-calendar-check text-blue-400 w-5 mr-2"></i>
+                                <i class="fas fa-calendar-check text-primary-400 w-5 mr-2"></i>
                                 <span class="font-medium">Mulai: <strong class="text-gray-700">{{ $ta->tanggal_mulai_daftar->format('d/m/Y') }}</strong></span>
                             </div>
                             <div class="flex items-center text-sm text-gray-500">
@@ -192,12 +208,12 @@
 
                         <div class="flex flex-wrap gap-2 mb-6">
                             @foreach(['KKN','PPL','PKL','Magang'] as $keg)
-                            <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold uppercase">{{ $keg }}</span>
+                            <span class="px-3 py-1 bg-primary-50 text-primary-600 rounded-lg text-[10px] font-bold uppercase">{{ $keg }}</span>
                             @endforeach
                         </div>
 
                         @if($isOpen)
-                        <a href="{{ route('login') }}" class="block w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-center text-sm transition-all shadow-lg shadow-blue-100">
+                        <a href="{{ route('login') }}" class="block w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl text-center text-sm transition-all shadow-lg shadow-primary-100">
                             <i class="fas fa-sign-in-alt mr-2"></i>Login & Daftar Sekarang
                         </a>
                         @else
@@ -216,21 +232,21 @@
         <section id="program" class="py-32 bg-white relative">
             <div class="max-w-7xl mx-auto px-6">
                 <div class="text-center max-w-2xl mx-auto mb-20 space-y-4">
-                    <h2 class="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">Program Kami</h2>
+                    <h2 class="text-[10px] font-black text-primary-600 uppercase tracking-[0.3em]">Program Kami</h2>
                     <h3 class="text-4xl font-extrabold text-gray-900 tracking-tight">Eksplorasi Berbagai Kesempatan</h3>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div class="group bg-gray-50/50 p-10 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500">
-                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <div class="w-16 h-16 bg-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-primary-600 group-hover:text-white transition-all">
                             <i class="fas fa-users"></i>
                         </div>
                         <h4 class="text-2xl font-bold mb-4">KKN</h4>
                         <p class="text-gray-500 font-medium">Kuliah Kerja Nyata. Berinteraksi langsung dengan masyarakat desa dan berikan solusi nyata.</p>
                     </div>
 
-                    <div class="group bg-gray-50/50 p-10 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500 lg:translate-y-6">
-                        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                    <div class="group bg-gray-50/50 p-10 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500 lg:trangray-y-6">
+                        <div class="w-16 h-16 bg-gold-100 text-gold-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-gold-600 group-hover:text-white transition-all">
                             <i class="fas fa-school"></i>
                         </div>
                         <h4 class="text-2xl font-bold mb-4">PPL</h4>
@@ -238,15 +254,15 @@
                     </div>
 
                     <div class="group bg-gray-50/50 p-10 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500">
-                        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-amber-600 group-hover:text-white transition-all">
+                        <div class="w-16 h-16 bg-gold-100 text-gold-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-gold-600 group-hover:text-white transition-all">
                             <i class="fas fa-building"></i>
                         </div>
                         <h4 class="text-2xl font-bold mb-4">PKL</h4>
                         <p class="text-gray-500 font-medium">Praktik Kerja Lapangan. Rasakan dunia kerja sesungguhnya di perusahaan atau instansi ternama.</p>
                     </div>
 
-                    <div class="group bg-gray-50/50 p-10 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500 lg:translate-y-6">
-                        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                    <div class="group bg-gray-50/50 p-10 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500 lg:trangray-y-6">
+                        <div class="w-16 h-16 bg-primary-100 text-primary-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-primary-600 group-hover:text-white transition-all">
                             <i class="fas fa-briefcase"></i>
                         </div>
                         <h4 class="text-2xl font-bold mb-4">Magang</h4>
@@ -257,25 +273,25 @@
         </section>
 
         <!-- Stats Section -->
-        <section class="py-24 bg-blue-600 text-white relative">
+        <section class="py-24 bg-primary-600 text-white relative">
             <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-12 text-center relative z-10">
                 <div class="space-y-2">
                     <span class="block text-5xl font-black tracking-tighter" x-data="{ count: 0 }" x-init="setInterval(() => { if(count < 1200) count+=10 }, 20)">
                         <span x-text="count">1200</span>+
                     </span>
-                    <span class="text-sm font-bold text-blue-200 uppercase tracking-widest">Mahasiswa Aktif</span>
+                    <span class="text-sm font-bold text-primary-200 uppercase tracking-widest">Mahasiswa Aktif</span>
                 </div>
                 <div class="space-y-2">
                     <span class="block text-5xl font-black tracking-tighter">450+</span>
-                    <span class="text-sm font-bold text-blue-200 uppercase tracking-widest">Lokasi Tersebar</span>
+                    <span class="text-sm font-bold text-primary-200 uppercase tracking-widest">Lokasi Tersebar</span>
                 </div>
                 <div class="space-y-2">
                     <span class="block text-5xl font-black tracking-tighter">80+</span>
-                    <span class="text-sm font-bold text-blue-200 uppercase tracking-widest">Dosen Pembimbing</span>
+                    <span class="text-sm font-bold text-primary-200 uppercase tracking-widest">Dosen Pembimbing</span>
                 </div>
                 <div class="space-y-2">
                     <span class="block text-5xl font-black tracking-tighter">99%</span>
-                    <span class="text-sm font-bold text-blue-200 uppercase tracking-widest">Kepuasan Sistem</span>
+                    <span class="text-sm font-bold text-primary-200 uppercase tracking-widest">Kepuasan Sistem</span>
                 </div>
             </div>
         </section>
@@ -284,7 +300,7 @@
         <section id="faq" class="py-32 bg-white" x-data="{ active: null }">
             <div class="max-w-3xl mx-auto px-6">
                 <div class="text-center mb-16 space-y-4">
-                    <h2 class="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">Pertanyaan Umum</h2>
+                    <h2 class="text-[10px] font-black text-primary-600 uppercase tracking-[0.3em]">Pertanyaan Umum</h2>
                     <h3 class="text-4xl font-extrabold text-gray-900 tracking-tight">Sering Ditanyakan</h3>
                 </div>
 
@@ -318,7 +334,7 @@
                 <div class="relative z-10 space-y-8">
                     <h2 class="text-4xl lg:text-5xl font-black tracking-tight leading-tight text-white">Siap Memulai Pengalaman Luar Kampus?</h2>
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                        <a href="{{ route('login') }}" class="w-full sm:w-auto px-10 py-5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-blue-900 flex items-center justify-center gap-3">
+                        <a href="{{ route('login') }}" class="w-full sm:w-auto px-10 py-5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-primary-900 flex items-center justify-center gap-3">
                             <i class="fas fa-sign-in-alt"></i> Masuk ke Sistem
                         </a>
                     </div>
@@ -331,7 +347,7 @@
             <div class="md:col-span-1 space-y-6 text-center lg:text-left">
                 <div class="flex items-center justify-center lg:justify-start space-x-3">
                     <img src="{{ asset('logo-universitas-markandeya.png') }}" alt="Logo Universitas Markandeya" class="h-10 w-auto">
-                    <span class="font-black text-2xl tracking-tighter italic text-gray-900">Sinergi<span class="text-blue-600">.</span></span>
+                    <span class="font-black text-2xl tracking-tighter italic text-gray-900">Sinergi<span class="text-primary-600">.</span></span>
                 </div>
             <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">
                 &copy; {{ date('Y') }} Universitas Markandeya.

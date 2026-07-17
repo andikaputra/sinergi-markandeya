@@ -36,7 +36,7 @@
 
                 <!-- Topik Bimbingan -->
                 <div style="margin-bottom: 30px;">
-                    <label style="display: block; color: #1a5d4d; font-weight: 700; margin-bottom: 8px;">Topik Bimbingan <span style="color: red;">*</span></label>
+                    <label style="display: block; color: #0f2d26; font-weight: 700; margin-bottom: 8px; font-size: 15px;">Topik Bimbingan <span style="color: red;">*</span></label>
                     <input
                         type="text"
                         name="topik"
@@ -52,7 +52,7 @@
 
                 <!-- Deskripsi -->
                 <div style="margin-bottom: 30px;">
-                    <label style="display: block; color: #1a5d4d; font-weight: 700; margin-bottom: 8px;">Deskripsi Bimbingan <span style="color: red;">*</span></label>
+                    <label style="display: block; color: #0f2d26; font-weight: 700; margin-bottom: 8px; font-size: 15px;">Deskripsi Bimbingan <span style="color: red;">*</span></label>
                     <textarea
                         name="deskripsi"
                         style="width: 100%; padding: 12px 16px; border: 2px solid #d4a574; border-radius: 8px; font-size: 1rem; font-family: inherit; min-height: 150px; transition: all 0.3s; resize: vertical;"
@@ -66,7 +66,7 @@
 
                 <!-- Tanggal Bimbingan -->
                 <div style="margin-bottom: 30px;">
-                    <label style="display: block; color: #1a5d4d; font-weight: 700; margin-bottom: 8px;">Tanggal & Waktu Bimbingan <span style="color: red;">*</span></label>
+                    <label style="display: block; color: #0f2d26; font-weight: 700; margin-bottom: 8px; font-size: 15px;">Tanggal & Waktu Bimbingan <span style="color: red;">*</span></label>
                     <input
                         type="datetime-local"
                         name="tanggal_bimbingan"
@@ -82,7 +82,7 @@
 
                 <!-- File Upload -->
                 <div style="margin-bottom: 30px;">
-                    <label style="display: block; color: #1a5d4d; font-weight: 700; margin-bottom: 8px;">Upload Materi (Opsional)</label>
+                    <label style="display: block; color: #0f2d26; font-weight: 700; margin-bottom: 8px; font-size: 15px;">Upload Materi (Opsional)</label>
                     <div style="border: 2px dashed #d4a574; border-radius: 8px; padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.3s; background-color: #fafaf8;">
                         <input
                             type="file"
@@ -106,9 +106,9 @@
                 <div style="display: flex; gap: 16px; margin-top: 40px;">
                     <button
                         type="submit"
-                        style="flex: 1; background-color: #1a5d4d; color: white; padding: 16px; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s;"
-                        onmouseover="this.style.backgroundColor='#0f2d26'"
-                        onmouseout="this.style.backgroundColor='#1a5d4d'"
+                        style="flex: 1; background-color: #d4a574; color: #1a5d4d; padding: 16px; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);"
+                        onmouseover="this.style.backgroundColor='#c9905c'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(212, 165, 116, 0.3)';"
+                        onmouseout="this.style.backgroundColor='#d4a574'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(212, 165, 116, 0.2)';"
                     >
                         ✓ Ajukan Permohonan
                     </button>
