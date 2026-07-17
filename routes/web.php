@@ -25,7 +25,12 @@ use App\Http\Controllers\NotifikasiController;
 
 
 Route::get('/', function () {
-    return view('home');
+    $pengumuman = \App\Models\TahunAkademik::whereNotNull('tanggal_mulai_daftar')
+        ->whereNotNull('tanggal_selesai_daftar')
+        ->where('tanggal_selesai_daftar', '>=', now()->toDateString())
+        ->orderBy('tanggal_mulai_daftar', 'asc')
+        ->get();
+    return view('home', compact('pengumuman'));
 });
 
 
