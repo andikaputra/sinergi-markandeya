@@ -32,6 +32,14 @@
     <i class="fas fa-paper-plane text-lg"></i>
     <span class="font-medium text-sm">Publikasi</span>
 </a>
+<a href="{{ route('program-kerja.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+    <i class="fas fa-tasks text-lg"></i>
+    <span class="font-medium text-sm">Program Kerja</span>
+</a>
+<a href="{{ route('bimbingan.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+    <i class="fas fa-chalkboard-user text-lg"></i>
+    <span class="font-medium text-sm">Bimbingan Dosen</span>
+</a>
 @php
     $kegiatanAktif = Auth::guard('mahasiswa')->user()->kegiatan ?? null;
     $labelTeman = match($kegiatanAktif) {
@@ -87,8 +95,4 @@
 <a href="{{ route('mahasiswa.profil.edit') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-user-edit text-lg"></i>
     <span class="font-medium text-sm">Edit Profil</span>
-</a>
-<a href="{{ route('password.change') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
-    <i class="fas fa-user-lock text-lg"></i>
-    <span class="font-medium text-sm">Ubah Password</span>
 </a>

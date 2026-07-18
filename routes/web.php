@@ -44,11 +44,6 @@ Route::post('/lupa-password', [AuthController::class, 'lupaPassword'])->name('lu
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset-password');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('reset-password.submit');
 
-// Change Password Routes (Universal)
-Route::middleware(['auth:web,mahasiswa,dosen,pembimbing_luar'])->group(function() {
-    Route::get('/change-password', [AuthController::class, 'showChangePasswordForm'])->name('password.change');
-    Route::post('/change-password', [AuthController::class, 'updatePassword'])->name('password.update');
-});
 
 // Halaman Login Admin
 Route::get('/admin', [AuthController::class, 'showLoginFormAdmin'])->name('loginadmin');
@@ -115,6 +110,12 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/admin/login-activity/dosen-belum-login', [\App\Http\Controllers\Admin\LoginActivityController::class, 'dosenBelumLogin'])->name('admin.login-activity.dosen-belum-login');
     Route::get('/admin/login-activity/dosen-tidak-aktif', [\App\Http\Controllers\Admin\LoginActivityController::class, 'dosenTidakAktif'])->name('admin.login-activity.dosen-tidak-aktif');
     Route::get('/admin/login-activity/laporan', [\App\Http\Controllers\Admin\LoginActivityController::class, 'aktivitasLogin'])->name('admin.login-activity.laporan');
+
+    Route::get('/admin/program-kerja', [\App\Http\Controllers\Admin\ProgramKerjaMonitoringController::class, 'dashboard'])->name('admin.program-kerja.dashboard');
+    Route::get('/admin/program-kerja/mahasiswa-tanpa-program', [\App\Http\Controllers\Admin\ProgramKerjaMonitoringController::class, 'mahasiswaTanpaProgram'])->name('admin.program-kerja.mahasiswa-tanpa-program');
+    Route::get('/admin/program-kerja/semua-program', [\App\Http\Controllers\Admin\ProgramKerjaMonitoringController::class, 'semuaProgram'])->name('admin.program-kerja.semua-program');
+    Route::get('/admin/program-kerja/semua-luaran', [\App\Http\Controllers\Admin\ProgramKerjaMonitoringController::class, 'semuaLuaran'])->name('admin.program-kerja.semua-luaran');
+    Route::get('/admin/program-kerja/{mahasiswa}', [\App\Http\Controllers\Admin\ProgramKerjaMonitoringController::class, 'detailMahasiswa'])->name('admin.program-kerja.detail-mahasiswa');
 
     // Import Routes
     Route::post('/admin/import-mahasiswa', [AdminController::class, 'importMahasiswa'])->name('admin.import.mahasiswa');
@@ -253,6 +254,18 @@ Route::middleware(['auth:mahasiswa'])->group(function () {
     Route::get('/bimbingan/create', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'create'])->name('bimbingan.create');
     Route::post('/bimbingan', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'store'])->name('bimbingan.store');
     Route::get('/bimbingan/{bimbingan}', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'show'])->name('bimbingan.show');
+
+    Route::get('/program-kerja', [\App\Http\Controllers\ProgramKerjaController::class, 'index'])->name('program-kerja.index');
+    Route::get('/program-kerja/create', [\App\Http\Controllers\ProgramKerjaController::class, 'create'])->name('program-kerja.create');
+    Route::post('/program-kerja', [\App\Http\Controllers\ProgramKerjaController::class, 'store'])->name('program-kerja.store');
+    Route::get('/program-kerja/{programKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'show'])->name('program-kerja.show');
+    Route::get('/program-kerja/{programKerja}/edit', [\App\Http\Controllers\ProgramKerjaController::class, 'edit'])->name('program-kerja.edit');
+    Route::put('/program-kerja/{programKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'update'])->name('program-kerja.update');
+    Route::delete('/program-kerja/{programKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'destroy'])->name('program-kerja.destroy');
+
+    Route::post('/program-kerja/{programKerja}/luaran', [\App\Http\Controllers\ProgramKerjaController::class, 'storeLuaran'])->name('luaran.store');
+    Route::put('/luaran/{luaran}/status', [\App\Http\Controllers\ProgramKerjaController::class, 'updateLuaranStatus'])->name('luaran.update-status');
+    Route::delete('/luaran/{luaran}', [\App\Http\Controllers\ProgramKerjaController::class, 'deleteLuaran'])->name('luaran.destroy');
     Route::delete('/publikasi/{id}', [PublikasiController::class, 'destroy'])->name('publikasi.destroy');
 
     Route::get('/pengajuan-pkl', [PengajuanLokasiPKLController::class, 'index'])->name('pengajuanpkl.index');
@@ -291,6 +304,13 @@ Route::middleware(['auth:dosen'])->prefix('dosen-pembimbing')->group(function ()
     Route::get('/publikasi-penilaian', [DosenPenilaiPublikasiController::class, 'dosenIndex'])->name('dosen.publikasi.index');
     Route::get('/publikasi-penilaian/{nim}', [DosenPenilaiPublikasiController::class, 'detailMahasiswa'])->name('dosen.publikasi.detail');
     Route::post('/publikasi-penilaian/{nim}/nilai', [DosenPenilaiPublikasiController::class, 'inputNilai'])->name('dosen.publikasi.nilai');
+
+    // Program Kerja & Luaran
+    Route::get('/program-kerja', [\App\Http\Controllers\DosenProgramKerjaController::class, 'dashboard'])->name('dosen.program-kerja.dashboard');
+    Route::get('/program-kerja/mahasiswa', [\App\Http\Controllers\DosenProgramKerjaController::class, 'mahasiswaBimbingan'])->name('dosen.program-kerja.mahasiswa');
+    Route::get('/program-kerja/semua', [\App\Http\Controllers\DosenProgramKerjaController::class, 'semuaProgram'])->name('dosen.program-kerja.semua');
+    Route::get('/program-kerja/luaran', [\App\Http\Controllers\DosenProgramKerjaController::class, 'semuaLuaran'])->name('dosen.program-kerja.luaran');
+    Route::get('/program-kerja/{mahasiswa}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'detailMahasiswa'])->name('dosen.program-kerja.detail');
 });
 
 // Routes untuk Pembimbing Luar

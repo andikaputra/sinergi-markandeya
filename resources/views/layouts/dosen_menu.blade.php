@@ -31,9 +31,10 @@
 </a>
 
 <div class="pt-4 pb-2">
-    <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Akun</p>
+    <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Program Kerja Mahasiswa</p>
 </div>
-<a href="{{ route('password.change') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
-    <i class="fas fa-user-lock text-lg"></i>
-    <span class="font-medium text-sm">Ubah Password</span>
+
+<a href="{{ route('dosen.program-kerja.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+    <i class="fas fa-tasks text-lg"></i>
+    <span class="font-medium text-sm">Program Kerja & Luaran</span>
 </a>
