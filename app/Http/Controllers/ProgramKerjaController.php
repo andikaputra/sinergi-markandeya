@@ -16,11 +16,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ProgramKerjaController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:mahasiswa');
-    }
-
     public function index()
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();

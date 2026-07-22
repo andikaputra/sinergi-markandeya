@@ -13,11 +13,6 @@ use Illuminate\Support\Facades\Auth;
 
 class DosenProgramKerjaController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:dosen');
-    }
-
     private function getMahasiswaBimbingan()
     {
         $dosen = Auth::guard('dosen')->user();
