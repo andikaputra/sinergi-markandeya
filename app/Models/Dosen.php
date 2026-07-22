@@ -44,4 +44,9 @@ class Dosen extends Authenticatable
     {
         return $this->hasMany(DosenPenilaiPublikasi::class, 'nidn', 'nidn');
     }
+
+    public function monevPrograms()
+    {
+        return $this->hasMany(DosenMonev::class, 'nidn', 'nidn');
+    }
 }

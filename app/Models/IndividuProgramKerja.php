@@ -33,4 +33,9 @@ class IndividuProgramKerja extends Model
     {
         return $this->hasMany(IndividuLuaran::class, 'individu_program_kerja_id');
     }
+
+    public function dosenMonev()
+    {
+        return $this->hasOne(DosenMonev::class, 'program_id')->where('monev_type', 'individu');
+    }
 }

@@ -256,16 +256,28 @@ Route::middleware(['auth:mahasiswa'])->group(function () {
     Route::get('/bimbingan/{bimbingan}', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'show'])->name('bimbingan.show');
 
     Route::get('/program-kerja', [\App\Http\Controllers\ProgramKerjaController::class, 'index'])->name('program-kerja.index');
-    Route::get('/program-kerja/create', [\App\Http\Controllers\ProgramKerjaController::class, 'create'])->name('program-kerja.create');
-    Route::post('/program-kerja', [\App\Http\Controllers\ProgramKerjaController::class, 'store'])->name('program-kerja.store');
-    Route::get('/program-kerja/{programKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'show'])->name('program-kerja.show');
-    Route::get('/program-kerja/{programKerja}/edit', [\App\Http\Controllers\ProgramKerjaController::class, 'edit'])->name('program-kerja.edit');
-    Route::put('/program-kerja/{programKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'update'])->name('program-kerja.update');
-    Route::delete('/program-kerja/{programKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'destroy'])->name('program-kerja.destroy');
 
-    Route::post('/program-kerja/{programKerja}/luaran', [\App\Http\Controllers\ProgramKerjaController::class, 'storeLuaran'])->name('luaran.store');
-    Route::put('/luaran/{luaran}/status', [\App\Http\Controllers\ProgramKerjaController::class, 'updateLuaranStatus'])->name('luaran.update-status');
-    Route::delete('/luaran/{luaran}', [\App\Http\Controllers\ProgramKerjaController::class, 'deleteLuaran'])->name('luaran.destroy');
+    // Program Kerja Individu
+    Route::get('/program-kerja/individu/create', [\App\Http\Controllers\ProgramKerjaController::class, 'createIndividu'])->name('program-kerja.create-individu');
+    Route::post('/program-kerja/individu', [\App\Http\Controllers\ProgramKerjaController::class, 'storeIndividu'])->name('program-kerja.store-individu');
+    Route::get('/program-kerja/individu/{individuProgramKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'showIndividu'])->name('program-kerja.show-individu');
+    Route::get('/program-kerja/individu/{individuProgramKerja}/edit', [\App\Http\Controllers\ProgramKerjaController::class, 'editIndividu'])->name('program-kerja.edit-individu');
+    Route::put('/program-kerja/individu/{individuProgramKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'updateIndividu'])->name('program-kerja.update-individu');
+    Route::delete('/program-kerja/individu/{individuProgramKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'destroyIndividu'])->name('program-kerja.destroy-individu');
+    Route::post('/program-kerja/individu/{individuProgramKerja}/luaran', [\App\Http\Controllers\ProgramKerjaController::class, 'storeLuaranIndividu'])->name('luaran.store-individu');
+
+    // Program Kerja Kelompok
+    Route::get('/program-kerja/kelompok/create', [\App\Http\Controllers\ProgramKerjaController::class, 'createKelompok'])->name('program-kerja.create-kelompok');
+    Route::post('/program-kerja/kelompok', [\App\Http\Controllers\ProgramKerjaController::class, 'storeKelompok'])->name('program-kerja.store-kelompok');
+    Route::get('/program-kerja/kelompok/{kelompokProgramKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'showKelompok'])->name('program-kerja.show-kelompok');
+    Route::get('/program-kerja/kelompok/{kelompokProgramKerja}/edit', [\App\Http\Controllers\ProgramKerjaController::class, 'editKelompok'])->name('program-kerja.edit-kelompok');
+    Route::put('/program-kerja/kelompok/{kelompokProgramKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'updateKelompok'])->name('program-kerja.update-kelompok');
+    Route::delete('/program-kerja/kelompok/{kelompokProgramKerja}', [\App\Http\Controllers\ProgramKerjaController::class, 'destroyKelompok'])->name('program-kerja.destroy-kelompok');
+    Route::post('/program-kerja/kelompok/{kelompokProgramKerja}/luaran', [\App\Http\Controllers\ProgramKerjaController::class, 'storeLuaranKelompok'])->name('luaran.store-kelompok');
+
+    // Luaran Management
+    Route::put('/luaran/{type}/{luaranId}/status', [\App\Http\Controllers\ProgramKerjaController::class, 'updateLuaranStatus'])->name('luaran.update-status');
+    Route::delete('/luaran/{type}/{luaranId}', [\App\Http\Controllers\ProgramKerjaController::class, 'deleteLuaran'])->name('luaran.destroy');
     Route::delete('/publikasi/{id}', [PublikasiController::class, 'destroy'])->name('publikasi.destroy');
 
     Route::get('/pengajuan-pkl', [PengajuanLokasiPKLController::class, 'index'])->name('pengajuanpkl.index');
