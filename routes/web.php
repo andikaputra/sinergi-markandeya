@@ -117,6 +117,12 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/admin/program-kerja/semua-luaran', [\App\Http\Controllers\Admin\ProgramKerjaMonitoringController::class, 'semuaLuaran'])->name('admin.program-kerja.semua-luaran');
     Route::get('/admin/program-kerja/{mahasiswa}', [\App\Http\Controllers\Admin\ProgramKerjaMonitoringController::class, 'detailMahasiswa'])->name('admin.program-kerja.detail-mahasiswa');
 
+    // Dosen Monev Plotting
+    Route::get('/admin/dosen-monev', [\App\Http\Controllers\Admin\DosenMonevController::class, 'index'])->name('admin.dosen-monev.index');
+    Route::post('/admin/dosen-monev', [\App\Http\Controllers\Admin\DosenMonevController::class, 'store'])->name('admin.dosen-monev.store');
+    Route::delete('/admin/dosen-monev/{id}', [\App\Http\Controllers\Admin\DosenMonevController::class, 'delete'])->name('admin.dosen-monev.delete');
+    Route::post('/admin/dosen-monev/import', [\App\Http\Controllers\Admin\DosenMonevController::class, 'import'])->name('admin.dosen-monev.import');
+
     // Import Routes
     Route::post('/admin/import-mahasiswa', [AdminController::class, 'importMahasiswa'])->name('admin.import.mahasiswa');
     Route::post('/admin/import-dosen', [AdminController::class, 'importDosen'])->name('admin.import.dosen');
@@ -323,6 +329,11 @@ Route::middleware(['auth:dosen'])->prefix('dosen-pembimbing')->group(function ()
     Route::get('/program-kerja/semua', [\App\Http\Controllers\DosenProgramKerjaController::class, 'semuaProgram'])->name('dosen.program-kerja.semua');
     Route::get('/program-kerja/luaran', [\App\Http\Controllers\DosenProgramKerjaController::class, 'semuaLuaran'])->name('dosen.program-kerja.luaran');
     Route::get('/program-kerja/{mahasiswa}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'detailMahasiswa'])->name('dosen.program-kerja.detail');
+
+    // Dosen Monev (Monitoring & Evaluasi)
+    Route::get('/program-kerja-monev', [\App\Http\Controllers\DosenProgramKerjaController::class, 'monevDashboard'])->name('dosen.program-kerja.monev-dashboard');
+    Route::get('/program-kerja-monev/{type}/{programId}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'monevDetail'])->name('dosen.program-kerja.monev-detail');
+    Route::post('/program-kerja-monev/{type}/{programId}/nilai', [\App\Http\Controllers\DosenProgramKerjaController::class, 'inputNilaiMonev'])->name('dosen.program-kerja.monev-nilai');
 });
 
 // Routes untuk Pembimbing Luar

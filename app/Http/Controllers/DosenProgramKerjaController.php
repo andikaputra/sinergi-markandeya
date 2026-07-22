@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProgramKerja;
-use App\Models\Luaran;
+use App\Models\IndividuProgramKerja;
+use App\Models\KelompokProgramKerja;
+use App\Models\IndividuLuaran;
+use App\Models\KelompokLuaran;
+use App\Models\DosenMonev;
 use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,37 +30,37 @@ class DosenProgramKerjaController extends Controller
 
     public function dashboard()
     {
-        $mahasiswaBimbingan = $this->getMahasiswaBimbingan();
+        $dosen = Auth::guard('dosen')->user();
+        $mahasiswaBimbinganNim = $this->getMahasiswaBimbingan();
 
-        $totalProgram = ProgramKerja::whereIn('nim', $mahasiswaBimbingan)->count();
-        $totalMahasiswa = $mahasiswaBimbingan->count();
-        $mahasiswaDenganProgram = ProgramKerja::whereIn('nim', $mahasiswaBimbingan)
-            ->distinct('nim')
-            ->count('nim');
-        $mahasiswaTanpaProgram = $totalMahasiswa - $mahasiswaDenganProgram;
+        $totalProposalIndividu = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->count();
+        $totalProposalKelompok = KelompokProgramKerja::where('kategori', '!=', '')->count();
+        $totalMonevPrograms = DosenMonev::where('nidn', $dosen->nidn)->count();
 
-        $statistikStatus = [
-            'rencana' => ProgramKerja::whereIn('nim', $mahasiswaBimbingan)
-                ->where('status', 'rencana')->count(),
-            'sedang_berjalan' => ProgramKerja::whereIn('nim', $mahasiswaBimbingan)
-                ->where('status', 'sedang_berjalan')->count(),
-            'selesai' => ProgramKerja::whereIn('nim', $mahasiswaBimbingan)
-                ->where('status', 'selesai')->count(),
+        $statistikIndividu = [
+            'rencana' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'rencana')->count(),
+            'sedang_berjalan' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'sedang_berjalan')->count(),
+            'selesai' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'selesai')->count(),
         ];
 
-        $recentPrograms = ProgramKerja::whereIn('nim', $mahasiswaBimbingan)
+        $recentPrograms = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)
             ->with('mahasiswa')
             ->orderBy('created_at', 'desc')
-            ->limit(10)
+            ->limit(5)
+            ->get();
+
+        $monevPrograms = DosenMonev::where('nidn', $dosen->nidn)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
             ->get();
 
         return view('dosen.program-kerja.dashboard', compact(
-            'totalProgram',
-            'totalMahasiswa',
-            'mahasiswaDenganProgram',
-            'mahasiswaTanpaProgram',
-            'statistikStatus',
-            'recentPrograms'
+            'totalProposalIndividu',
+            'totalProposalKelompok',
+            'totalMonevPrograms',
+            'statistikIndividu',
+            'recentPrograms',
+            'monevPrograms'
         ));
     }
 
@@ -83,21 +86,21 @@ class DosenProgramKerjaController extends Controller
             abort(403, 'Anda tidak berwenang mengakses data mahasiswa ini');
         }
 
-        $programs = ProgramKerja::where('nim', $mahasiswa->nim)
+        $individuPrograms = IndividuProgramKerja::where('nim', $mahasiswa->nim)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $luarans = Luaran::whereIn('program_kerja_id', $programs->pluck('id'))
+        $individuLuarans = IndividuLuaran::whereIn('individu_program_kerja_id', $individuPrograms->pluck('id'))
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('dosen.program-kerja.detail-mahasiswa', compact('mahasiswa', 'programs', 'luarans'));
+        return view('dosen.program-kerja.detail-mahasiswa', compact('mahasiswa', 'individuPrograms', 'individuLuarans'));
     }
 
     public function semuaProgram()
     {
         $mahasiswaBimbingan = $this->getMahasiswaBimbingan();
-        $programs = ProgramKerja::whereIn('nim', $mahasiswaBimbingan)
+        $programs = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbingan)
             ->with('mahasiswa')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
@@ -108,9 +111,9 @@ class DosenProgramKerjaController extends Controller
     public function semuaLuaran()
     {
         $mahasiswaBimbingan = $this->getMahasiswaBimbingan();
-        $luarans = Luaran::whereIn('program_kerja_id', function ($query) use ($mahasiswaBimbingan) {
+        $luarans = IndividuLuaran::whereIn('individu_program_kerja_id', function ($query) use ($mahasiswaBimbingan) {
             $query->select('id')
-                ->from('program_kerjas')
+                ->from('individu_program_kerjas')
                 ->whereIn('nim', $mahasiswaBimbingan);
         })
         ->with('programKerja.mahasiswa')
@@ -118,5 +121,56 @@ class DosenProgramKerjaController extends Controller
         ->paginate(20);
 
         return view('dosen.program-kerja.semua-luaran', compact('luarans'));
+    }
+
+    // Dosen Monev Methods
+    public function monevDashboard()
+    {
+        $dosen = Auth::guard('dosen')->user();
+        $monevPrograms = DosenMonev::where('nidn', $dosen->nidn)
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('dosen.program-kerja.monev-dashboard', compact('monevPrograms'));
+    }
+
+    public function monevDetail($type, $programId)
+    {
+        $dosen = Auth::guard('dosen')->user();
+
+        $monev = DosenMonev::where('nidn', $dosen->nidn)
+            ->where('monev_type', $type)
+            ->where('program_id', $programId)
+            ->firstOrFail();
+
+        if ($type === 'individu') {
+            $program = IndividuProgramKerja::findOrFail($programId);
+            $luarans = $program->luarans;
+            return view('dosen.program-kerja.monev-detail', compact('program', 'monev', 'type', 'luarans'));
+        } else {
+            $program = KelompokProgramKerja::findOrFail($programId);
+            $anggota = $program->anggota();
+            $luarans = $program->luarans;
+            return view('dosen.program-kerja.monev-detail', compact('program', 'monev', 'type', 'anggota', 'luarans'));
+        }
+    }
+
+    public function inputNilaiMonev(Request $request, $type, $programId)
+    {
+        $dosen = Auth::guard('dosen')->user();
+
+        $monev = DosenMonev::where('nidn', $dosen->nidn)
+            ->where('monev_type', $type)
+            ->where('program_id', $programId)
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'nilai' => 'nullable|numeric|min:0|max:100',
+            'catatan' => 'nullable|string|max:1000',
+        ]);
+
+        $monev->update($validated);
+
+        return back()->with('success', 'Nilai dan catatan monev berhasil disimpan');
     }
 }
