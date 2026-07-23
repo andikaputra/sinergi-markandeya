@@ -28,11 +28,12 @@ class DosenProgramKerjaController extends Controller
         $dosen = Auth::guard('dosen')->user();
         $mahasiswaBimbinganNim = $this->getMahasiswaBimbingan();
 
-        $totalProposalIndividu = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->count();
-        $totalProposalKelompok = KelompokProgramKerja::where('kategori', '!=', '')->count();
-        $totalMonevPrograms = DosenMonev::where('nidn', $dosen->nidn)->count();
+        $totalMahasiswa = $mahasiswaBimbinganNim->count();
+        $totalProgram = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->count();
+        $mahasiswaDenganProgram = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->distinct('nim')->count('nim');
+        $mahasiswaTanpaProgram = $totalMahasiswa - $mahasiswaDenganProgram;
 
-        $statistikIndividu = [
+        $statistikStatus = [
             'rencana' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'rencana')->count(),
             'sedang_berjalan' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'sedang_berjalan')->count(),
             'selesai' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'selesai')->count(),
@@ -41,21 +42,16 @@ class DosenProgramKerjaController extends Controller
         $recentPrograms = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)
             ->with('mahasiswa')
             ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
-
-        $monevPrograms = DosenMonev::where('nidn', $dosen->nidn)
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
+            ->limit(10)
             ->get();
 
         return view('dosen.program-kerja.dashboard', compact(
-            'totalProposalIndividu',
-            'totalProposalKelompok',
-            'totalMonevPrograms',
-            'statistikIndividu',
-            'recentPrograms',
-            'monevPrograms'
+            'totalMahasiswa',
+            'totalProgram',
+            'mahasiswaDenganProgram',
+            'mahasiswaTanpaProgram',
+            'statistikStatus',
+            'recentPrograms'
         ));
     }
 
