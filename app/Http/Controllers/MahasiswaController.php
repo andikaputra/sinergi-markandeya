@@ -226,6 +226,19 @@ class MahasiswaController extends Controller
             'tahun_akademik'=> $taString,
         ]);
 
+        // Auto-assign penempatan jika ada pilihan lokasi
+        if ($request->kegiatan === 'KKN' && $request->filled('preferensi_lokasi_id')) {
+            \App\Models\PenempatanKkn::updateOrCreate(
+                ['nim' => $mahasiswa->nim],
+                ['lokasi_kkn_id' => $request->preferensi_lokasi_id]
+            );
+        } elseif ($request->kegiatan === 'PPL' && $request->filled('preferensi_lokasi_id')) {
+            \App\Models\PenempatanPpl::updateOrCreate(
+                ['nim' => $mahasiswa->nim],
+                ['sekolah_id' => $request->preferensi_lokasi_id]
+            );
+        }
+
         return redirect()->route('mahasiswa.daftar-kegiatan.page')
             ->with('success', 'Berhasil mendaftar ' . $request->kegiatan . ' untuk tahun akademik ' . $taString . '!');
     }
