@@ -144,13 +144,17 @@ class Mahasiswa extends Authenticatable
         // Nonaktifkan semua kegiatan aktif sebelumnya
         $this->mahasiswaKegiatan()->where('is_active', true)->update(['is_active' => false]);
 
-        // Buat kegiatan baru sebagai aktif
-        return MahasiswaKegiatan::create([
-            'nim' => $this->nim,
-            'kegiatan' => $kegiatan,
-            'tahun_akademik' => $tahunAkademik,
-            'is_active' => true,
-        ]);
+        // Buat atau aktifkan kegiatan baru sebagai aktif
+        return MahasiswaKegiatan::updateOrCreate(
+            [
+                'nim' => $this->nim,
+                'kegiatan' => $kegiatan,
+                'tahun_akademik' => $tahunAkademik,
+            ],
+            [
+                'is_active' => true,
+            ]
+        );
     }
 
     /**
