@@ -74,7 +74,10 @@
                             </span>
                         </td>
                         <td class="px-6 py-5">
-                            @php $desa = $mahasiswa->penempatankkn?->lokasikkn?->desa; @endphp
+                            @php 
+                                $desa = $mahasiswa->penempatankkn?->lokasikkn?->desa 
+                                    ?? ($mahasiswa->activeKegiatan?->preferensi_lokasi_id ? \App\Models\LokasiKkn::find($mahasiswa->activeKegiatan->preferensi_lokasi_id)?->desa : null);
+                            @endphp
                             @if($desa)
                             <div class="flex items-center space-x-2 text-emerald-600">
                                 <i class="fas fa-map-marker-alt text-xs"></i>

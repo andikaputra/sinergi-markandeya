@@ -70,15 +70,32 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 text-center">
-                            @if($mhs->status === 'aktif')
-                            {{-- Nonaktifkan --}}
-                            <div class="flex items-center justify-center gap-2">
+                            <div class="flex flex-wrap items-center justify-center gap-2">
+                                @if($mhs->status === 'aktif')
                                 <button type="button"
-                                    onclick="document.getElementById('form-nonaktif-{{ $mhs->id }}').classList.toggle('hidden')"
-                                    class="px-4 py-2 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 text-xs font-bold rounded-xl transition-all">
+                                    onclick="document.getElementById('form-nonaktif-{{ $mhs->id }}').classList.toggle('hidden'); document.getElementById('form-assign-{{ $mhs->id }}').classList.add('hidden')"
+                                    class="px-3 py-1.5 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 text-xs font-bold rounded-xl transition-all">
                                     <i class="fas fa-ban mr-1"></i> Nonaktifkan
                                 </button>
+                                @else
+                                <form action="{{ route('admin.mahasiswa.approve', $mhs->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit"
+                                        class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl transition-all shadow-sm">
+                                        <i class="fas fa-check mr-1"></i> Aktifkan
+                                    </button>
+                                </form>
+                                @endif
+
+                                <button type="button"
+                                    onclick="document.getElementById('form-assign-{{ $mhs->id }}').classList.toggle('hidden'); document.getElementById('form-nonaktif-{{ $mhs->id }}')?.classList.add('hidden')"
+                                    class="px-3 py-1.5 bg-blue-50 hover:bg-blue-500 hover:text-white text-blue-600 text-xs font-bold rounded-xl transition-all">
+                                    <i class="fas fa-clipboard-list mr-1"></i> Plot Kegiatan
+                                </button>
                             </div>
+
+                            {{-- Form Nonaktifkan --}}
+                            @if($mhs->status === 'aktif')
                             <div id="form-nonaktif-{{ $mhs->id }}" class="hidden mt-2">
                                 <form action="{{ route('admin.mahasiswa.reject', $mhs->id) }}" method="POST" class="space-y-2 p-3 bg-red-50/50 rounded-2xl border border-red-100">
                                     @csrf
@@ -89,17 +106,40 @@
                                     </button>
                                 </form>
                             </div>
-
-                            @else
-                            {{-- Aktifkan kembali --}}
-                            <form action="{{ route('admin.mahasiswa.approve', $mhs->id) }}" method="POST">
-                                @csrf
-                                <button type="submit"
-                                    class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl transition-all shadow-sm">
-                                    <i class="fas fa-check mr-1"></i> Aktifkan
-                                </button>
-                            </form>
                             @endif
+
+                            {{-- Form Assign Kegiatan --}}
+                            <div id="form-assign-{{ $mhs->id }}" class="hidden mt-2">
+                                <form action="{{ route('admin.mahasiswa.assign-kegiatan') }}" method="POST" class="space-y-3 p-4 bg-blue-50/50 rounded-2xl border border-blue-100 text-left">
+                                    @csrf
+                                    <input type="hidden" name="nim" value="{{ $mhs->nim }}">
+                                    
+                                    <div class="space-y-1">
+                                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest block ml-1">Pilih Kegiatan</label>
+                                        <select name="kegiatan" required class="w-full px-3 py-2 bg-white border border-blue-100 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold">
+                                            <option value="KKN" {{ $mhs->kegiatan === 'KKN' ? 'selected' : '' }}>KKN (Kuliah Kerja Nyata)</option>
+                                            <option value="PPL" {{ $mhs->kegiatan === 'PPL' ? 'selected' : '' }}>PPL (Praktik Pengalaman Lapangan)</option>
+                                            <option value="PKL" {{ $mhs->kegiatan === 'PKL' ? 'selected' : '' }}>PKL (Praktik Kerja Lapangan)</option>
+                                            <option value="Magang" {{ $mhs->kegiatan === 'Magang' ? 'selected' : '' }}>Magang</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="space-y-1">
+                                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest block ml-1">Tahun Akademik</label>
+                                        <select name="tahun_akademik" required class="w-full px-3 py-2 bg-white border border-blue-100 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold">
+                                            @foreach($tahunAkademiks as $ta)
+                                                <option value="{{ $ta->tahun }} {{ $ta->semester }}" {{ $mhs->tahun_akademik === ($ta->tahun . ' ' . $ta->semester) ? 'selected' : '' }}>
+                                                    {{ $ta->tahun }} - {{ $ta->semester }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    
+                                    <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl transition-all uppercase tracking-wider">
+                                        Simpan Plotting
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty

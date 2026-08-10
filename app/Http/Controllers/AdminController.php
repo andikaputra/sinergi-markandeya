@@ -564,7 +564,8 @@ class AdminController extends Controller
         $mahasiswas = Mahasiswa::orderByRaw("FIELD(status,'nonaktif','aktif') ASC")
             ->orderBy('nama')->paginate(20);
         $jumlahNonaktif = Mahasiswa::where('status', 'nonaktif')->count();
-        return view('admin.mahasiswa.pending', compact('mahasiswas', 'jumlahNonaktif'));
+        $tahunAkademiks = TahunAkademik::orderBy('tahun', 'desc')->get();
+        return view('admin.mahasiswa.pending', compact('mahasiswas', 'jumlahNonaktif', 'tahunAkademiks'));
     }
 
     public function approveMahasiswa($id)

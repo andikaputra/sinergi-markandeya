@@ -74,7 +74,10 @@
                             </span>
                         </td>
                         <td class="px-6 py-5">
-                            @php $sekolah = $mahasiswa->penempatanppl?->lokasippl?->Sekolah; @endphp
+                            @php 
+                                $sekolah = $mahasiswa->penempatanppl?->lokasippl?->Sekolah 
+                                    ?? ($mahasiswa->activeKegiatan?->preferensi_lokasi_id ? \App\Models\LokasiPpl::find($mahasiswa->activeKegiatan->preferensi_lokasi_id)?->Sekolah : null);
+                            @endphp
                             @if($sekolah)
                             <div class="flex items-center space-x-2 text-blue-600">
                                 <i class="fas fa-school text-xs"></i>
