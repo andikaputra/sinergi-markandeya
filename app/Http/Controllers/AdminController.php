@@ -202,6 +202,43 @@ class AdminController extends Controller
             ->with('success', 'Mahasiswa ' . $request->nama . ' berhasil ditambahkan. Password default: ' . $request->nim);
     }
 
+    public function editMahasiswa($id)
+    {
+        $mahasiswa = Mahasiswa::findOrFail($id);
+        $tahunAkademiks = TahunAkademik::orderBy('tahun', 'desc')->get();
+        return view('admin.mahasiswa.edit', compact('mahasiswa', 'tahunAkademiks'));
+    }
+
+    public function updateMahasiswa(Request $request, $id)
+    {
+        $mahasiswa = Mahasiswa::findOrFail($id);
+
+        $request->validate([
+            'nama'  => 'required|string|max:255',
+            'nim'   => 'required|string|max:20|unique:mahasiswas,nim,' . $mahasiswa->id,
+            'prodi' => 'required|in:PGSD,PBSI,PBI,SI,ME,PARBUD,HUKUM',
+            'kegiatan' => 'nullable|in:KKN,PPL,PKL,Magang',
+            'tahun_akademik' => 'nullable|string',
+        ]);
+
+        $mahasiswa->update([
+            'nama'  => $request->nama,
+            'nim'   => $request->nim,
+            'prodi' => $request->prodi,
+        ]);
+
+        if ($request->filled('kegiatan') && $request->filled('tahun_akademik')) {
+            $mahasiswa->addKegiatan($request->kegiatan, $request->tahun_akademik);
+            $mahasiswa->update([
+                'kegiatan' => $request->kegiatan,
+                'tahun_akademik' => $request->tahun_akademik,
+            ]);
+        }
+
+        return redirect()->route('admin.mahasiswa.pending')
+            ->with('success', 'Data mahasiswa ' . $request->nama . ' berhasil diperbarui.');
+    }
+
     /**
      * Admin: Assign kegiatan ke mahasiswa
      */
@@ -215,15 +252,6 @@ class AdminController extends Controller
 
         $mahasiswa = Mahasiswa::where('nim', $request->nim)->firstOrFail();
 
-        // Cek duplikasi
-        $exists = MahasiswaKegiatan::where('nim', $request->nim)
-            ->where('kegiatan', $request->kegiatan)
-            ->where('tahun_akademik', $request->tahun_akademik)
-            ->exists();
-
-        if ($exists) {
-            return redirect()->back()->with('error', 'Mahasiswa sudah terdaftar di kegiatan ini untuk tahun akademik tersebut.');
-        }
 
         $mahasiswa->addKegiatan($request->kegiatan, $request->tahun_akademik);
 
@@ -559,10 +587,21 @@ class AdminController extends Controller
     /**
      * Admin: Delete Mahasiswa (Peserta) and all related data
      */
-    public function mahasiswaPending()
+    public function mahasiswaPending(Request $request)
     {
-        $mahasiswas = Mahasiswa::orderByRaw("FIELD(status,'nonaktif','aktif') ASC")
-            ->orderBy('nama')->paginate(20);
+        $query = Mahasiswa::query();
+
+        if ($search = $request->search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nim', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $mahasiswas = $query->orderByRaw("FIELD(status,'nonaktif','aktif') ASC")
+            ->orderBy('nama')->paginate(20)->withQueryString();
+
         $jumlahNonaktif = Mahasiswa::where('status', 'nonaktif')->count();
         $tahunAkademiks = TahunAkademik::orderBy('tahun', 'desc')->get();
         return view('admin.mahasiswa.pending', compact('mahasiswas', 'jumlahNonaktif', 'tahunAkademiks'));

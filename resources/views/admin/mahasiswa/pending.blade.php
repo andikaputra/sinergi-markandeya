@@ -22,6 +22,26 @@
         </div>
     </div>
 
+    {{-- Search Form --}}
+    <form method="GET" action="{{ route('admin.mahasiswa.pending') }}" class="flex items-center gap-3 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+        <div class="relative flex-1 max-w-md">
+            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
+                <i class="fas fa-search text-sm"></i>
+            </span>
+            <input type="text" name="search" value="{{ request('search') }}"
+                   placeholder="Cari nama, NIM, atau email mahasiswa..."
+                   class="w-full bg-slate-50 border border-gray-100 text-gray-700 placeholder-gray-400 rounded-2xl pl-12 pr-4 py-3.5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all">
+        </div>
+        <button type="submit" class="px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl transition-all shadow-lg shadow-blue-100">
+            Cari
+        </button>
+        @if(request('search'))
+            <a href="{{ route('admin.mahasiswa.pending') }}" class="px-5 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-bold rounded-2xl transition-all">
+                Reset
+            </a>
+        @endif
+    </form>
+
     @if(session('success'))
     <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-emerald-700 text-sm font-bold flex items-center gap-2">
         <i class="fas fa-check-circle"></i>{{ session('success') }}
@@ -90,8 +110,13 @@
                                 <button type="button"
                                     onclick="document.getElementById('form-assign-{{ $mhs->id }}').classList.toggle('hidden'); document.getElementById('form-nonaktif-{{ $mhs->id }}')?.classList.add('hidden')"
                                     class="px-3 py-1.5 bg-blue-50 hover:bg-blue-500 hover:text-white text-blue-600 text-xs font-bold rounded-xl transition-all">
-                                    <i class="fas fa-clipboard-list mr-1"></i> Plot Kegiatan
+                                    <i class="fas fa-clipboard-list mr-1"></i> Plot
                                 </button>
+
+                                <a href="{{ route('admin.mahasiswa.edit', $mhs->id) }}"
+                                    class="px-3 py-1.5 bg-amber-50 hover:bg-amber-500 hover:text-white text-amber-600 text-xs font-bold rounded-xl transition-all">
+                                    <i class="fas fa-edit mr-1"></i> Edit
+                                </a>
                             </div>
 
                             {{-- Form Nonaktifkan --}}
