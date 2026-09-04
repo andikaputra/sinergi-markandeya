@@ -6,9 +6,16 @@
 <div style="background-color: #f5f3f0; min-height: 100vh; padding: 40px 20px;">
     <div style="max-width: 1400px; margin: 0 auto;">
         <!-- Header -->
-        <div style="background: linear-gradient(135deg, #1a5d4d 0%, #0f2d26 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 40px;">
-            <h1 style="font-size: 2.5rem; margin: 0 0 10px 0; font-weight: 700;">📊 Admin Dashboard Bimbingan</h1>
-            <p style="margin: 0; color: #d4a574; font-size: 1.1rem;">Monitoring dan kontrol sistem bimbingan mahasiswa</p>
+        <div style="background: linear-gradient(135deg, #1a5d4d 0%, #0f2d26 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h1 style="font-size: 2.5rem; margin: 0 0 10px 0; font-weight: 700;">📊 Admin Dashboard Bimbingan</h1>
+                <p style="margin: 0; color: #d4a574; font-size: 1.1rem;">Monitoring dan kontrol sistem bimbingan mahasiswa</p>
+            </div>
+            <div>
+                <a href="{{ route('admindashboard') }}" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 700; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)';" onmouseout="this.style.background='rgba(255,255,255,0.15)';">
+                    ← Dashboard Utama Admin
+                </a>
+            </div>
         </div>
 
         <!-- Quick Links -->

@@ -33,20 +33,42 @@
                 <a href="{{ url('/') }}" class="hover:text-gold transition">Beranda</a>
                 <a href="{{ url('/#pendaftaran') }}" class="hover:text-gold transition">Pendaftaran</a>
 
-                @if (Route::has('login'))
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="px-4 py-2 bg-gold text-primary font-semibold rounded-lg hover:bg-gold-600 transition">
-                            Dashboard
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                            @csrf
-                            <button type="submit" class="hover:text-gold transition">Logout</button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="px-4 py-2 border-2 border-gold text-gold hover:bg-gold hover:text-primary transition rounded-lg font-semibold">
-                            Login
-                        </a>
-                    @endauth
+                @php
+                    $isLoggedIn = false;
+                    $dashboardUrl = url('/dashboard');
+                    $logoutRoute = route('logout');
+                    
+                    if (Auth::guard('web')->check()) {
+                        $isLoggedIn = true;
+                        $dashboardUrl = route('admindashboard');
+                        $logoutRoute = route('logoutadmin');
+                    } elseif (Auth::guard('dosen')->check()) {
+                        $isLoggedIn = true;
+                        $dashboardUrl = route('dosendashboard');
+                        $logoutRoute = route('logoutdosen');
+                    } elseif (Auth::guard('pembimbing_luar')->check()) {
+                        $isLoggedIn = true;
+                        $dashboardUrl = route('pembimbingluardashboard');
+                        $logoutRoute = route('logoutpembimbingluar');
+                    } elseif (Auth::guard('mahasiswa')->check()) {
+                        $isLoggedIn = true;
+                        $dashboardUrl = url('/dashboard');
+                        $logoutRoute = route('logout');
+                    }
+                @endphp
+
+                @if ($isLoggedIn)
+                    <a href="{{ $dashboardUrl }}" class="px-4 py-2 bg-gold text-primary font-semibold rounded-lg hover:bg-gold-600 transition">
+                        Dashboard
+                    </a>
+                    <form method="POST" action="{{ $logoutRoute }}" class="inline">
+                        @csrf
+                        <button type="submit" class="hover:text-gold transition">Logout</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="px-4 py-2 border-2 border-gold text-gold hover:bg-gold hover:text-primary transition rounded-lg font-semibold">
+                        Login
+                    </a>
                 @endif
             </div>
         </div>
