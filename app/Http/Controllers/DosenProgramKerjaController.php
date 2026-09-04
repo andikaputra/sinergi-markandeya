@@ -121,6 +121,7 @@ class DosenProgramKerjaController extends Controller
     {
         $dosen = Auth::guard('dosen')->user();
         $monevPrograms = DosenMonev::where('nidn', $dosen->nidn)
+            ->with(['mahasiswa', 'programKerja', 'lokasiKkn', 'lokasiPpl', 'lokasiPkl', 'lokasiMagang'])
             ->orderBy('updated_at', 'desc')
             ->paginate(20);
 
@@ -134,35 +135,57 @@ class DosenProgramKerjaController extends Controller
         return view('dosen.program-kerja.monev-dashboard', compact('monevPrograms', 'totalTugas', 'totalSelesai', 'totalBelum'));
     }
 
-    public function monevDetail($type, $programId)
+    public function monevDetail(Request $request, $idOrType, $programId = null)
     {
         $dosen = Auth::guard('dosen')->user();
 
-        $monev = DosenMonev::where('nidn', $dosen->nidn)
-            ->where('monev_type', $type)
-            ->where('program_id', $programId)
-            ->firstOrFail();
+        if ($programId) {
+            $monev = DosenMonev::where('nidn', $dosen->nidn)
+                ->where('monev_type', $idOrType)
+                ->where(function ($q) use ($programId) {
+                    $q->where('program_id', $programId)->orWhere('id', $programId);
+                })
+                ->firstOrFail();
+        } else {
+            $monev = DosenMonev::where('nidn', $dosen->nidn)
+                ->where('id', $idOrType)
+                ->firstOrFail();
+        }
+
+        $type = $monev->monev_type;
 
         if ($type === 'individu') {
-            $program = IndividuProgramKerja::with('mahasiswa')->findOrFail($programId);
-            $luarans = $program->luarans;
-            return view('dosen.program-kerja.monev-detail', compact('program', 'monev', 'type', 'luarans'));
+            $program = $monev->program_id ? IndividuProgramKerja::with('mahasiswa')->find($monev->program_id) : null;
+            $mahasiswa = $monev->mahasiswa ?: ($program?->mahasiswa ?: Mahasiswa::where('nim', $monev->nim)->first());
+            $luarans = $program ? $program->luarans : collect();
+            return view('dosen.program-kerja.monev-detail', compact('program', 'monev', 'type', 'mahasiswa', 'luarans'));
         } else {
-            $program = KelompokProgramKerja::with('mahasiswaKetua')->findOrFail($programId);
-            $anggota = $program->anggota();
-            $luarans = $program->luarans;
-            return view('dosen.program-kerja.monev-detail', compact('program', 'monev', 'type', 'anggota', 'luarans'));
+            $program = $monev->program_id ? KelompokProgramKerja::with('mahasiswaKetua')->find($monev->program_id) : null;
+            $anggota = $program ? $program->anggota() : collect();
+            $luarans = $program ? $program->luarans : collect();
+            $lokasi = $monev->lokasiKkn ?: ($monev->lokasiPpl ?: ($monev->lokasiPkl ?: $monev->lokasiMagang));
+            return view('dosen.program-kerja.monev-detail', compact('program', 'monev', 'type', 'anggota', 'luarans', 'lokasi'));
         }
     }
 
-    public function inputNilaiMonev(Request $request, $type, $programId)
+    public function inputNilaiMonev(Request $request, $idOrType, $programId = null)
     {
         $dosen = Auth::guard('dosen')->user();
 
-        $monev = DosenMonev::where('nidn', $dosen->nidn)
-            ->where('monev_type', $type)
-            ->where('program_id', $programId)
-            ->firstOrFail();
+        if ($programId) {
+            $monev = DosenMonev::where('nidn', $dosen->nidn)
+                ->where('monev_type', $idOrType)
+                ->where(function ($q) use ($programId) {
+                    $q->where('program_id', $programId)->orWhere('id', $programId);
+                })
+                ->firstOrFail();
+        } else {
+            $monev = DosenMonev::where('nidn', $dosen->nidn)
+                ->where('id', $idOrType)
+                ->firstOrFail();
+        }
+
+        $type = $monev->monev_type;
 
         $request->validate([
             'nilai' => 'nullable|numeric|min:0|max:100',
@@ -184,7 +207,7 @@ class DosenProgramKerjaController extends Controller
         if ($request->hasFile('foto_monev')) {
             foreach ($request->file('foto_monev') as $file) {
                 if ($file->isValid()) {
-                    $filename = 'monev_' . $type . '_' . $programId . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $filename = 'monev_' . $type . '_' . $monev->id . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                     $path = $file->storeAs('monev', $filename, 'public');
                     $currentPhotos[] = $path;
                 }
@@ -199,36 +222,31 @@ class DosenProgramKerjaController extends Controller
 
         // Send notifications
         if ($type === 'individu') {
-            $program = IndividuProgramKerja::find($programId);
-            if ($program && $program->nim) {
+            $nim = $monev->nim ?: ($monev->programKerja?->nim);
+            if ($nim) {
                 Notifikasi::kirim(
-                    $program->nim,
+                    $nim,
                     'Hasil Monev Program Kerja',
-                    "Dosen Monev ({$dosen->nama}) telah memperbarui catatan & dokumentasi hasil monev untuk program: {$program->judul}",
+                    "Dosen Monev ({$dosen->nama}) telah memperbarui catatan & dokumentasi hasil monev.",
                     'info'
                 );
             }
         } else {
-            $program = KelompokProgramKerja::find($programId);
-            if ($program) {
-                if ($program->nim_ketua) {
-                    Notifikasi::kirim(
-                        $program->nim_ketua,
-                        'Hasil Monev Program Kelompok',
-                        "Dosen Monev ({$dosen->nama}) telah mengunggah catatan & foto hasil monev untuk kelompok: {$program->judul}",
-                        'info'
-                    );
+            if ($monev->program_id) {
+                $program = KelompokProgramKerja::find($monev->program_id);
+                if ($program && $program->nim_ketua) {
+                    Notifikasi::kirim($program->nim_ketua, 'Hasil Monev Kelompok', "Dosen Monev ({$dosen->nama}) telah mengunggah catatan & foto hasil monev.", 'info');
                 }
-                $anggota = $program->anggota();
-                foreach ($anggota as $member) {
-                    if ($member->nim !== $program->nim_ketua) {
-                        Notifikasi::kirim(
-                            $member->nim,
-                            'Hasil Monev Program Kelompok',
-                            "Dosen Monev ({$dosen->nama}) telah mengunggah catatan & foto hasil monev untuk kelompok: {$program->judul}",
-                            'info'
-                        );
-                    }
+            } elseif ($monev->lokasi_id) {
+                $nims = match($monev->kegiatan) {
+                    'kkn' => \App\Models\PenempatanKkn::where('lokasi_kkn_id', $monev->lokasi_id)->pluck('nim'),
+                    'ppl' => \App\Models\PenempatanPpl::where('lokasi_ppl_id', $monev->lokasi_id)->pluck('nim'),
+                    'pkl' => \App\Models\PenempatanPkl::where('lokasi_pkl_id', $monev->lokasi_id)->pluck('nim'),
+                    'magang' => \App\Models\PenempatanMagang::where('lokasi_magang_id', $monev->lokasi_id)->pluck('nim'),
+                    default => collect(),
+                };
+                foreach ($nims as $nim) {
+                    Notifikasi::kirim($nim, 'Hasil Monev Kelompok/Lokasi', "Dosen Monev ({$dosen->nama}) telah mengunggah catatan & foto hasil monev.", 'info');
                 }
             }
         }
@@ -236,21 +254,29 @@ class DosenProgramKerjaController extends Controller
         return back()->with('success', 'Catatan, nilai, dan foto dokumentasi hasil monev berhasil disimpan!');
     }
 
-    public function deleteFotoMonev(Request $request, $type, $programId, $photoIndex)
+    public function deleteFotoMonev(Request $request, $idOrType, $programIdOrPhotoIndex = null, $photoIndex = null)
     {
         $dosen = Auth::guard('dosen')->user();
 
-        $monev = DosenMonev::where('nidn', $dosen->nidn)
-            ->where('monev_type', $type)
-            ->where('program_id', $programId)
-            ->firstOrFail();
+        if ($photoIndex !== null) {
+            $monev = DosenMonev::where('nidn', $dosen->nidn)
+                ->where('monev_type', $idOrType)
+                ->where('program_id', $programIdOrPhotoIndex)
+                ->firstOrFail();
+            $targetIndex = $photoIndex;
+        } else {
+            $monev = DosenMonev::where('nidn', $dosen->nidn)
+                ->where('id', $idOrType)
+                ->firstOrFail();
+            $targetIndex = $programIdOrPhotoIndex;
+        }
 
         $photos = is_array($monev->foto_monev) ? $monev->foto_monev : [];
 
-        if (isset($photos[$photoIndex])) {
-            $photoPath = $photos[$photoIndex];
+        if (isset($photos[$targetIndex])) {
+            $photoPath = $photos[$targetIndex];
             Storage::disk('public')->delete($photoPath);
-            array_splice($photos, $photoIndex, 1);
+            array_splice($photos, $targetIndex, 1);
             $monev->foto_monev = array_values($photos);
             $monev->save();
 

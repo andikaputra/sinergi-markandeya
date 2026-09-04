@@ -8,8 +8,11 @@ class DosenMonev extends Model
 {
     protected $fillable = [
         'nidn',
+        'nim',
+        'kegiatan',
         'monev_type',
         'program_id',
+        'lokasi_id',
         'nilai',
         'catatan',
         'foto_monev',
@@ -26,6 +29,11 @@ class DosenMonev extends Model
         return $this->belongsTo(Dosen::class, 'nidn', 'nidn');
     }
 
+    public function mahasiswa()
+    {
+        return $this->belongsTo(Mahasiswa::class, 'nim', 'nim');
+    }
+
     public function programKerja()
     {
         if ($this->monev_type === 'individu') {
@@ -33,6 +41,27 @@ class DosenMonev extends Model
         }
         return $this->belongsTo(KelompokProgramKerja::class, 'program_id');
     }
+
+    public function lokasiKkn()
+    {
+        return $this->belongsTo(LokasiKkn::class, 'lokasi_id');
+    }
+
+    public function lokasiPpl()
+    {
+        return $this->belongsTo(LokasiPpl::class, 'lokasi_id');
+    }
+
+    public function lokasiPkl()
+    {
+        return $this->belongsTo(LokasiPkl::class, 'lokasi_id');
+    }
+
+    public function lokasiMagang()
+    {
+        return $this->belongsTo(LokasiMagang::class, 'lokasi_id');
+    }
+
 
     /**
      * Get array of full public URLs for monev photos

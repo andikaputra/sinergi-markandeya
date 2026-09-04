@@ -345,6 +345,9 @@ Route::middleware(['auth:dosen'])->prefix('dosen-pembimbing')->group(function ()
 
     // Dosen Monev (Monitoring & Evaluasi)
     Route::get('/program-kerja-monev', [\App\Http\Controllers\DosenProgramKerjaController::class, 'monevDashboard'])->name('dosen.program-kerja.monev-dashboard');
+    Route::get('/program-kerja-monev/detail/{id}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'monevDetail'])->name('dosen.program-kerja.monev-detail-id');
+    Route::post('/program-kerja-monev/detail/{id}/nilai', [\App\Http\Controllers\DosenProgramKerjaController::class, 'inputNilaiMonev'])->name('dosen.program-kerja.monev-nilai-id');
+    Route::delete('/program-kerja-monev/detail/{id}/foto/{index}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'deleteFotoMonev'])->name('dosen.program-kerja.monev-delete-foto-id');
     Route::get('/program-kerja-monev/{type}/{programId}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'monevDetail'])->name('dosen.program-kerja.monev-detail');
     Route::post('/program-kerja-monev/{type}/{programId}/nilai', [\App\Http\Controllers\DosenProgramKerjaController::class, 'inputNilaiMonev'])->name('dosen.program-kerja.monev-nilai');
     Route::delete('/program-kerja-monev/{type}/{programId}/foto/{index}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'deleteFotoMonev'])->name('dosen.program-kerja.monev-delete-foto');

@@ -1,6 +1,11 @@
 @extends('layouts.main')
 
-@section('title', 'Detail & Hasil Monev - ' . $program->judul)
+@php
+    $kegiatan = strtoupper($monev->kegiatan ?? 'KKN');
+    $pageTitle = $program?->judul ?? ($type === 'individu' ? 'Monev Individu - ' . ($mahasiswa?->nama ?? $monev->nim) : 'Monev Kelompok - ' . ($lokasi?->desa ?? $lokasi?->nama_sekolah ?? $lokasi?->nama_instansi ?? 'Kelompok #' . $monev->lokasi_id));
+@endphp
+
+@section('title', 'Detail & Hasil Monev - ' . $pageTitle)
 
 @section('user_type', 'Dosen Pembimbing')
 
@@ -36,9 +41,9 @@
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-semibold uppercase tracking-wider">
                     <i class="fas fa-search-location"></i> Evaluasi Lapangan & Monev
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white line-clamp-2">{{ $program->judul }}</h1>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white line-clamp-2">{{ $pageTitle }}</h1>
                 <p class="text-slate-300 text-sm">
-                    Kategori: <strong class="text-white uppercase">{{ $program->kategori }}</strong> • Tipe: <strong class="text-white uppercase">{{ $type }}</strong>
+                    Kegiatan: <strong class="text-white uppercase">{{ $kegiatan }}</strong> • Tipe: <strong class="text-white uppercase">{{ $type }}</strong>
                 </p>
             </div>
             <div class="flex items-center gap-3">
@@ -68,21 +73,23 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <!-- Left Column: Program Info & Luaran (5 cols) -->
         <div class="lg:col-span-5 space-y-6">
-            <!-- Program Details Card -->
+            <!-- Program / Target Details Card -->
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
                 <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
                     <h2 class="text-lg font-black text-gray-900 flex items-center gap-2">
                         <i class="fas fa-info-circle text-indigo-600"></i>
-                        <span>Informasi Program</span>
+                        <span>Informasi {{ $type === 'individu' ? 'Mahasiswa' : 'Kelompok / Lokasi' }}</span>
                     </h2>
-                    @if ($program->status === 'rencana')
-                        <span class="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold rounded-full">Rencana</span>
-                    @elseif ($program->status === 'sedang_berjalan')
-                        <span class="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold rounded-full">Sedang Berjalan</span>
-                    @elseif ($program->status === 'selesai')
-                        <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-full">Selesai</span>
-                    @else
-                        <span class="px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold rounded-full">Tunda</span>
+                    @if ($program)
+                        @if ($program->status === 'rencana')
+                            <span class="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold rounded-full">Rencana</span>
+                        @elseif ($program->status === 'sedang_berjalan')
+                            <span class="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold rounded-full">Sedang Berjalan</span>
+                        @elseif ($program->status === 'selesai')
+                            <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-full">Selesai</span>
+                        @else
+                            <span class="px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold rounded-full">Tunda</span>
+                        @endif
                     @endif
                 </div>
 
@@ -90,39 +97,49 @@
                     @if ($type === 'individu')
                         <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
                             <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Mahasiswa Pelaksana</p>
-                            <p class="text-base font-bold text-gray-900 mt-1">{{ $program->mahasiswa->nama ?? '-' }}</p>
-                            <p class="text-xs text-gray-500 font-mono">NIM: {{ $program->nim }} • {{ $program->mahasiswa->prodi ?? '-' }}</p>
+                            <p class="text-base font-bold text-gray-900 mt-1">{{ $mahasiswa->nama ?? ($program?->mahasiswa?->nama ?? '-') }}</p>
+                            <p class="text-xs text-gray-500 font-mono">NIM: {{ $mahasiswa->nim ?? ($program?->nim ?? $monev->nim) }} • {{ $mahasiswa->prodi ?? ($program?->mahasiswa?->prodi ?? '-') }}</p>
                         </div>
                     @else
                         <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Ketua Kelompok</p>
-                            <p class="text-base font-bold text-gray-900 mt-1">{{ $program->mahasiswaKetua->nama ?? '-' }}</p>
-                            <p class="text-xs text-gray-500 font-mono">NIM: {{ $program->nim_ketua }}</p>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Kelompok / Lokasi</p>
+                            <p class="text-base font-bold text-gray-900 mt-1">
+                                {{ $lokasi?->desa ?? $lokasi?->nama_sekolah ?? $lokasi?->nama_instansi ?? ($program?->mahasiswaKetua?->nama ?? 'Kelompok #' . $monev->lokasi_id) }}
+                            </p>
+                            @if(isset($lokasi) && ($lokasi->kecamatan || $lokasi->kabupaten))
+                                <p class="text-xs text-gray-500">Kecamatan: {{ $lokasi->kecamatan ?? '-' }} • Kabupaten: {{ $lokasi->kabupaten ?? '-' }}</p>
+                            @endif
                         </div>
                     @endif
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                            <span class="text-xs text-gray-400 font-medium block">Tgl Mulai</span>
-                            <span class="font-bold text-gray-800 text-xs">{{ $program->tanggal_mulai ? $program->tanggal_mulai->format('d M Y') : '-' }}</span>
+                    @if ($program)
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                <span class="text-xs text-gray-400 font-medium block">Tgl Mulai</span>
+                                <span class="font-bold text-gray-800 text-xs">{{ $program->tanggal_mulai ? $program->tanggal_mulai->format('d M Y') : '-' }}</span>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                <span class="text-xs text-gray-400 font-medium block">Tgl Selesai</span>
+                                <span class="font-bold text-gray-800 text-xs">{{ $program->tanggal_selesai ? $program->tanggal_selesai->format('d M Y') : '-' }}</span>
+                            </div>
                         </div>
-                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                            <span class="text-xs text-gray-400 font-medium block">Tgl Selesai</span>
-                            <span class="font-bold text-gray-800 text-xs">{{ $program->tanggal_selesai ? $program->tanggal_selesai->format('d M Y') : '-' }}</span>
-                        </div>
-                    </div>
 
-                    @if($program->lokasi)
-                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                        <span class="text-xs text-gray-400 font-medium block">Lokasi Program</span>
-                        <span class="font-bold text-gray-800 text-xs">{{ $program->lokasi }}</span>
-                    </div>
+                        @if($program->lokasi)
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                            <span class="text-xs text-gray-400 font-medium block">Lokasi Program</span>
+                            <span class="font-bold text-gray-800 text-xs">{{ $program->lokasi }}</span>
+                        </div>
+                        @endif
+
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Deskripsi Program</span>
+                            <p class="text-gray-700 text-xs bg-gray-50 p-3 rounded-xl border border-gray-100 leading-relaxed whitespace-pre-wrap">{{ $program->deskripsi ?: 'Tidak ada deskripsi' }}</p>
+                        </div>
+                    @else
+                        <div class="p-4 bg-amber-50/60 rounded-2xl border border-amber-200/70 text-xs text-amber-900 leading-relaxed">
+                            <i class="fas fa-info-circle mr-1 text-amber-600"></i> Mahasiswa/kelompok ini belum membuat rincian judul program kerja di sistem. Anda tetap dapat melakukan observasi dan mencatat evaluasi monev di formulir sebelah kanan.
+                        </div>
                     @endif
-
-                    <div>
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Deskripsi</span>
-                        <p class="text-gray-700 text-xs bg-gray-50 p-3 rounded-xl border border-gray-100 leading-relaxed whitespace-pre-wrap">{{ $program->deskripsi ?: 'Tidak ada deskripsi' }}</p>
-                    </div>
                 </div>
             </div>
 
@@ -140,7 +157,7 @@
                                 <p class="font-bold text-gray-900 truncate">{{ $member->nama }}</p>
                                 <p class="text-gray-500 font-mono">{{ $member->nim }}</p>
                             </div>
-                            @if ($member->nim === $program->nim_ketua)
+                            @if (isset($program) && $member->nim === $program->nim_ketua)
                                 <span class="px-2 py-0.5 bg-amber-100 text-amber-800 font-bold rounded-md text-[10px]">Ketua</span>
                             @endif
                         </div>
@@ -150,6 +167,7 @@
             @endif
 
             <!-- Deliverables / Luaran Card -->
+            @if ($program)
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
                 <h3 class="text-base font-black text-gray-900 mb-4 flex items-center gap-2">
                     <i class="fas fa-box-open text-indigo-600"></i>
@@ -186,6 +204,7 @@
                     <p class="text-xs text-gray-400 text-center py-4">Belum ada luaran yang ditambahkan.</p>
                 @endif
             </div>
+            @endif
         </div>
 
         <!-- Right Column: Monev Form & Photo Gallery (7 cols) -->
@@ -202,7 +221,7 @@
                     </div>
                 </div>
 
-                <form action="{{ route('dosen.program-kerja.monev-nilai', ['type' => $type, 'programId' => $program->id]) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <form action="{{ route('dosen.program-kerja.monev-nilai-id', $monev->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
                     <!-- Tanggal Pelaksanaan Monev -->
@@ -222,7 +241,7 @@
                             Catatan & Hasil Evaluasi Monev <span class="text-red-500">*</span>
                         </label>
                         <p class="text-xs text-gray-400 mb-2">Tuliskan hasil pengamatan di lokasi, pencapaian target, evaluasi kendala, serta arahan/saran untuk mahasiswa.</p>
-                        <textarea name="catatan" rows="6" placeholder="Contoh: Berdasarkan monev lapangan pada tanggal ini, kelompok telah menyelesaikan 80% program kerja. Koordinasi dengan kepala desa berjalan sangat baik. Disarankan untuk segera menyelesaikan laporan akhir..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition leading-relaxed @error('catatan') border-red-500 @enderror">{{ old('catatan', $monev->catatan) }}</textarea>
+                        <textarea name="catatan" rows="6" placeholder="Contoh: Berdasarkan monev lapangan pada tanggal ini, pelaksanaan kegiatan berjalan dengan baik. Mahasiswa aktif berkoordinasi dengan warga..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition leading-relaxed @error('catatan') border-red-500 @enderror">{{ old('catatan', $monev->catatan) }}</textarea>
                         @error('catatan')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -301,7 +320,7 @@
                             <span>Dokumentasi Foto Hasil Monev Tersimpan</span>
                         </h2>
                         <p class="text-xs text-gray-500 mt-0.5">
-                            {{ !empty($monev->foto_monev) ? count($monev->foto_monev) : 0 }} foto tersimpan untuk program ini
+                            {{ !empty($monev->foto_monev) ? count($monev->foto_monev) : 0 }} foto tersimpan untuk penugasan ini
                         </p>
                     </div>
                 </div>
@@ -319,7 +338,7 @@
                                 <!-- Hover Overlay Actions -->
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-between pointer-events-none">
                                     <div class="flex justify-end pointer-events-auto">
-                                        <form action="{{ route('dosen.program-kerja.monev-delete-foto', ['type' => $type, 'programId' => $program->id, 'index' => $index]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto dokumentasi ini?');">
+                                        <form action="{{ route('dosen.program-kerja.monev-delete-foto-id', ['id' => $monev->id, 'index' => $index]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto dokumentasi ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="w-8 h-8 rounded-full bg-rose-600/90 hover:bg-rose-700 text-white flex items-center justify-center text-xs shadow-md transition" title="Hapus foto ini">

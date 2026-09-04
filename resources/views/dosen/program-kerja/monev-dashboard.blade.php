@@ -49,7 +49,7 @@
             <div>
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Penugasan</p>
                 <h3 class="text-3xl font-black text-gray-900 mt-2">{{ $totalTugas }}</h3>
-                <p class="text-xs text-gray-500 mt-1">Program kerja individu & kelompok</p>
+                <p class="text-xs text-gray-500 mt-1">Mahasiswa & kelompok monev</p>
             </div>
             <div class="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-2xl font-bold border border-indigo-100">
                 <i class="fas fa-tasks"></i>
@@ -60,7 +60,7 @@
             <div>
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Sudah Dimonev</p>
                 <h3 class="text-3xl font-black text-emerald-600 mt-2">{{ $totalSelesai }}</h3>
-                <p class="text-xs text-gray-500 mt-1">Ada catatan / dokumentasi / nilai</p>
+                <p class="text-xs text-gray-500 mt-1">Ada catatan / foto / nilai</p>
             </div>
             <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 text-2xl font-bold border border-emerald-100">
                 <i class="fas fa-check-double"></i>
@@ -83,7 +83,7 @@
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-6 sm:p-8 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h2 class="text-xl font-black text-gray-900">Daftar Program Kerja yang Anda Monev</h2>
+                <h2 class="text-xl font-black text-gray-900">Daftar Mahasiswa & Kelompok yang Anda Monev</h2>
                 <p class="text-sm text-gray-500 mt-1">Klik pada kartu untuk menginput catatan evaluasi dan mengunggah foto dokumentasi hasil monev</p>
             </div>
         </div>
@@ -93,25 +93,37 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     @foreach ($monevPrograms as $monev)
                         @php
+                            $typeLabel = $monev->monev_type === 'individu' ? 'Individu' : 'Kelompok';
+                            $typeBadgeClass = $monev->monev_type === 'individu' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-purple-50 text-purple-700 border-purple-200';
+                            $kegiatan = strtoupper($monev->kegiatan ?? 'KKN');
+
                             if ($monev->monev_type === 'individu') {
-                                $program = App\Models\IndividuProgramKerja::with('mahasiswa')->find($monev->program_id);
-                                $picName = $program?->mahasiswa?->nama ?? '-';
-                                $picNim = $program?->mahasiswa?->nim ?? '-';
-                                $typeLabel = 'Individu';
-                                $typeBadgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+                                $program = $monev->program_id ? App\Models\IndividuProgramKerja::find($monev->program_id) : null;
+                                $mhs = $monev->mahasiswa ?: ($program?->mahasiswa ?: App\Models\Mahasiswa::where('nim', $monev->nim)->first());
+                                $title = $program?->judul ?? ('Monev Individu ' . $kegiatan . ' - ' . ($mhs?->nama ?? $monev->nim));
+                                $picName = $mhs?->nama ?? '-';
+                                $picNim = $mhs?->nim ?? $monev->nim;
+                                $lokasiName = match(strtolower($monev->kegiatan ?? 'kkn')) {
+                                    'kkn' => $mhs?->penempatankkn?->lokasikkn?->desa,
+                                    'ppl' => $mhs?->penempatanppl?->lokasippl?->nama_sekolah,
+                                    'pkl' => $mhs?->penempatanpkl?->lokasipkl?->nama_instansi,
+                                    'magang' => $mhs?->penempatanmagang?->lokasimagang?->nama_instansi,
+                                    default => null,
+                                };
                             } else {
-                                $program = App\Models\KelompokProgramKerja::with('mahasiswaKetua')->find($monev->program_id);
-                                $picName = $program?->mahasiswaKetua?->nama ?? '-';
-                                $picNim = $program?->mahasiswaKetua?->nim ?? '-';
-                                $typeLabel = 'Kelompok';
-                                $typeBadgeClass = 'bg-purple-50 text-purple-700 border-purple-200';
+                                $program = $monev->program_id ? App\Models\KelompokProgramKerja::find($monev->program_id) : null;
+                                $lok = $monev->lokasiKkn ?: ($monev->lokasiPpl ?: ($monev->lokasiPkl ?: $monev->lokasiMagang));
+                                $picName = $program?->mahasiswaKetua?->nama ?? ($lok?->desa ?? $lok?->nama_sekolah ?? $lok?->nama_instansi ?? 'Kelompok #' . $monev->lokasi_id);
+                                $picNim = $program?->nim_ketua ?? '-';
+                                $title = $program?->judul ?? ('Monev Kelompok ' . $kegiatan . ' - ' . $picName);
+                                $lokasiName = ($lok?->kecamatan ? 'Kec. ' . $lok->kecamatan : '') . ($lok?->kabupaten ? ', ' . $lok->kabupaten : '');
                             }
+
                             $hasPhotos = !empty($monev->foto_monev) && count($monev->foto_monev) > 0;
                             $hasNotes = !empty($monev->catatan);
                             $hasScore = !is_null($monev->nilai);
                         @endphp
 
-                        @if ($program)
                         <div class="bg-white rounded-2xl border border-gray-200 hover:border-indigo-400 hover:shadow-lg transition-all duration-200 flex flex-col justify-between overflow-hidden group">
                             <div class="p-6">
                                 <!-- Top Badges -->
@@ -121,7 +133,7 @@
                                             <i class="fas {{ $monev->monev_type === 'individu' ? 'fa-user' : 'fa-users' }} mr-1"></i> {{ $typeLabel }}
                                         </span>
                                         <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 uppercase">
-                                            {{ $program->kategori }}
+                                            {{ $kegiatan }}
                                         </span>
                                     </div>
                                     @if ($hasScore)
@@ -134,19 +146,19 @@
 
                                 <!-- Title -->
                                 <h3 class="font-bold text-gray-900 text-lg group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2">
-                                    {{ $program->judul }}
+                                    {{ $title }}
                                 </h3>
 
                                 <!-- PIC & Location -->
                                 <div class="space-y-1.5 text-xs text-gray-600 mb-4 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100">
                                     <div class="flex items-center gap-2">
                                         <i class="fas {{ $monev->monev_type === 'individu' ? 'fa-user-graduate' : 'fa-crown text-amber-600' }} w-4 text-gray-400"></i>
-                                        <span><strong>{{ $monev->monev_type === 'individu' ? 'Mahasiswa' : 'Ketua' }}:</strong> {{ $picName }} ({{ $picNim }})</span>
+                                        <span><strong>{{ $monev->monev_type === 'individu' ? 'Mahasiswa' : 'Kelompok/Ketua' }}:</strong> {{ $picName }} @if($picNim !== '-') ({{ $picNim }}) @endif</span>
                                     </div>
-                                    @if($program->lokasi)
+                                    @if($lokasiName)
                                     <div class="flex items-center gap-2">
                                         <i class="fas fa-map-marker-alt w-4 text-rose-500"></i>
-                                        <span class="truncate">{{ $program->lokasi }}</span>
+                                        <span class="truncate">{{ $lokasiName }}</span>
                                     </div>
                                     @endif
                                     @if($monev->tanggal_monev)
@@ -186,13 +198,12 @@
                                 <span class="text-xs text-gray-400 font-medium">
                                     {{ $monev->updated_at ? 'Diperbarui ' . $monev->updated_at->diffForHumans() : 'Belum diupdate' }}
                                 </span>
-                                <a href="{{ route('dosen.program-kerja.monev-detail', ['type' => $monev->monev_type, 'programId' => $monev->program_id]) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition">
+                                <a href="{{ route('dosen.program-kerja.monev-detail-id', $monev->id) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition">
                                     <span>Detail & Monev</span>
                                     <i class="fas fa-arrow-right text-[10px]"></i>
                                 </a>
                             </div>
                         </div>
-                        @endif
                     @endforeach
                 </div>
 
@@ -209,7 +220,7 @@
                     </div>
                     <h3 class="text-lg font-bold text-gray-800">Belum Ada Program yang Ditugaskan</h3>
                     <p class="text-sm text-gray-500 max-w-md mx-auto mt-2">
-                        Admin belum menugaskan Anda sebagai Dosen Pemonev untuk program kerja mahasiswa. Silakan hubungi admin prodi/kegiatan jika diperlukan.
+                        Admin belum menugaskan Anda sebagai Dosen Pemonev untuk mahasiswa/kelompok.
                     </p>
                 </div>
             @endif
