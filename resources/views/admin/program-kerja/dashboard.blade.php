@@ -36,7 +36,7 @@
                 <div>
                     <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Mahasiswa Tanpa Program</p>
                     <p class="text-4xl font-black text-gray-900 mt-2">{{ $mahasiswaTanpaProgram }}</p>
-                    <p class="text-xs text-gray-400 mt-2">{{ round(($mahasiswaTanpaProgram / $totalMahasiswa) * 100) }}%</p>
+                    <p class="text-xs text-gray-400 mt-2">{{ $totalMahasiswa > 0 ? round(($mahasiswaTanpaProgram / $totalMahasiswa) * 100) : 0 }}%</p>
                 </div>
                 <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600">
                     <i class="fas fa-exclamation-circle text-2xl"></i>
@@ -48,8 +48,8 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Program Selesai</p>
-                    <p class="text-4xl font-black text-gray-900 mt-2">{{ $statistikStatus['selesai'] }}</p>
-                    <p class="text-xs text-gray-400 mt-2">{{ round(($statistikStatus['selesai'] / $totalProgram) * 100) }}%</p>
+                    <p class="text-4xl font-black text-gray-900 mt-2">{{ $statistikStatus['selesai'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-400 mt-2">{{ $totalProgram > 0 ? round((($statistikStatus['selesai'] ?? 0) / $totalProgram) * 100) : 0 }}%</p>
                 </div>
                 <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
                     <i class="fas fa-trophy text-2xl"></i>

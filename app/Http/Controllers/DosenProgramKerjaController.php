@@ -191,12 +191,14 @@ class DosenProgramKerjaController extends Controller
             'nilai' => 'nullable|numeric|min:0|max:100',
             'catatan' => 'nullable|string|max:5000',
             'tanggal_monev' => 'nullable|date',
+            'link_monev' => 'nullable|url|max:1000',
             'foto_monev' => 'nullable|array',
             'foto_monev.*' => 'nullable|file|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
         ], [
             'nilai.numeric' => 'Nilai harus berupa angka',
             'nilai.min' => 'Nilai minimal adalah 0',
             'nilai.max' => 'Nilai maksimal adalah 100',
+            'link_monev.url' => 'Format tautan Google Drive / dokumentasi harus berupa URL yang valid (diawali https://)',
             'foto_monev.*.image' => 'Berkas harus berupa gambar (JPG, PNG, WEBP)',
             'foto_monev.*.max' => 'Ukuran setiap foto maksimal 10MB',
         ]);
@@ -217,6 +219,7 @@ class DosenProgramKerjaController extends Controller
         $monev->nilai = $request->filled('nilai') ? $request->input('nilai') : $monev->nilai;
         $monev->catatan = $request->input('catatan');
         $monev->tanggal_monev = $request->filled('tanggal_monev') ? $request->input('tanggal_monev') : ($monev->tanggal_monev ?: now()->toDateString());
+        $monev->link_monev = $request->input('link_monev');
         $monev->foto_monev = $currentPhotos;
         $monev->save();
 
@@ -240,7 +243,7 @@ class DosenProgramKerjaController extends Controller
             } elseif ($monev->lokasi_id) {
                 $nims = match($monev->kegiatan) {
                     'kkn' => \App\Models\PenempatanKkn::where('lokasi_kkn_id', $monev->lokasi_id)->pluck('nim'),
-                    'ppl' => \App\Models\PenempatanPpl::where('lokasi_ppl_id', $monev->lokasi_id)->pluck('nim'),
+                    'ppl' => \App\Models\PenempatanPpl::where('sekolah_id', $monev->lokasi_id)->pluck('nim'),
                     'pkl' => \App\Models\PenempatanPkl::where('lokasi_pkl_id', $monev->lokasi_id)->pluck('nim'),
                     'magang' => \App\Models\PenempatanMagang::where('lokasi_magang_id', $monev->lokasi_id)->pluck('nim'),
                     default => collect(),

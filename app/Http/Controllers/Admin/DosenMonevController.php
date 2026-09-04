@@ -16,11 +16,70 @@ use App\Models\LokasiMagang;
 
 class DosenMonevController extends Controller
 {
+    private function ensureTableSchema()
+    {
+        if (\Illuminate\Support\Facades\Schema::hasTable('dosen_monevs')) {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'nim') || 
+                !\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'kegiatan') || 
+                !\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'lokasi_id') ||
+                !\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'link_monev') ||
+                !\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'foto_monev')) {
+                
+                try {
+                    // Drop old unique index if exists
+                    try {
+                        \Illuminate\Support\Facades\Schema::table('dosen_monevs', function (\Illuminate\Database\Schema\Blueprint $table) {
+                            $table->dropUnique('dosen_monevs_monev_type_program_id_unique');
+                        });
+                    } catch (\Throwable $e) {}
+
+                    \Illuminate\Support\Facades\Schema::table('dosen_monevs', function (\Illuminate\Database\Schema\Blueprint $table) {
+                        try {
+                            $table->bigInteger('program_id')->nullable()->change();
+                        } catch (\Throwable $e) {}
+
+                        if (!\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'nim')) {
+                            $table->string('nim')->nullable()->after('nidn');
+                        }
+                        if (!\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'kegiatan')) {
+                            $table->string('kegiatan')->nullable()->after('monev_type');
+                        }
+                        if (!\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'lokasi_id')) {
+                            $table->bigInteger('lokasi_id')->nullable()->after('program_id');
+                        }
+                        if (!\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'foto_monev')) {
+                            $table->json('foto_monev')->nullable()->after('catatan');
+                        }
+                        if (!\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'tanggal_monev')) {
+                            $table->date('tanggal_monev')->nullable()->after('foto_monev');
+                        }
+                        if (!\Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'link_monev')) {
+                            $table->string('link_monev', 1000)->nullable()->after('foto_monev');
+                        }
+                    });
+                } catch (\Throwable $e) {
+                    // Ignore schema migration error
+                }
+            }
+        }
+    }
+
     public function index(Request $request)
     {
+        $this->ensureTableSchema();
+
         $kegiatan = strtolower($request->query('kegiatan', 'kkn'));
         $type = $request->query('type', 'individu');
         $dosens = Dosen::orderBy('nama', 'asc')->get();
+
+        $mahasiswas = collect();
+        $prokers = collect();
+        $lokasis = collect();
+        $kelompokProkers = collect();
+
+        $hasKegiatanCol = \Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'kegiatan');
+        $hasLokasiCol = \Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'lokasi_id');
+        $hasNimCol = \Illuminate\Support\Facades\Schema::hasColumn('dosen_monevs', 'nim');
 
         if ($type === 'individu') {
             // Get all Mahasiswa for this kegiatan
@@ -33,29 +92,27 @@ class DosenMonevController extends Controller
             $prokers = IndividuProgramKerja::where('kategori', $kegiatan)->get()->keyBy('nim');
 
             // Active assignments
-            $assignments = DosenMonev::where('monev_type', 'individu')
-                ->where(function ($q) use ($kegiatan) {
+            $query = DosenMonev::where('monev_type', 'individu');
+            if ($hasKegiatanCol) {
+                $query->where(function ($q) use ($kegiatan) {
                     $q->where('kegiatan', $kegiatan)
+                      ->orWhereNull('kegiatan')
                       ->orWhereHas('mahasiswa', function ($m) use ($kegiatan) {
                           $m->withKegiatan(strtoupper($kegiatan));
                       });
-                })
-                ->with(['dosen', 'mahasiswa'])
+                });
+            }
+            $assignments = $query->with(['dosen', 'mahasiswa', 'programKerja'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
 
-            $existingAssignments = $assignments->pluck('nim')->filter()->toArray();
-
-            return view('admin.dosen-monev.index', compact(
-                'mahasiswas', 'prokers', 'dosens', 'kegiatan', 'type', 'assignments', 'existingAssignments'
-            ));
+            $existingAssignments = $hasNimCol ? $assignments->pluck('nim')->filter()->toArray() : [];
         } else {
             // Kelompok tab: load groups / locations and kelompok prokers
-            $lokasis = collect();
             if ($kegiatan === 'kkn') {
                 $lokasis = LokasiKkn::with(['penempatankkn.mahasiswa'])->orderBy('desa', 'asc')->get();
             } elseif ($kegiatan === 'ppl') {
-                $lokasis = LokasiPpl::with(['penempatanppl.mahasiswa'])->orderBy('nama_sekolah', 'asc')->get();
+                $lokasis = LokasiPpl::with(['penempatanppl.mahasiswa'])->orderBy('Sekolah', 'asc')->get();
             } elseif ($kegiatan === 'pkl') {
                 $lokasis = LokasiPkl::with(['penempatanpkl.mahasiswa'])->orderBy('nama_instansi', 'asc')->get();
             } elseif ($kegiatan === 'magang') {
@@ -64,18 +121,23 @@ class DosenMonevController extends Controller
 
             $kelompokProkers = KelompokProgramKerja::where('kategori', $kegiatan)->with('mahasiswaKetua')->get();
 
-            $assignments = DosenMonev::where('monev_type', 'kelompok')
-                ->where('kegiatan', $kegiatan)
-                ->with(['dosen', 'lokasiKkn', 'lokasiPpl', 'lokasiPkl', 'lokasiMagang'])
+            $query = DosenMonev::where('monev_type', 'kelompok');
+            if ($hasKegiatanCol) {
+                $query->where(function ($q) use ($kegiatan) {
+                    $q->where('kegiatan', $kegiatan)
+                      ->orWhereNull('kegiatan');
+                });
+            }
+            $assignments = $query->with(['dosen', 'lokasiKkn', 'lokasiPpl', 'lokasiPkl', 'lokasiMagang', 'programKerja'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
 
-            $existingAssignments = $assignments->pluck('lokasi_id')->filter()->toArray();
-
-            return view('admin.dosen-monev.index', compact(
-                'lokasis', 'kelompokProkers', 'dosens', 'kegiatan', 'type', 'assignments', 'existingAssignments'
-            ));
+            $existingAssignments = $hasLokasiCol ? $assignments->pluck('lokasi_id')->filter()->toArray() : [];
         }
+
+        return view('admin.dosen-monev.index', compact(
+            'mahasiswas', 'prokers', 'lokasis', 'kelompokProkers', 'dosens', 'kegiatan', 'type', 'assignments', 'existingAssignments'
+        ));
     }
 
     public function store(Request $request)
@@ -96,6 +158,10 @@ class DosenMonevController extends Controller
             foreach ($validated['nims'] as $nim) {
                 $proker = IndividuProgramKerja::where('nim', $nim)->first();
                 $existing = DosenMonev::where('monev_type', 'individu')
+                    ->where(function ($q) use ($kegiatan) {
+                        $q->where('kegiatan', $kegiatan)
+                          ->orWhereNull('kegiatan');
+                    })
                     ->where(function ($q) use ($nim, $proker) {
                         $q->where('nim', $nim);
                         if ($proker) {
@@ -133,7 +199,10 @@ class DosenMonevController extends Controller
 
             foreach ($validated['lokasi_ids'] as $lokasiId) {
                 $existing = DosenMonev::where('monev_type', 'kelompok')
-                    ->where('kegiatan', $kegiatan)
+                    ->where(function ($q) use ($kegiatan) {
+                        $q->where('kegiatan', $kegiatan)
+                          ->orWhereNull('kegiatan');
+                    })
                     ->where(function ($q) use ($lokasiId) {
                         $q->where('lokasi_id', $lokasiId)
                           ->orWhere('program_id', $lokasiId);
@@ -152,6 +221,7 @@ class DosenMonevController extends Controller
                         'lokasi_id' => $lokasiId,
                         'kegiatan' => $kegiatan,
                         'nidn' => $validated['nidn'],
+                        'program_id' => null,
                     ]);
                 }
             }
@@ -193,31 +263,55 @@ class DosenMonevController extends Controller
             if ($request->input('monev_type') === 'individu') {
                 if (Mahasiswa::where('nim', $identifier)->exists() && Dosen::where('nidn', $nidn)->exists()) {
                     $proker = IndividuProgramKerja::where('nim', $identifier)->first();
-                    DosenMonev::updateOrCreate(
-                        [
+                    $existing = DosenMonev::where('monev_type', 'individu')
+                        ->where(function ($q) use ($kegiatan) {
+                            $q->where('kegiatan', $kegiatan)
+                              ->orWhereNull('kegiatan');
+                        })
+                        ->where('nim', $identifier)
+                        ->first();
+
+                    if ($existing) {
+                        $existing->update([
+                            'nidn' => $nidn,
+                            'kegiatan' => $kegiatan,
+                            'program_id' => $proker?->id,
+                        ]);
+                    } else {
+                        DosenMonev::create([
                             'monev_type' => 'individu',
                             'nim' => $identifier,
                             'kegiatan' => $kegiatan,
-                        ],
-                        [
                             'nidn' => $nidn,
                             'program_id' => $proker?->id,
-                        ]
-                    );
+                        ]);
+                    }
                     $imported++;
                 }
             } else {
                 if (Dosen::where('nidn', $nidn)->exists()) {
-                    DosenMonev::updateOrCreate(
-                        [
+                    $existing = DosenMonev::where('monev_type', 'kelompok')
+                        ->where(function ($q) use ($kegiatan) {
+                            $q->where('kegiatan', $kegiatan)
+                              ->orWhereNull('kegiatan');
+                        })
+                        ->where('lokasi_id', $identifier)
+                        ->first();
+
+                    if ($existing) {
+                        $existing->update([
+                            'nidn' => $nidn,
+                            'kegiatan' => $kegiatan,
+                        ]);
+                    } else {
+                        DosenMonev::create([
                             'monev_type' => 'kelompok',
                             'lokasi_id' => $identifier,
                             'kegiatan' => $kegiatan,
-                        ],
-                        [
                             'nidn' => $nidn,
-                        ]
-                    );
+                            'program_id' => null,
+                        ]);
+                    }
                     $imported++;
                 }
             }

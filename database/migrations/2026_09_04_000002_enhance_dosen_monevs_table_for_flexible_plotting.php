@@ -11,25 +11,33 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('dosen_monevs', function (Blueprint $table) {
-            // Make program_id nullable if it's not already
-            $table->bigInteger('program_id')->nullable()->change();
+        if (Schema::hasTable('dosen_monevs')) {
+            // Drop unique constraint on (monev_type, program_id) if it exists so multiple records with null program_id can be created
+            try {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE `dosen_monevs` DROP INDEX `dosen_monevs_monev_type_program_id_unique`");
+            } catch (\Throwable $e) {}
 
-            if (!Schema::hasColumn('dosen_monevs', 'nim')) {
-                $table->string('nim')->nullable()->after('nidn');
-                $table->index('nim');
-            }
+            try {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE `dosen_monevs` MODIFY `program_id` BIGINT NULL");
+            } catch (\Throwable $e) {}
 
-            if (!Schema::hasColumn('dosen_monevs', 'kegiatan')) {
-                $table->string('kegiatan')->nullable()->after('monev_type');
-                $table->index('kegiatan');
-            }
+            Schema::table('dosen_monevs', function (Blueprint $table) {
+                if (!Schema::hasColumn('dosen_monevs', 'nim')) {
+                    $table->string('nim')->nullable()->after('nidn');
+                    $table->index('nim');
+                }
 
-            if (!Schema::hasColumn('dosen_monevs', 'lokasi_id')) {
-                $table->bigInteger('lokasi_id')->nullable()->after('program_id');
-                $table->index('lokasi_id');
-            }
-        });
+                if (!Schema::hasColumn('dosen_monevs', 'kegiatan')) {
+                    $table->string('kegiatan')->nullable()->after('monev_type');
+                    $table->index('kegiatan');
+                }
+
+                if (!Schema::hasColumn('dosen_monevs', 'lokasi_id')) {
+                    $table->bigInteger('lokasi_id')->nullable()->after('program_id');
+                    $table->index('lokasi_id');
+                }
+            });
+        }
     }
 
     /**

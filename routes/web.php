@@ -69,6 +69,16 @@ Route::middleware(['auth:web'])->group(function () {
         return back()->with('success', 'Semua cache (route, view, config, cache) berhasil dibersihkan!');
     })->name('admin.clear-cache');
 
+    Route::get('/admin/run-migrate', function () {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $output = \Illuminate\Support\Facades\Artisan::output();
+            return back()->with('success', 'Migrasi database berhasil dijalankan! ' . $output);
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Gagal migrasi: ' . $e->getMessage());
+        }
+    })->name('admin.run-migrate');
+
 
     Route::get('/admin/peserta/kkn', [AdminController::class, 'pesertaKKN'])->name('admin.peserta.kkn')->middleware('kegiatan:KKN');
     Route::get('/admin/peserta/ppl', [AdminController::class, 'pesertaPPL'])->name('admin.peserta.ppl')->middleware('kegiatan:PPL');

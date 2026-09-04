@@ -2,7 +2,7 @@
 
 @php
     $kegiatan = strtoupper($monev->kegiatan ?? 'KKN');
-    $pageTitle = $program?->judul ?? ($type === 'individu' ? 'Monev Individu - ' . ($mahasiswa?->nama ?? $monev->nim) : 'Monev Kelompok - ' . ($lokasi?->desa ?? $lokasi?->nama_sekolah ?? $lokasi?->nama_instansi ?? 'Kelompok #' . $monev->lokasi_id));
+    $pageTitle = $program?->judul ?? ($type === 'individu' ? 'Monev Individu - ' . ($mahasiswa?->nama ?? $monev->nim) : 'Monev Kelompok - ' . ($lokasi?->desa ?? $lokasi?->Sekolah ?? $lokasi?->sekolah ?? $lokasi?->nama_sekolah ?? $lokasi?->nama_instansi ?? 'Kelompok #' . $monev->lokasi_id));
 @endphp
 
 @section('title', 'Detail & Hasil Monev - ' . $pageTitle)
@@ -104,7 +104,7 @@
                         <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
                             <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Kelompok / Lokasi</p>
                             <p class="text-base font-bold text-gray-900 mt-1">
-                                {{ $lokasi?->desa ?? $lokasi?->nama_sekolah ?? $lokasi?->nama_instansi ?? ($program?->mahasiswaKetua?->nama ?? 'Kelompok #' . $monev->lokasi_id) }}
+                                {{ $lokasi?->desa ?? $lokasi?->Sekolah ?? $lokasi?->sekolah ?? $lokasi?->nama_sekolah ?? $lokasi?->nama_instansi ?? ($program?->mahasiswaKetua?->nama ?? 'Kelompok #' . $monev->lokasi_id) }}
                             </p>
                             @if(isset($lokasi) && ($lokasi->kecamatan || $lokasi->kabupaten))
                                 <p class="text-xs text-gray-500">Kecamatan: {{ $lokasi->kecamatan ?? '-' }} • Kabupaten: {{ $lokasi->kabupaten ?? '-' }}</p>
@@ -263,12 +263,53 @@
                         @enderror
                     </div>
 
-                    <!-- Upload Foto Hasil Monev (Multiple) -->
+                    <!-- Link Google Drive Dokumentasi Foto Monev -->
+                    <div class="p-5 bg-gradient-to-br from-indigo-50/70 via-blue-50/40 to-emerald-50/40 rounded-2xl border border-indigo-100/80 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fab fa-google-drive text-emerald-600 text-base"></i>
+                                <span>Tautan Google Drive Dokumentasi / Foto Monev</span>
+                            </label>
+                            <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase tracking-wider">
+                                Direkomendasikan
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            Masukkan tautan/link folder <strong>Google Drive</strong> yang berisi foto-foto atau dokumen hasil monitoring dan evaluasi lapangan. Mahasiswa dapat langsung membuka link tersebut tanpa membebani kapasitas server.
+                        </p>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-600">
+                                <i class="fab fa-google-drive text-base"></i>
+                            </div>
+                            <input type="url" name="link_monev" value="{{ old('link_monev', $monev->link_monev) }}" placeholder="https://drive.google.com/drive/folders/..." class="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition @error('link_monev') border-red-500 @enderror">
+                        </div>
+                        @error('link_monev')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+
+                        @if ($monev->link_monev)
+                            <div class="pt-1 flex items-center justify-between">
+                                <span class="text-xs text-emerald-800 font-medium truncate max-w-md">
+                                    <i class="fas fa-check-circle text-emerald-600 mr-1"></i> Tautan aktif tersimpan
+                                </span>
+                                <a href="{{ $monev->link_monev }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition">
+                                    <i class="fab fa-google-drive"></i>
+                                    <span>Buka Tautan Drive</span>
+                                    <i class="fas fa-external-link-alt text-[10px] ml-1"></i>
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Upload Foto Hasil Monev (Multiple) - Opsional -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                            Unggah Foto Hasil Monev / Dokumentasi Lapangan
-                        </label>
-                        <p class="text-xs text-gray-400 mb-3">Pilih 1 atau beberapa foto sekaligus (Format: JPG, PNG, WEBP. Maks 10MB per foto).</p>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                Unggah Foto Langsung ke Server (Opsional)
+                            </label>
+                            <span class="text-[10px] text-gray-400 font-semibold">Format: JPG, PNG, WEBP</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-3">Jika tidak menggunakan link Google Drive, Anda dapat mengunggah beberapa file foto langsung (Maks 10MB per foto).</p>
 
                         <div class="border-2 border-dashed border-gray-200 hover:border-indigo-500 rounded-2xl p-6 text-center bg-gray-50/50 transition-colors cursor-pointer relative">
                             <input type="file" name="foto_monev[]" multiple accept="image/*" @change="handleFileSelect" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
@@ -276,7 +317,7 @@
                                 <div class="w-12 h-12 mx-auto rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
                                     <i class="fas fa-camera"></i>
                                 </div>
-                                <p class="text-xs font-bold text-gray-700">Klik di sini untuk memilih foto dokumentasi monev</p>
+                                <p class="text-xs font-bold text-gray-700">Klik di sini untuk memilih file foto langsung</p>
                                 <p class="text-[11px] text-gray-400">Bisa memilih lebih dari satu foto secara bersamaan</p>
                             </div>
                         </div>
@@ -305,61 +346,87 @@
                     <div class="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">
                         <button type="submit" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200 flex items-center justify-center gap-2">
                             <i class="fas fa-save"></i>
-                            <span>Simpan Catatan & Foto Monev</span>
+                            <span>Simpan Evaluasi & Dokumentasi</span>
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- Saved Photos Gallery Card -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
-                <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+            <!-- Saved Photos & Drive Gallery Card -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-6">
+                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
                     <div>
                         <h2 class="text-lg font-black text-gray-900 flex items-center gap-2">
                             <i class="fas fa-images text-indigo-600"></i>
-                            <span>Dokumentasi Foto Hasil Monev Tersimpan</span>
+                            <span>Dokumentasi Hasil Monev Tersimpan</span>
                         </h2>
                         <p class="text-xs text-gray-500 mt-0.5">
-                            {{ !empty($monev->foto_monev) ? count($monev->foto_monev) : 0 }} foto tersimpan untuk penugasan ini
+                            Status dokumentasi untuk penugasan monev ini
                         </p>
                     </div>
                 </div>
 
-                @if (!empty($monev->foto_monev) && count($monev->foto_monev) > 0)
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        @foreach ($monev->foto_monev as $index => $photoPath)
-                            @php
-                                $photoUrl = asset('storage/' . ltrim($photoPath, '/'));
-                            @endphp
-                            <div class="group relative rounded-2xl overflow-hidden border border-gray-200 bg-slate-950 aspect-square shadow-sm flex flex-col justify-between">
-                                <!-- Image with click to view -->
-                                <img src="{{ $photoUrl }}" alt="Dokumentasi Monev {{ $index + 1 }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer" @click="selectedImage = '{{ $photoUrl }}'">
+                <!-- Google Drive Link Preview if available -->
+                @if ($monev->link_monev)
+                    <div class="p-5 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-200 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow-md shadow-emerald-500/20 flex-shrink-0">
+                                <i class="fab fa-google-drive"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-black text-gray-900 text-sm">Folder Google Drive Dokumentasi</h4>
+                                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-md">Tersambung</span>
+                                </div>
+                                <p class="text-xs text-gray-500 truncate max-w-md mt-0.5 font-mono">{{ $monev->link_monev }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ $monev->link_monev }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition whitespace-nowrap">
+                            <i class="fab fa-google-drive"></i>
+                            <span>Buka di Google Drive</span>
+                            <i class="fas fa-external-link-alt text-[10px]"></i>
+                        </a>
+                    </div>
+                @endif
 
-                                <!-- Hover Overlay Actions -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-between pointer-events-none">
-                                    <div class="flex justify-end pointer-events-auto">
-                                        <form action="{{ route('dosen.program-kerja.monev-delete-foto-id', ['id' => $monev->id, 'index' => $index]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto dokumentasi ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="w-8 h-8 rounded-full bg-rose-600/90 hover:bg-rose-700 text-white flex items-center justify-center text-xs shadow-md transition" title="Hapus foto ini">
-                                                <i class="fas fa-trash-alt"></i>
+                @if (!empty($monev->foto_monev) && count($monev->foto_monev) > 0)
+                    <div class="space-y-3">
+                        <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Foto Diunggah ke Server ({{ count($monev->foto_monev) }})</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            @foreach ($monev->foto_monev as $index => $photoPath)
+                                @php
+                                    $photoUrl = asset('storage/' . ltrim($photoPath, '/'));
+                                @endphp
+                                <div class="group relative rounded-2xl overflow-hidden border border-gray-200 bg-slate-950 aspect-square shadow-sm flex flex-col justify-between">
+                                    <!-- Image with click to view -->
+                                    <img src="{{ $photoUrl }}" alt="Dokumentasi Monev {{ $index + 1 }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer" @click="selectedImage = '{{ $photoUrl }}'">
+
+                                    <!-- Hover Overlay Actions -->
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-between pointer-events-none">
+                                        <div class="flex justify-end pointer-events-auto">
+                                            <form action="{{ route('dosen.program-kerja.monev-delete-foto-id', ['id' => $monev->id, 'index' => $index]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto dokumentasi ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-8 h-8 rounded-full bg-rose-600/90 hover:bg-rose-700 text-white flex items-center justify-center text-xs shadow-md transition" title="Hapus foto ini">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="pointer-events-auto">
+                                            <button type="button" @click="selectedImage = '{{ $photoUrl }}'" class="text-white text-xs font-bold hover:underline flex items-center gap-1">
+                                                <i class="fas fa-search-plus"></i> Lihat Penuh
                                             </button>
-                                        </form>
-                                    </div>
-                                    <div class="pointer-events-auto">
-                                        <button type="button" @click="selectedImage = '{{ $photoUrl }}'" class="text-white text-xs font-bold hover:underline flex items-center gap-1">
-                                            <i class="fas fa-search-plus"></i> Lihat Penuh
-                                        </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
-                @else
+                @elseif (!$monev->link_monev)
                     <div class="text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                         <i class="far fa-images text-gray-300 text-4xl mb-3 block"></i>
-                        <p class="text-xs font-bold text-gray-500">Belum ada foto dokumentasi hasil monev yang diunggah.</p>
-                        <p class="text-[11px] text-gray-400 mt-1">Gunakan formulir di atas untuk mengunggah foto kunjungan/evaluasi.</p>
+                        <p class="text-xs font-bold text-gray-500">Belum ada tautan Google Drive atau foto dokumentasi monev.</p>
+                        <p class="text-[11px] text-gray-400 mt-1">Gunakan formulir di atas untuk memasukkan tautan Google Drive atau mengunggah foto.</p>
                     </div>
                 @endif
             </div>

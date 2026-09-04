@@ -79,14 +79,14 @@
                         </p>
                     </div>
                     <span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full border border-indigo-100">
-                        {{ $type === 'individu' ? $mahasiswas->count() . ' Mahasiswa' : $lokasis->count() . ' Kelompok/Lokasi' }}
+                        {{ $type === 'individu' ? (($mahasiswas ?? collect())->count()) . ' Mahasiswa' : (($lokasis ?? collect())->count()) . ' Kelompok/Lokasi' }}
                     </span>
                 </div>
 
                 @if ($type === 'individu')
                     <!-- FORM PLOTTING INDIVIDU -->
-                    @if ($mahasiswas->count() > 0)
-                        <form id="assignForm" action="{{ route('admin.dosen-monev.store') }}" method="POST" class="space-y-6">
+                    @if (($mahasiswas ?? collect())->count() > 0)
+                        <form id="assignFormIndividu" action="{{ route('admin.dosen-monev.store') }}" method="POST" class="space-y-6">
                             @csrf
                             <input type="hidden" name="monev_type" value="individu">
                             <input type="hidden" name="kegiatan" value="{{ $kegiatan }}">
@@ -121,12 +121,12 @@
                                 <div class="space-y-2 max-h-[420px] overflow-y-auto pr-1">
                                     @foreach ($mahasiswas as $mhs)
                                         @php
-                                            $isAssigned = in_array($mhs->nim, $existingAssignments);
-                                            $assignedRecord = $assignments->where('nim', $mhs->nim)->first();
-                                            $proker = $prokers->get($mhs->nim);
+                                            $isAssigned = in_array($mhs->nim, $existingAssignments ?? []);
+                                            $assignedRecord = ($assignments ?? collect())->where('nim', $mhs->nim)->first();
+                                            $proker = ($prokers ?? collect())->get($mhs->nim);
                                             $lokasiName = match($kegiatan) {
                                                 'kkn' => $mhs->penempatankkn?->lokasikkn?->desa ?? $mhs->penempatankkn?->lokasikkn?->nama_kelompok,
-                                                'ppl' => $mhs->penempatanppl?->lokasippl?->nama_sekolah,
+                                                'ppl' => $mhs->penempatanppl?->lokasippl?->Sekolah ?? $mhs->penempatanppl?->lokasippl?->sekolah ?? $mhs->penempatanppl?->lokasippl?->nama_sekolah,
                                                 'pkl' => $mhs->penempatanpkl?->lokasipkl?->nama_instansi,
                                                 'magang' => $mhs->penempatanmagang?->lokasimagang?->nama_instansi,
                                                 default => null,
@@ -142,7 +142,7 @@
                                                     </div>
                                                     @if ($isAssigned && $assignedRecord?->dosen)
                                                         <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold rounded-md whitespace-nowrap">
-                                                            <i class="fas fa-user-check mr-1"></i> {{ $assignedRecord->dosen->nama }}
+                                                            <i class="fas fa-user-check mr-1"></i> {{ $assignedRecord->dosen?->nama ?? '-' }}
                                                         </span>
                                                     @endif
                                                 </div>
@@ -188,8 +188,8 @@
                     @endif
                 @else
                     <!-- FORM PLOTTING KELOMPOK / LOKASI -->
-                    @if ($lokasis->count() > 0)
-                        <form id="assignForm" action="{{ route('admin.dosen-monev.store') }}" method="POST" class="space-y-6">
+                    @if (($lokasis ?? collect())->count() > 0)
+                        <form id="assignFormKelompok" action="{{ route('admin.dosen-monev.store') }}" method="POST" class="space-y-6">
                             @csrf
                             <input type="hidden" name="monev_type" value="kelompok">
                             <input type="hidden" name="kegiatan" value="{{ $kegiatan }}">
@@ -216,7 +216,7 @@
                                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
                                         Pilih Kelompok / Lokasi yang Ditugaskan <span class="text-red-500">*</span>
                                     </label>
-                                    <button type="button" id="selectAllBtn" class="text-xs font-bold text-indigo-600 hover:underline">
+                                    <button type="button" id="selectAllKelompokBtn" class="text-xs font-bold text-indigo-600 hover:underline">
                                         Pilih Semua
                                     </button>
                                 </div>
@@ -224,13 +224,13 @@
                                 <div class="space-y-2 max-h-[420px] overflow-y-auto pr-1">
                                     @foreach ($lokasis as $lok)
                                         @php
-                                            $isAssigned = in_array($lok->id, $existingAssignments);
-                                            $assignedRecord = $assignments->where('lokasi_id', $lok->id)->first();
+                                            $isAssigned = in_array($lok->id, $existingAssignments ?? []);
+                                            $assignedRecord = ($assignments ?? collect())->where('lokasi_id', $lok->id)->first();
                                             $name = match($kegiatan) {
                                                 'kkn' => ($lok->desa ?? 'Desa') . ' - ' . ($lok->nama_kelompok ?? 'Kelompok ' . $lok->id),
-                                                'ppl' => $lok->nama_sekolah,
-                                                'pkl' => $lok->nama_instansi,
-                                                'magang' => $lok->nama_instansi,
+                                                'ppl' => $lok->Sekolah ?? $lok->sekolah ?? $lok->nama_sekolah ?? ('Sekolah #' . $lok->id),
+                                                'pkl' => $lok->nama_instansi ?? ('Instansi #' . $lok->id),
+                                                'magang' => $lok->nama_instansi ?? ('Instansi #' . $lok->id),
                                                 default => 'Lokasi #' . $lok->id,
                                             };
                                             $memberCount = match($kegiatan) {
@@ -248,12 +248,18 @@
                                                     <div>
                                                         <p class="font-bold text-gray-900 text-sm leading-tight">{{ $name }}</p>
                                                         <p class="text-xs text-gray-500 mt-0.5">
-                                                            Kecamatan: {{ $lok->kecamatan ?? '-' }} • Kabupaten: {{ $lok->kabupaten ?? '-' }}
+                                                            @if ($kegiatan === 'kkn')
+                                                                Kecamatan: {{ $lok->kecamatan ?? '-' }} • Kabupaten: {{ $lok->kabupaten ?? '-' }}
+                                                            @elseif ($kegiatan === 'ppl')
+                                                                Maks Peserta: {{ $lok->maks_peserta ?? '-' }}
+                                                            @else
+                                                                Alamat: {{ $lok->alamat ?? '-' }}
+                                                            @endif
                                                         </p>
                                                     </div>
                                                     @if ($isAssigned && $assignedRecord?->dosen)
                                                         <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold rounded-md whitespace-nowrap">
-                                                            <i class="fas fa-user-check mr-1"></i> {{ $assignedRecord->dosen->nama }}
+                                                            <i class="fas fa-user-check mr-1"></i> {{ $assignedRecord->dosen?->nama ?? '-' }}
                                                         </span>
                                                     @endif
                                                 </div>
@@ -296,14 +302,14 @@
                 <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
                     <div>
                         <h2 class="text-lg font-black text-gray-900">Penugasan Saat Ini</h2>
-                        <p class="text-xs text-gray-500 mt-0.5">{{ $assignments->count() }} penugasan aktif ({{ ucfirst($type) }} - {{ strtoupper($kegiatan) }})</p>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ ($assignments ?? collect())->count() }} penugasan aktif ({{ ucfirst($type) }} - {{ strtoupper($kegiatan) }})</p>
                     </div>
                     <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm">
                         <i class="fas fa-clipboard-list"></i>
                     </div>
                 </div>
 
-                @if ($assignments->count() > 0)
+                @if (($assignments ?? collect())->count() > 0)
                     <div class="space-y-3 max-h-96 overflow-y-auto pr-1">
                         @foreach ($assignments as $assignment)
                             @php
@@ -312,19 +318,24 @@
                                     $targetSub = 'NIM: ' . $assignment->nim . ($assignment->mahasiswa?->prodi ? ' • ' . $assignment->mahasiswa->prodi : '');
                                 } else {
                                     $lok = $assignment->lokasiKkn ?: ($assignment->lokasiPpl ?: ($assignment->lokasiPkl ?: $assignment->lokasiMagang));
-                                    $targetName = $lok?->desa ?? $lok?->nama_sekolah ?? $lok?->nama_instansi ?? ('Lokasi #' . $assignment->lokasi_id);
-                                    $targetSub = ($lok?->kecamatan ? 'Kec. ' . $lok->kecamatan : '') . ($lok?->kabupaten ? ', ' . $lok->kabupaten : '');
+                                    if (!$lok && $assignment->program_id) {
+                                        $targetName = $assignment->programKerja?->judul ?? ('Proker #' . $assignment->program_id);
+                                        $targetSub = 'Ketua: ' . ($assignment->programKerja?->mahasiswaKetua?->nama ?? $assignment->programKerja?->nim_ketua ?? '-');
+                                    } else {
+                                        $targetName = $lok?->desa ?? $lok?->Sekolah ?? $lok?->sekolah ?? $lok?->nama_sekolah ?? $lok?->nama_instansi ?? ('Lokasi #' . ($assignment->lokasi_id ?? $assignment->program_id));
+                                        $targetSub = $lok?->kecamatan ? ('Kec. ' . $lok->kecamatan . ($lok?->kabupaten ? ', ' . $lok->kabupaten : '')) : ($lok?->alamat ?? '');
+                                    }
                                 }
-                                $fotoCount = !empty($assignment->foto_monev) ? count($assignment->foto_monev) : 0;
+                                $fotoCount = !empty($assignment->foto_monev) && is_array($assignment->foto_monev) ? count($assignment->foto_monev) : 0;
                             @endphp
                             <div class="p-3.5 bg-gray-50 border border-gray-100 rounded-2xl flex items-start justify-between gap-3 text-xs">
                                 <div class="min-w-0 flex-1 space-y-1">
                                     <p class="font-bold text-gray-900 truncate">{{ $targetName }}</p>
                                     <p class="text-[11px] text-gray-400 truncate">{{ $targetSub }}</p>
                                     <p class="text-gray-600 pt-0.5">
-                                        Dosen: <strong class="text-indigo-700">{{ $assignment->dosen->nama ?? '-' }}</strong>
+                                        Dosen: <strong class="text-indigo-700">{{ $assignment->dosen?->nama ?? '-' }}</strong>
                                     </p>
-                                    <div class="flex items-center gap-2 pt-1">
+                                    <div class="flex flex-wrap items-center gap-2 pt-1">
                                         @if (!is_null($assignment->nilai))
                                             <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-md text-[10px]">
                                                 Nilai: {{ $assignment->nilai }}
@@ -333,6 +344,12 @@
                                             <span class="px-2 py-0.5 bg-gray-200 text-gray-600 font-semibold rounded-md text-[10px]">
                                                 Belum dinilai
                                             </span>
+                                        @endif
+
+                                        @if ($assignment->link_monev)
+                                            <a href="{{ $assignment->link_monev }}" target="_blank" rel="noopener noreferrer" class="px-2 py-0.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-md text-[10px] inline-flex items-center gap-1 transition">
+                                                <i class="fab fa-google-drive"></i> Drive Link
+                                            </a>
                                         @endif
 
                                         @if ($fotoCount > 0)
@@ -390,16 +407,18 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const selectAllBtn = document.getElementById('selectAllBtn');
-        if (selectAllBtn) {
-            let allSelected = false;
-            selectAllBtn.addEventListener('click', function() {
-                const checkboxes = document.querySelectorAll('.item-checkbox');
-                allSelected = !allSelected;
-                checkboxes.forEach(cb => cb.checked = allSelected);
-                selectAllBtn.textContent = allSelected ? 'Batal Pilih Semua' : 'Pilih Semua';
-            });
-        }
+        ['selectAllBtn', 'selectAllKelompokBtn'].forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                let allSelected = false;
+                btn.addEventListener('click', function() {
+                    const checkboxes = document.querySelectorAll('.item-checkbox');
+                    allSelected = !allSelected;
+                    checkboxes.forEach(cb => cb.checked = allSelected);
+                    btn.textContent = allSelected ? 'Batal Pilih Semua' : 'Pilih Semua';
+                });
+            }
+        });
     });
 </script>
 @endsection

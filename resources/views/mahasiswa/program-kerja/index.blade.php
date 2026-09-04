@@ -70,6 +70,55 @@
 
     <!-- TAB 1: INDIVIDU -->
     <div x-show="activeTab === 'individu'" class="space-y-6">
+        @if ($dosenMonevIndividu && $dosenMonevIndividu->dosen)
+            <div class="p-5 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-3xl text-white shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-xl text-blue-300 flex-shrink-0">
+                        <i class="fas fa-search-location"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 class="font-bold text-sm text-white">Dosen Pemonev: {{ $dosenMonevIndividu->dosen->nama }}</h4>
+                            @if ($dosenMonevIndividu->catatan || $dosenMonevIndividu->link_monev || !empty($dosenMonevIndividu->foto_monev) || !is_null($dosenMonevIndividu->nilai))
+                                <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold rounded-full flex items-center gap-1">
+                                    <i class="fas fa-check-circle"></i> Sudah Dievaluasi
+                                </span>
+                            @else
+                                <span class="px-2.5 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold rounded-full flex items-center gap-1">
+                                    <i class="fas fa-clock"></i> Menunggu Evaluasi
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-xs text-blue-200 mt-1">
+                            @if ($dosenMonevIndividu->tanggal_monev)
+                                Pelaksanaan Monev: <strong>{{ \Carbon\Carbon::parse($dosenMonevIndividu->tanggal_monev)->format('d M Y') }}</strong>
+                            @else
+                                Dosen ditugaskan untuk mengevaluasi program kerja mandiri Anda.
+                            @endif
+                            @if (!is_null($dosenMonevIndividu->nilai))
+                                • Nilai Monev: <strong class="text-white bg-white/10 px-2 py-0.5 rounded">{{ $dosenMonevIndividu->nilai }}</strong>
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    @if ($dosenMonevIndividu->link_monev)
+                        <a href="{{ $dosenMonevIndividu->link_monev }}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fab fa-google-drive"></i>
+                            <span>Foto Google Drive</span>
+                            <i class="fas fa-external-link-alt text-[10px]"></i>
+                        </a>
+                    @endif
+                    @if ($individuPrograms->isNotEmpty())
+                        <a href="{{ route('program-kerja.show-individu', $individuPrograms->first()) }}" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fas fa-eye"></i>
+                            <span>Lihat Detail Evaluasi</span>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @endif
+
         <!-- Stat Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -201,6 +250,55 @@
 
     <!-- TAB 2: KELOMPOK -->
     <div x-show="activeTab === 'kelompok'" class="space-y-6" style="display: none;">
+        @if ($dosenMonevKelompok && $dosenMonevKelompok->dosen)
+            <div class="p-5 bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-900 rounded-3xl text-white shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-xl text-purple-300 flex-shrink-0">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 class="font-bold text-sm text-white">Dosen Pemonev Kelompok: {{ $dosenMonevKelompok->dosen->nama }}</h4>
+                            @if ($dosenMonevKelompok->catatan || $dosenMonevKelompok->link_monev || !empty($dosenMonevKelompok->foto_monev) || !is_null($dosenMonevKelompok->nilai))
+                                <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold rounded-full flex items-center gap-1">
+                                    <i class="fas fa-check-circle"></i> Sudah Dievaluasi
+                                </span>
+                            @else
+                                <span class="px-2.5 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold rounded-full flex items-center gap-1">
+                                    <i class="fas fa-clock"></i> Menunggu Evaluasi
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-xs text-purple-200 mt-1">
+                            @if ($dosenMonevKelompok->tanggal_monev)
+                                Pelaksanaan Monev: <strong>{{ \Carbon\Carbon::parse($dosenMonevKelompok->tanggal_monev)->format('d M Y') }}</strong>
+                            @else
+                                Dosen ditugaskan untuk monitoring & evaluasi lapangan lokasi kelompok Anda.
+                            @endif
+                            @if (!is_null($dosenMonevKelompok->nilai))
+                                • Nilai Monev: <strong class="text-white bg-white/10 px-2 py-0.5 rounded">{{ $dosenMonevKelompok->nilai }}</strong>
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    @if ($dosenMonevKelompok->link_monev)
+                        <a href="{{ $dosenMonevKelompok->link_monev }}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fab fa-google-drive"></i>
+                            <span>Foto Google Drive</span>
+                            <i class="fas fa-external-link-alt text-[10px]"></i>
+                        </a>
+                    @endif
+                    @if ($kelompokPrograms->isNotEmpty())
+                        <a href="{{ route('program-kerja.show-kelompok', $kelompokPrograms->first()) }}" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fas fa-eye"></i>
+                            <span>Lihat Detail Evaluasi</span>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @endif
+
         <!-- Stat Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">

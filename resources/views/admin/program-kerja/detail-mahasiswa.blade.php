@@ -105,6 +105,15 @@
                                         {{ $monev->catatan }}
                                     </div>
                                 @endif
+                                @if($monev->link_monev)
+                                    <div class="mb-2">
+                                        <a href="{{ $monev->link_monev }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition">
+                                            <i class="fab fa-google-drive"></i>
+                                            <span>Buka Dokumentasi di Google Drive</span>
+                                            <i class="fas fa-external-link-alt text-[10px] ml-1"></i>
+                                        </a>
+                                    </div>
+                                @endif
                                 @if(!empty($monev->foto_monev) && count($monev->foto_monev) > 0)
                                     <div class="flex items-center gap-2 overflow-x-auto py-1">
                                         @foreach($monev->foto_monev as $f)

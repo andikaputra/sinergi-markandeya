@@ -38,4 +38,18 @@ class IndividuProgramKerja extends Model
     {
         return $this->hasOne(DosenMonev::class, 'program_id')->where('monev_type', 'individu');
     }
+
+    public function getMonevAttribute()
+    {
+        if ($this->relationLoaded('dosenMonev') && $this->dosenMonev) {
+            return $this->dosenMonev;
+        }
+
+        return DosenMonev::where('monev_type', 'individu')
+            ->where(function ($q) {
+                $q->where('program_id', $this->id)
+                  ->orWhere('nim', $this->nim);
+            })
+            ->first();
+    }
 }

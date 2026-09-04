@@ -16,6 +16,7 @@ class DosenMonev extends Model
         'nilai',
         'catatan',
         'foto_monev',
+        'link_monev',
         'tanggal_monev',
     ];
 

@@ -86,7 +86,21 @@ class ProgramKerjaController extends Controller
             'selesai' => (clone $kelompokQuery)->where('status', 'selesai')->count(),
         ];
 
-        return view('mahasiswa.program-kerja.index', compact('individuPrograms', 'kelompokPrograms', 'statistikIndividu', 'statistikKelompok', 'kegiatan'));
+        $dosenMonevIndividu = \App\Models\DosenMonev::where('monev_type', 'individu')
+            ->where('nim', $mahasiswa->nim)
+            ->first();
+
+        $dosenMonevKelompok = null;
+        if ($table && $column) {
+            $myLocationId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mahasiswa->nim)->value($column);
+            if ($myLocationId) {
+                $dosenMonevKelompok = \App\Models\DosenMonev::where('monev_type', 'kelompok')
+                    ->where('lokasi_id', $myLocationId)
+                    ->first();
+            }
+        }
+
+        return view('mahasiswa.program-kerja.index', compact('individuPrograms', 'kelompokPrograms', 'statistikIndividu', 'statistikKelompok', 'kegiatan', 'dosenMonevIndividu', 'dosenMonevKelompok'));
     }
 
     // Individu Methods
@@ -131,7 +145,7 @@ class ProgramKerjaController extends Controller
             'total' => $luarans->count(),
             'selesai' => $luarans->where('status', 'selesai')->count(),
         ];
-        $dosenMonev = $individuProgramKerja->dosenMonev;
+        $dosenMonev = $individuProgramKerja->monev;
 
         return view('mahasiswa.program-kerja.individu.show', compact('individuProgramKerja', 'luarans', 'statistikLuaran', 'dosenMonev'));
     }
@@ -226,7 +240,7 @@ class ProgramKerjaController extends Controller
             'total' => $luarans->count(),
             'selesai' => $luarans->where('status', 'selesai')->count(),
         ];
-        $dosenMonev = $kelompokProgramKerja->dosenMonev;
+        $dosenMonev = $kelompokProgramKerja->monev;
 
         return view('mahasiswa.program-kerja.kelompok.show', compact('kelompokProgramKerja', 'anggota', 'luarans', 'statistikLuaran', 'dosenMonev'));
     }

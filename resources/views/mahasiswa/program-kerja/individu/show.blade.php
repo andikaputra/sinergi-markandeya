@@ -211,8 +211,17 @@
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
                         <i class="fas fa-search-location text-indigo-600"></i>
-                        <span>Dosen Monev (Evaluasi)</span>
+                        <span>Evaluasi & Monev Lapangan</span>
                     </h3>
+                    @if ($dosenMonev && ($dosenMonev->catatan || $dosenMonev->link_monev || !empty($dosenMonev->foto_monev) || !is_null($dosenMonev->nilai)))
+                        <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full flex items-center gap-1">
+                            <i class="fas fa-check-circle"></i> Dievaluasi
+                        </span>
+                    @elseif ($dosenMonev)
+                        <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded-full flex items-center gap-1">
+                            <i class="fas fa-clock"></i> Belum Evaluasi
+                        </span>
+                    @endif
                 </div>
 
                 @if ($dosenMonev && $dosenMonev->dosen)
@@ -220,7 +229,7 @@
                         <!-- Profil Dosen Monev -->
                         <div class="p-4 bg-indigo-50/60 rounded-2xl border border-indigo-100">
                             <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-base shadow-sm">
+                                <div class="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-base shadow-sm flex-shrink-0">
                                     {{ substr($dosenMonev->dosen->nama, 0, 1) }}
                                 </div>
                                 <div class="min-w-0 flex-1">
@@ -230,7 +239,7 @@
                             </div>
 
                             <div class="mt-3 pt-3 border-t border-indigo-200/60 flex items-center justify-between text-xs">
-                                <span class="text-indigo-950 font-medium">Tgl Kunjungan:</span>
+                                <span class="text-indigo-950 font-medium">Tgl Pelaksanaan:</span>
                                 <span class="font-bold text-indigo-900">
                                     {{ $dosenMonev->tanggal_monev ? \Carbon\Carbon::parse($dosenMonev->tanggal_monev)->format('d M Y') : '-' }}
                                 </span>
@@ -246,27 +255,49 @@
                             @endif
                         </div>
 
-                        <!-- Catatan Monev -->
+                        <!-- Catatan & Arahan Monev -->
                         @if ($dosenMonev->catatan)
-                            <div class="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl">
-                                <p class="text-xs font-bold text-amber-900 mb-1 flex items-center gap-1.5">
+                            <div class="p-4 bg-amber-50/80 border border-amber-200/80 rounded-2xl space-y-1.5">
+                                <p class="text-xs font-bold text-amber-900 flex items-center gap-1.5">
                                     <i class="fas fa-comment-dots text-amber-600"></i>
-                                    <span>Catatan & Arahan Monev:</span>
+                                    <span>Catatan & Masukan Dosen Monev:</span>
                                 </p>
-                                <p class="text-xs text-amber-950 leading-relaxed whitespace-pre-wrap">{{ $dosenMonev->catatan }}</p>
+                                <div class="text-xs text-amber-950 leading-relaxed whitespace-pre-wrap font-normal">
+                                    {{ $dosenMonev->catatan }}
+                                </div>
                             </div>
                         @else
-                            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 text-center">
-                                <p class="text-xs text-gray-400">Belum ada catatan evaluasi tertulis dari Dosen Monev.</p>
+                            <div class="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 text-center">
+                                <p class="text-xs text-gray-400">Belum ada catatan evaluasi dari Dosen Monev.</p>
                             </div>
                         @endif
 
-                        <!-- Foto Dokumentasi Hasil Monev -->
+                        <!-- Google Drive Link Dokumentasi Foto -->
+                        @if ($dosenMonev->link_monev)
+                            <div class="p-4 bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-emerald-500/10 border border-emerald-200 rounded-2xl space-y-2.5">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs shadow-sm">
+                                        <i class="fab fa-google-drive"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-emerald-950">Foto Dokumentasi Lapangan</h4>
+                                        <p class="text-[10px] text-emerald-700">Tersedia di Google Drive</p>
+                                    </div>
+                                </div>
+                                <a href="{{ $dosenMonev->link_monev }}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition">
+                                    <i class="fab fa-google-drive"></i>
+                                    <span>Buka Foto di Google Drive</span>
+                                    <i class="fas fa-external-link-alt text-[10px] ml-0.5"></i>
+                                </a>
+                            </div>
+                        @endif
+
+                        <!-- Foto Dokumentasi Hasil Monev (Uploaded directly) -->
                         @if (!empty($dosenMonev->foto_monev) && count($dosenMonev->foto_monev) > 0)
                             <div class="space-y-2">
                                 <p class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
                                     <i class="fas fa-camera text-indigo-600"></i>
-                                    <span>Dokumentasi Monev ({{ count($dosenMonev->foto_monev) }} foto):</span>
+                                    <span>Galeri Foto Monev ({{ count($dosenMonev->foto_monev) }} foto):</span>
                                 </p>
                                 <div class="grid grid-cols-2 gap-2">
                                     @foreach ($dosenMonev->foto_monev as $fIndex => $photo)
@@ -285,7 +316,7 @@
                 @else
                     <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-center">
                         <i class="fas fa-user-clock text-gray-300 text-2xl mb-2 block"></i>
-                        <p class="text-xs text-gray-500 font-medium">Belum ada dosen monev yang ditugaskan untuk program kerja ini.</p>
+                        <p class="text-xs text-gray-500 font-medium">Belum ada dosen monev yang ditugaskan untuk kegiatan/program Anda.</p>
                     </div>
                 @endif
 

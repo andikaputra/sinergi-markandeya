@@ -39,6 +39,47 @@ class KelompokProgramKerja extends Model
         return $this->hasOne(DosenMonev::class, 'program_id')->where('monev_type', 'kelompok');
     }
 
+    public function getMonevAttribute()
+    {
+        if ($this->relationLoaded('dosenMonev') && $this->dosenMonev) {
+            return $this->dosenMonev;
+        }
+
+        // Try by program_id first
+        $monev = DosenMonev::where('monev_type', 'kelompok')
+            ->where('program_id', $this->id)
+            ->first();
+
+        if ($monev) {
+            return $monev;
+        }
+
+        // Try by location of ketua
+        $ketua = $this->mahasiswaKetua;
+        if ($ketua) {
+            $kegiatanLower = strtolower($this->kategori ?? '');
+            $lokasiId = match($kegiatanLower) {
+                'kkn' => PenempatanKkn::where('nim', $ketua->nim)->value('lokasi_kkn_id'),
+                'ppl' => PenempatanPpl::where('nim', $ketua->nim)->value('sekolah_id'),
+                'pkl' => PenempatanPkl::where('nim', $ketua->nim)->value('lokasi_pkl_id'),
+                'magang' => PenempatanMagang::where('nim', $ketua->nim)->value('lokasi_magang_id'),
+                default => null,
+            };
+
+            if ($lokasiId) {
+                return DosenMonev::where('monev_type', 'kelompok')
+                    ->where(function ($q) use ($kegiatanLower) {
+                        $q->where('kegiatan', $kegiatanLower)
+                          ->orWhereNull('kegiatan');
+                    })
+                    ->where('lokasi_id', $lokasiId)
+                    ->first();
+            }
+        }
+
+        return null;
+    }
+
     public function anggota()
     {
         $ketua = $this->mahasiswaKetua;

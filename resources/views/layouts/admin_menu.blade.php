@@ -193,11 +193,19 @@
 
 @if(Auth::guard('web')->user()?->isSuperAdmin())
 <div class="pt-4 pb-2">
-    <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Super Admin</p>
+    <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Super Admin & Sistem</p>
 </div>
 <a href="{{ route('admin.kelola') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gold-50 hover:text-gold-600 transition-all duration-200">
     <i class="fas fa-user-shield text-lg"></i>
     <span class="font-medium text-sm">Kelola Admin</span>
+</a>
+<a href="{{ route('admin.run-migrate') }}" onclick="return confirm('Jalankan migrasi database sekarang?');" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-indigo-600 hover:bg-indigo-50 transition-all duration-200 text-xs font-semibold">
+    <i class="fas fa-database text-sm"></i>
+    <span>Jalankan Migrasi DB</span>
+</a>
+<a href="{{ route('admin.clear-cache') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-amber-600 hover:bg-amber-50 transition-all duration-200 text-xs font-semibold">
+    <i class="fas fa-broom text-sm"></i>
+    <span>Bersihkan Cache</span>
 </a>
 @endif
 

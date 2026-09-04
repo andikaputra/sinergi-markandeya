@@ -105,7 +105,7 @@
                                 $picNim = $mhs?->nim ?? $monev->nim;
                                 $lokasiName = match(strtolower($monev->kegiatan ?? 'kkn')) {
                                     'kkn' => $mhs?->penempatankkn?->lokasikkn?->desa,
-                                    'ppl' => $mhs?->penempatanppl?->lokasippl?->nama_sekolah,
+                                    'ppl' => $mhs?->penempatanppl?->lokasippl?->Sekolah ?? $mhs?->penempatanppl?->lokasippl?->sekolah ?? $mhs?->penempatanppl?->lokasippl?->nama_sekolah,
                                     'pkl' => $mhs?->penempatanpkl?->lokasipkl?->nama_instansi,
                                     'magang' => $mhs?->penempatanmagang?->lokasimagang?->nama_instansi,
                                     default => null,
@@ -113,7 +113,7 @@
                             } else {
                                 $program = $monev->program_id ? App\Models\KelompokProgramKerja::find($monev->program_id) : null;
                                 $lok = $monev->lokasiKkn ?: ($monev->lokasiPpl ?: ($monev->lokasiPkl ?: $monev->lokasiMagang));
-                                $picName = $program?->mahasiswaKetua?->nama ?? ($lok?->desa ?? $lok?->nama_sekolah ?? $lok?->nama_instansi ?? 'Kelompok #' . $monev->lokasi_id);
+                                $picName = $program?->mahasiswaKetua?->nama ?? ($lok?->desa ?? $lok?->Sekolah ?? $lok?->sekolah ?? $lok?->nama_sekolah ?? $lok?->nama_instansi ?? 'Kelompok #' . $monev->lokasi_id);
                                 $picNim = $program?->nim_ketua ?? '-';
                                 $title = $program?->judul ?? ('Monev Kelompok ' . $kegiatan . ' - ' . $picName);
                                 $lokasiName = ($lok?->kecamatan ? 'Kec. ' . $lok->kecamatan : '') . ($lok?->kabupaten ? ', ' . $lok->kabupaten : '');
@@ -181,11 +181,17 @@
                                         </span>
                                     @endif
 
+                                    @if ($monev->link_monev)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <i class="fab fa-google-drive"></i> Link Drive Ada
+                                        </span>
+                                    @endif
+
                                     @if ($hasPhotos)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
-                                            <i class="fas fa-camera"></i> {{ count($monev->foto_monev) }} Foto Tersimpan
+                                            <i class="fas fa-camera"></i> {{ count($monev->foto_monev) }} Foto
                                         </span>
-                                    @else
+                                    @elseif (!$monev->link_monev)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 text-gray-500">
                                             <i class="far fa-image"></i> Belum ada foto
                                         </span>
