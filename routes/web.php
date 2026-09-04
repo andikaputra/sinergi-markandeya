@@ -61,6 +61,13 @@ Route::middleware(['auth:web'])->group(function () {
     Route::delete('/tahun-akademik/{id}', [TahunAkademikController::class, 'destroy'])->name('tahun_akademik.delete');
 
     Route::get('/admindashboard', [AdminController::class, 'dashboard'])->name('admindashboard');
+    Route::get('/admin/clear-cache', function () {
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        return back()->with('success', 'Semua cache (route, view, config, cache) berhasil dibersihkan!');
+    })->name('admin.clear-cache');
 
 
     Route::get('/admin/peserta/kkn', [AdminController::class, 'pesertaKKN'])->name('admin.peserta.kkn')->middleware('kegiatan:KKN');
