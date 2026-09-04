@@ -144,6 +144,7 @@
         @endif
         <a href="{{ route('assign.dosenpenguji') }}" class="block py-2 text-sm text-gray-500 hover:text-primary-600">Plot Dosen Penguji</a>
         <a href="{{ route('assign.dosenpenilai') }}" class="block py-2 text-sm text-gray-500 hover:text-primary-600">Plot Penilai Publikasi</a>
+        <a href="{{ route('admin.dosen-monev.index') }}" class="block py-2 text-sm text-gray-500 hover:text-primary-600 font-semibold text-indigo-600">Plot Dosen Monev</a>
     </div>
 </div>
 

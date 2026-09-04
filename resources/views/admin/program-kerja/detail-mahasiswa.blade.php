@@ -79,7 +79,43 @@
                         <!-- Luaran for this program -->
                         @php
                             $programLuarans = $luarans->where('program_kerja_id', $program->id);
+                            $monev = $program->dosenMonev;
                         @endphp
+
+                        <!-- Dosen Monev Section -->
+                        @if ($monev && $monev->dosen)
+                            <div class="mt-4 pt-4 border-t border-gray-100 bg-indigo-50/40 p-4 rounded-xl border border-indigo-100">
+                                <div class="flex items-center justify-between gap-2 mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-search-location text-indigo-600 text-sm"></i>
+                                        <span class="text-xs font-bold text-gray-900">Dosen Monev: {{ $monev->dosen->nama }} (NIDN: {{ $monev->dosen->nidn }})</span>
+                                    </div>
+                                    @if(!is_null($monev->nilai))
+                                        <span class="px-2.5 py-0.5 bg-indigo-600 text-white font-black text-xs rounded-lg">
+                                            Nilai Monev: {{ $monev->nilai }}
+                                        </span>
+                                    @endif
+                                </div>
+                                @if($monev->tanggal_monev)
+                                    <p class="text-[11px] text-gray-500 mb-2">Tanggal Monev: <strong>{{ \Carbon\Carbon::parse($monev->tanggal_monev)->format('d M Y') }}</strong></p>
+                                @endif
+                                @if($monev->catatan)
+                                    <div class="p-3 bg-white rounded-lg border border-indigo-100 text-xs text-gray-700 leading-relaxed mb-2">
+                                        <strong class="text-indigo-900 block mb-0.5">Catatan Monev:</strong>
+                                        {{ $monev->catatan }}
+                                    </div>
+                                @endif
+                                @if(!empty($monev->foto_monev) && count($monev->foto_monev) > 0)
+                                    <div class="flex items-center gap-2 overflow-x-auto py-1">
+                                        @foreach($monev->foto_monev as $f)
+                                            <a href="{{ asset('storage/' . ltrim($f, '/')) }}" target="_blank" class="block w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-black flex-shrink-0">
+                                                <img src="{{ asset('storage/' . ltrim($f, '/')) }}" class="w-full h-full object-cover hover:opacity-80 transition">
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
 
                         @if ($programLuarans->count() > 0)
                             <div class="mt-4 pt-4 border-t border-gray-200">

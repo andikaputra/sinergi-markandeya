@@ -347,6 +347,7 @@ Route::middleware(['auth:dosen'])->prefix('dosen-pembimbing')->group(function ()
     Route::get('/program-kerja-monev', [\App\Http\Controllers\DosenProgramKerjaController::class, 'monevDashboard'])->name('dosen.program-kerja.monev-dashboard');
     Route::get('/program-kerja-monev/{type}/{programId}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'monevDetail'])->name('dosen.program-kerja.monev-detail');
     Route::post('/program-kerja-monev/{type}/{programId}/nilai', [\App\Http\Controllers\DosenProgramKerjaController::class, 'inputNilaiMonev'])->name('dosen.program-kerja.monev-nilai');
+    Route::delete('/program-kerja-monev/{type}/{programId}/foto/{index}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'deleteFotoMonev'])->name('dosen.program-kerja.monev-delete-foto');
 });
 
 // Routes untuk Pembimbing Luar

@@ -207,31 +207,97 @@
             </div>
 
             <!-- Dosen Monev Card -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-3">Dosen Monitoring & Evaluasi</h3>
+            <div x-data="{ monevImage: null }" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-search-location text-indigo-600"></i>
+                        <span>Dosen Monev (Evaluasi)</span>
+                    </h3>
+                </div>
+
                 @if ($dosenMonev && $dosenMonev->dosen)
-                    <div class="p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
-                                {{ substr($dosenMonev->dosen->nama, 0, 1) }}
+                    <div class="space-y-4">
+                        <!-- Profil Dosen Monev -->
+                        <div class="p-4 bg-indigo-50/60 rounded-2xl border border-indigo-100">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-base shadow-sm">
+                                    {{ substr($dosenMonev->dosen->nama, 0, 1) }}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-bold text-gray-900 text-sm truncate">{{ $dosenMonev->dosen->nama }}</div>
+                                    <div class="text-[11px] text-gray-500 font-mono">NIDN: {{ $dosenMonev->dosen->nidn }}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="font-bold text-gray-800 text-sm">{{ $dosenMonev->dosen->nama }}</div>
-                                <div class="text-[11px] text-gray-500">NIDN: {{ $dosenMonev->dosen->nidn }}</div>
+
+                            <div class="mt-3 pt-3 border-t border-indigo-200/60 flex items-center justify-between text-xs">
+                                <span class="text-indigo-950 font-medium">Tgl Kunjungan:</span>
+                                <span class="font-bold text-indigo-900">
+                                    {{ $dosenMonev->tanggal_monev ? \Carbon\Carbon::parse($dosenMonev->tanggal_monev)->format('d M Y') : '-' }}
+                                </span>
                             </div>
+
+                            @if (!is_null($dosenMonev->nilai))
+                                <div class="mt-2 pt-2 border-t border-indigo-200/40 flex items-center justify-between">
+                                    <span class="text-xs text-indigo-950 font-medium">Nilai Monev:</span>
+                                    <span class="px-2.5 py-0.5 bg-indigo-600 text-white font-black text-sm rounded-lg shadow-sm">
+                                        {{ $dosenMonev->nilai }}
+                                    </span>
+                                </div>
+                            @endif
                         </div>
-                        @if ($dosenMonev->nilai)
-                            <div class="mt-3 pt-3 border-t border-blue-200/60 flex items-center justify-between">
-                                <span class="text-xs text-blue-900 font-medium">Nilai Monev:</span>
-                                <span class="text-lg font-black text-blue-700">{{ $dosenMonev->nilai }}</span>
+
+                        <!-- Catatan Monev -->
+                        @if ($dosenMonev->catatan)
+                            <div class="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl">
+                                <p class="text-xs font-bold text-amber-900 mb-1 flex items-center gap-1.5">
+                                    <i class="fas fa-comment-dots text-amber-600"></i>
+                                    <span>Catatan & Arahan Monev:</span>
+                                </p>
+                                <p class="text-xs text-amber-950 leading-relaxed whitespace-pre-wrap">{{ $dosenMonev->catatan }}</p>
+                            </div>
+                        @else
+                            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 text-center">
+                                <p class="text-xs text-gray-400">Belum ada catatan evaluasi tertulis dari Dosen Monev.</p>
+                            </div>
+                        @endif
+
+                        <!-- Foto Dokumentasi Hasil Monev -->
+                        @if (!empty($dosenMonev->foto_monev) && count($dosenMonev->foto_monev) > 0)
+                            <div class="space-y-2">
+                                <p class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+                                    <i class="fas fa-camera text-indigo-600"></i>
+                                    <span>Dokumentasi Monev ({{ count($dosenMonev->foto_monev) }} foto):</span>
+                                </p>
+                                <div class="grid grid-cols-2 gap-2">
+                                    @foreach ($dosenMonev->foto_monev as $fIndex => $photo)
+                                        @php $url = asset('storage/' . ltrim($photo, '/')); @endphp
+                                        <div class="group relative rounded-xl overflow-hidden border border-gray-200 bg-slate-900 aspect-video cursor-pointer shadow-sm" @click="monevImage = '{{ $url }}'">
+                                            <img src="{{ $url }}" alt="Dokumentasi Monev" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+                                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1">
+                                                <i class="fas fa-search-plus"></i> Lihat
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         @endif
                     </div>
                 @else
-                    <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-center">
-                        <p class="text-xs text-gray-500">Belum ada dosen monev yang ditugaskan untuk program kerja ini.</p>
+                    <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-center">
+                        <i class="fas fa-user-clock text-gray-300 text-2xl mb-2 block"></i>
+                        <p class="text-xs text-gray-500 font-medium">Belum ada dosen monev yang ditugaskan untuk program kerja ini.</p>
                     </div>
                 @endif
+
+                <!-- Lightbox Modal for Mahasiswa -->
+                <div x-show="monevImage" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" style="display: none;" @keydown.escape.window="monevImage = null">
+                    <div class="relative max-w-3xl w-full max-h-[85vh] flex flex-col items-center" @click.away="monevImage = null">
+                        <button type="button" @click="monevImage = null" class="absolute -top-10 right-0 text-white hover:text-gray-300 text-xl font-bold transition">
+                            <i class="fas fa-times"></i> Tutup
+                        </button>
+                        <img :src="monevImage" class="max-w-full max-h-[80vh] rounded-2xl object-contain shadow-2xl border border-white/20">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
