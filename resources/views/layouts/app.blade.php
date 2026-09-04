@@ -31,7 +31,7 @@
 
             <div class="flex items-center gap-4">
                 <a href="{{ url('/') }}" class="hover:text-gold transition">Beranda</a>
-                <a href="{{ route('register.form') }}" class="hover:text-gold transition">Pendaftaran</a>
+                <a href="{{ url('/#pendaftaran') }}" class="hover:text-gold transition">Pendaftaran</a>
 
                 @if (Route::has('login'))
                     @auth

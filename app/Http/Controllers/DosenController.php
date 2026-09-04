@@ -12,6 +12,10 @@ use App\Models\TahunAkademik;
 use Illuminate\Support\Facades\Auth;
 use App\Services\AisService;
 
+use App\Models\Bimbingan;
+use App\Models\Notifikasi;
+use Illuminate\Support\Str;
+
 class DosenController extends Controller
 {
     public function __construct(private AisService $ais) {}
@@ -101,8 +105,45 @@ class DosenController extends Controller
             ->firstOrFail();
 
         $jurnals = Jurnal::where('nim', $nim)->orderBy('tanggal', 'desc')->get();
+        $bimbingans = Bimbingan::where('nim', $nim)->orderBy('tanggal_bimbingan', 'desc')->get();
 
-        return view('dosen.mahasiswa_detail', compact('mahasiswa', 'jurnals', 'isBimbingan'));
+        return view('dosen.mahasiswa_detail', compact('mahasiswa', 'jurnals', 'bimbingans', 'isBimbingan'));
+    }
+
+    public function updateBimbinganStatus(Request $request, $id)
+    {
+        $dosen = Auth::guard('dosen')->user();
+        $bimbingan = Bimbingan::with('dosenPembimbing')->findOrFail($id);
+
+        if ($bimbingan->dosenPembimbing?->nidn !== $dosen->nidn) {
+            abort(403, 'Anda tidak memiliki akses untuk me-review bimbingan ini.');
+        }
+
+        $request->validate([
+            'status' => 'required|in:disetujui,perlu_revisi,belum_direview',
+            'catatan_dosen' => 'nullable|string',
+        ]);
+
+        $bimbingan->update([
+            'status' => $request->status,
+            'catatan_dosen' => $request->catatan_dosen,
+        ]);
+
+        $statusText = match($request->status) {
+            'disetujui' => 'Disetujui',
+            'perlu_revisi' => 'Perlu Revisi',
+            default => 'Dalam Review',
+        };
+
+        // Kirim notifikasi ke mahasiswa
+        Notifikasi::kirim(
+            $bimbingan->nim,
+            'Bimbingan ' . $statusText,
+            'Dosen Pembimbing (' . $dosen->nama . ') telah me-review bimbingan "' . $bimbingan->topik . '".' . ($request->catatan_dosen ? ' Catatan: ' . Str::limit($request->catatan_dosen, 60) : ''),
+            $request->status === 'disetujui' ? 'sukses' : 'peringatan'
+        );
+
+        return back()->with('success', 'Catatan dan status bimbingan berhasil disimpan!');
     }
 
     public function inputNilai(Request $request, $nim)

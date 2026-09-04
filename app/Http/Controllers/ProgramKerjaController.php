@@ -20,50 +20,70 @@ class ProgramKerjaController extends Controller
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
         $kegiatan = $mahasiswa->kegiatan;
+        $kegiatanLower = strtolower($kegiatan ?? '');
 
         $individuPrograms = IndividuProgramKerja::where('nim', $mahasiswa->nim)
-            ->where('kategori', $kegiatan)
+            ->where(function ($q) use ($kegiatan, $kegiatanLower) {
+                $q->where('kategori', $kegiatan)
+                  ->orWhere('kategori', $kegiatanLower)
+                  ->orWhere('kategori', strtoupper($kegiatanLower));
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'page_individu', 1);
 
-        $kelompokPrograms = KelompokProgramKerja::where('kategori', $kegiatan)
-            ->whereHas('mahasiswaKetua', function ($q) use ($mahasiswa) {
-                $q->orWhere('nim_ketua', $mahasiswa->nim)
-                  ->orWhereIn('nim', function ($q2) use ($kegiatan, $mahasiswa) {
-                      $table = match($kegiatan) {
-                          'kkn' => 'penempatan_kkns',
-                          'ppl' => 'penempatan_ppls',
-                          'pkl' => 'penempatan_pkls',
-                          'magang' => 'penempatan_mamangs',
-                          default => 'penempatan_kkns'
-                      };
-                      $column = match($kegiatan) {
-                          'kkn' => 'lokasi_kkn_id',
-                          'ppl' => 'lokasi_ppl_id',
-                          'pkl' => 'lokasi_pkl_id',
-                          'magang' => 'lokasi_magang_id',
-                          default => 'lokasi_kkn_id'
-                      };
-                      $q2->select('nim')->from($table)->where($column, function ($q3) use ($table, $column, $mahasiswa) {
-                          $q3->select($column)->from($table)->where('nim', $mahasiswa->nim);
-                      });
-                  });
-            })
+        $table = match($kegiatanLower) {
+            'kkn' => 'pembagian_lokasi_kkn',
+            'ppl' => 'Penempatan_ppl',
+            'pkl' => 'penempatan_pkls',
+            'magang' => 'penempatan_magangs',
+            default => null
+        };
+        $column = match($kegiatanLower) {
+            'kkn' => 'lokasi_kkn_id',
+            'ppl' => 'sekolah_id',
+            'pkl' => 'lokasi_pkl_id',
+            'magang' => 'lokasi_magang_id',
+            default => null
+        };
+
+        $groupNims = collect([$mahasiswa->nim]);
+        if ($table && $column) {
+            $myLocationId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mahasiswa->nim)->value($column);
+            if ($myLocationId) {
+                $groupNims = \Illuminate\Support\Facades\DB::table($table)->where($column, $myLocationId)->pluck('nim');
+            }
+        }
+
+        $kelompokQuery = KelompokProgramKerja::where(function ($q) use ($kegiatan, $kegiatanLower) {
+            $q->where('kategori', $kegiatan)
+              ->orWhere('kategori', $kegiatanLower)
+              ->orWhere('kategori', strtoupper($kegiatanLower));
+        })->whereIn('nim_ketua', $groupNims);
+
+        $kelompokPrograms = (clone $kelompokQuery)
             ->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'page_kelompok', 1);
 
         $statistikIndividu = [
-            'total' => IndividuProgramKerja::where('nim', $mahasiswa->nim)->where('kategori', $kegiatan)->count(),
-            'rencana' => IndividuProgramKerja::where('nim', $mahasiswa->nim)->where('kategori', $kegiatan)->where('status', 'rencana')->count(),
-            'sedang_berjalan' => IndividuProgramKerja::where('nim', $mahasiswa->nim)->where('kategori', $kegiatan)->where('status', 'sedang_berjalan')->count(),
-            'selesai' => IndividuProgramKerja::where('nim', $mahasiswa->nim)->where('kategori', $kegiatan)->where('status', 'selesai')->count(),
+            'total' => IndividuProgramKerja::where('nim', $mahasiswa->nim)->where(function ($q) use ($kegiatan, $kegiatanLower) {
+                $q->where('kategori', $kegiatan)->orWhere('kategori', $kegiatanLower)->orWhere('kategori', strtoupper($kegiatanLower));
+            })->count(),
+            'rencana' => IndividuProgramKerja::where('nim', $mahasiswa->nim)->where(function ($q) use ($kegiatan, $kegiatanLower) {
+                $q->where('kategori', $kegiatan)->orWhere('kategori', $kegiatanLower)->orWhere('kategori', strtoupper($kegiatanLower));
+            })->where('status', 'rencana')->count(),
+            'sedang_berjalan' => IndividuProgramKerja::where('nim', $mahasiswa->nim)->where(function ($q) use ($kegiatan, $kegiatanLower) {
+                $q->where('kategori', $kegiatan)->orWhere('kategori', $kegiatanLower)->orWhere('kategori', strtoupper($kegiatanLower));
+            })->where('status', 'sedang_berjalan')->count(),
+            'selesai' => IndividuProgramKerja::where('nim', $mahasiswa->nim)->where(function ($q) use ($kegiatan, $kegiatanLower) {
+                $q->where('kategori', $kegiatan)->orWhere('kategori', $kegiatanLower)->orWhere('kategori', strtoupper($kegiatanLower));
+            })->where('status', 'selesai')->count(),
         ];
 
         $statistikKelompok = [
-            'total' => KelompokProgramKerja::where('kategori', $kegiatan)->count(),
-            'rencana' => KelompokProgramKerja::where('kategori', $kegiatan)->where('status', 'rencana')->count(),
-            'sedang_berjalan' => KelompokProgramKerja::where('kategori', $kegiatan)->where('status', 'sedang_berjalan')->count(),
-            'selesai' => KelompokProgramKerja::where('kategori', $kegiatan)->where('status', 'selesai')->count(),
+            'total' => (clone $kelompokQuery)->count(),
+            'rencana' => (clone $kelompokQuery)->where('status', 'rencana')->count(),
+            'sedang_berjalan' => (clone $kelompokQuery)->where('status', 'sedang_berjalan')->count(),
+            'selesai' => (clone $kelompokQuery)->where('status', 'selesai')->count(),
         ];
 
         return view('mahasiswa.program-kerja.index', compact('individuPrograms', 'kelompokPrograms', 'statistikIndividu', 'statistikKelompok', 'kegiatan'));
@@ -79,7 +99,7 @@ class ProgramKerjaController extends Controller
     public function storeIndividu(Request $request)
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
-        $kegiatan = $mahasiswa->kegiatan;
+        $kegiatan = strtolower($mahasiswa->kegiatan ?? 'kkn');
 
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
@@ -172,7 +192,7 @@ class ProgramKerjaController extends Controller
     public function storeKelompok(Request $request)
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
-        $kegiatan = $mahasiswa->kegiatan;
+        $kegiatan = strtolower($mahasiswa->kegiatan ?? 'kkn');
 
         $validated = $request->validate([
             'judul' => 'required|string|max:255',

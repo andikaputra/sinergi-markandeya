@@ -1,294 +1,347 @@
-@extends('layouts.app')
+@extends('layouts.adminmhs')
+
+@section('title', 'Program Kerja')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-white mb-2">Program Kerja {{ ucfirst($kegiatan) }}</h1>
-        <p class="text-gray-300">Kelola program kerja individu dan kelompok serta luaran (deliverable)</p>
+<div class="space-y-6" x-data="{ activeTab: 'individu' }">
+    <!-- Header Banner -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full uppercase tracking-wider">
+                    {{ $kegiatan ? strtoupper($kegiatan) : 'KEGIATAN' }}
+                </span>
+                <span class="text-xs text-gray-400">• Mahasiswa Portal</span>
+            </div>
+            <h2 class="text-2xl font-black text-gray-800 tracking-tight mt-1">Program Kerja & Luaran</h2>
+            <p class="text-sm text-gray-500">Kelola rencana kerja individu dan kelompok beserta target deliverable luaran kegiatan.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <template x-if="activeTab === 'individu'">
+                <a href="{{ route('program-kerja.create-individu') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-blue-200 group">
+                    <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform"></i>
+                    Buat Program Individu
+                </a>
+            </template>
+            <template x-if="activeTab === 'kelompok'">
+                <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-indigo-200 group">
+                    <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
+                    Buat Program Kelompok
+                </a>
+            </template>
+        </div>
     </div>
 
     @if ($message = Session::get('success'))
-        <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-            {{ $message }}
+        <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3">
+            <i class="fas fa-check-circle text-emerald-500 text-lg"></i>
+            <span class="text-sm font-medium">{{ $message }}</span>
+        </div>
+    @endif
+
+    @if ($message = Session::get('error'))
+        <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl flex items-center gap-3">
+            <i class="fas fa-exclamation-circle text-rose-500 text-lg"></i>
+            <span class="text-sm font-medium">{{ $message }}</span>
         </div>
     @endif
 
     <!-- Tabs Navigation -->
-    <div class="mb-8 border-b border-gray-700">
-        <div class="flex gap-8">
-            <button onclick="switchTab('individu')" id="tab-individu" class="px-4 py-3 border-b-2 border-yellow-600 text-yellow-600 font-semibold cursor-pointer">
-                Program Individu
-            </button>
-            <button onclick="switchTab('kelompok')" id="tab-kelompok" class="px-4 py-3 border-b-2 border-transparent text-gray-400 font-semibold cursor-pointer hover:text-gray-300">
-                Program Kelompok
-            </button>
+    <div class="flex border-b border-gray-200 gap-4">
+        <button @click="activeTab = 'individu'" 
+            :class="activeTab === 'individu' ? 'border-blue-600 text-blue-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium'"
+            class="pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
+            <i class="fas fa-user text-sm"></i>
+            <span>Program Individu</span>
+            <span class="px-2 py-0.5 text-xs rounded-full" :class="activeTab === 'individu' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'">
+                {{ $statistikIndividu['total'] }}
+            </span>
+        </button>
+        <button @click="activeTab = 'kelompok'" 
+            :class="activeTab === 'kelompok' ? 'border-indigo-600 text-indigo-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium'"
+            class="pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
+            <i class="fas fa-users text-sm"></i>
+            <span>Program Kelompok</span>
+            <span class="px-2 py-0.5 text-xs rounded-full" :class="activeTab === 'kelompok' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600'">
+                {{ $statistikKelompok['total'] }}
+            </span>
+        </button>
+    </div>
+
+    <!-- TAB 1: INDIVIDU -->
+    <div x-show="activeTab === 'individu'" class="space-y-6">
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-gray-800">{{ $statistikIndividu['total'] }}</div>
+                    <div class="text-xs text-gray-500 font-medium">Total Program</div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-gray-800">{{ $statistikIndividu['rencana'] }}</div>
+                    <div class="text-xs text-gray-500 font-medium">Rencana</div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-gray-800">{{ $statistikIndividu['sedang_berjalan'] }}</div>
+                    <div class="text-xs text-gray-500 font-medium">Sedang Berjalan</div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-gray-800">{{ $statistikIndividu['selesai'] }}</div>
+                    <div class="text-xs text-gray-500 font-medium">Selesai</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            @if ($individuPrograms->isEmpty())
+                <div class="p-12 text-center">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">Belum Ada Program Kerja Individu</h3>
+                    <p class="text-sm text-gray-500 mt-1 max-w-md mx-auto">Mulai tambahkan program kerja mandiri Anda untuk kegiatan {{ ucfirst($kegiatan) }}.</p>
+                    <a href="{{ route('program-kerja.create-individu') }}" class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl mt-4 transition shadow-md shadow-blue-200">
+                        <i class="fas fa-plus mr-2"></i> Tambah Program Sekarang
+                    </a>
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50/50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-semibold">
+                                <th class="px-6 py-4">Judul Program</th>
+                                <th class="px-6 py-4">Lokasi</th>
+                                <th class="px-6 py-4">Jadwal Pelaksanaan</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm">
+                            @foreach ($individuPrograms as $program)
+                                <tr class="hover:bg-gray-50/70 transition-colors">
+                                    <td class="px-6 py-4 font-semibold text-gray-800">
+                                        <a href="{{ route('program-kerja.show-individu', $program) }}" class="hover:text-blue-600 transition-colors">
+                                            {{ $program->judul }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">
+                                        <i class="fas fa-map-marker-alt text-rose-500 text-xs mr-1"></i>
+                                        {{ $program->lokasi ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">
+                                        <div class="text-xs">
+                                            <span class="font-medium text-gray-700">{{ $program->tanggal_mulai ? $program->tanggal_mulai->format('d M Y') : '-' }}</span>
+                                            s/d
+                                            <span class="font-medium text-gray-700">{{ $program->tanggal_selesai ? $program->tanggal_selesai->format('d M Y') : '-' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if ($program->status === 'rencana')
+                                            <span class="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold rounded-full">Rencana</span>
+                                        @elseif ($program->status === 'sedang_berjalan')
+                                            <span class="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold rounded-full">Sedang Berjalan</span>
+                                        @elseif ($program->status === 'selesai')
+                                            <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-full">Selesai</span>
+                                        @else
+                                            <span class="px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold rounded-full">{{ ucfirst($program->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <a href="{{ route('program-kerja.show-individu', $program) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors" title="Detail & Luaran">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('program-kerja.edit-individu', $program) }}" class="p-2 text-amber-600 hover:bg-amber-50 rounded-xl transition-colors" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('program-kerja.destroy-individu', $program) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus program kerja ini?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors" title="Hapus">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                @if ($individuPrograms->hasPages())
+                    <div class="p-4 border-t border-gray-100">
+                        {{ $individuPrograms->links() }}
+                    </div>
+                @endif
+            @endif
         </div>
     </div>
 
-    <!-- Program Individu Tab -->
-    <div id="content-individu" class="tab-content">
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow p-6" style="border-left: 4px solid #d4a574;">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm font-semibold">Total Program</p>
-                        <p class="text-3xl font-bold text-gray-800">{{ $statistikIndividu['total'] }}</p>
-                    </div>
-                    <div class="bg-yellow-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                        </svg>
-                    </div>
+    <!-- TAB 2: KELOMPOK -->
+    <div x-show="activeTab === 'kelompok'" class="space-y-6" style="display: none;">
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-gray-800">{{ $statistikKelompok['total'] }}</div>
+                    <div class="text-xs text-gray-500 font-medium">Total Program</div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6" style="border-left: 4px solid #1a5d4d;">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm font-semibold">Rencana</p>
-                        <p class="text-3xl font-bold text-gray-800">{{ $statistikIndividu['rencana'] }}</p>
-                    </div>
-                    <div class="bg-blue-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-gray-800">{{ $statistikKelompok['rencana'] }}</div>
+                    <div class="text-xs text-gray-500 font-medium">Rencana</div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6" style="border-left: 4px solid #d4a574;">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm font-semibold">Sedang Berjalan</p>
-                        <p class="text-3xl font-bold text-gray-800">{{ $statistikIndividu['sedang_berjalan'] }}</p>
-                    </div>
-                    <div class="bg-orange-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 2m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-gray-800">{{ $statistikKelompok['sedang_berjalan'] }}</div>
+                    <div class="text-xs text-gray-500 font-medium">Sedang Berjalan</div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6" style="border-left: 4px solid #3b8686;">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm font-semibold">Selesai</p>
-                        <p class="text-3xl font-bold text-gray-800">{{ $statistikIndividu['selesai'] }}</p>
-                    </div>
-                    <div class="bg-green-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                    </div>
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-gray-800">{{ $statistikKelompok['selesai'] }}</div>
+                    <div class="text-xs text-gray-500 font-medium">Selesai</div>
                 </div>
             </div>
         </div>
 
-        <div class="mb-6">
-            <a href="{{ route('program-kerja.create-individu') }}" class="inline-block px-6 py-2 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition">
-                + Buat Program Individu
-            </a>
-        </div>
-
-        <!-- Programs Table -->
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <table class="w-full">
-                <thead class="bg-gray-100 border-b">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Judul</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal Mulai</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($individuPrograms as $program)
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="px-6 py-4">
-                                <span class="font-medium text-gray-800">{{ Str::limit($program->judul, 40) }}</span>
-                            </td>
-                            <td class="px-6 py-4 text-gray-600">{{ $program->tanggal_mulai->format('d M Y') }}</td>
-                            <td class="px-6 py-4">
-                                @if ($program->status === 'rencana')
-                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">Rencana</span>
-                                @elseif ($program->status === 'sedang_berjalan')
-                                    <span class="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">Sedang Berjalan</span>
-                                @elseif ($program->status === 'selesai')
-                                    <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Selesai</span>
-                                @else
-                                    <span class="px-3 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">Tunda</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="flex gap-2">
-                                    <a href="{{ route('program-kerja.show-individu', $program) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Lihat</a>
-                                    <a href="{{ route('program-kerja.edit-individu', $program) }}" class="text-gray-600 hover:text-gray-800 text-sm font-medium">Edit</a>
-                                    <form action="{{ route('program-kerja.destroy-individu', $program) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">Belum ada program kerja individu</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        @if ($individuPrograms->hasPages())
-            <div class="mt-6">
-                {{ $individuPrograms->links() }}
-            </div>
-        @endif
-    </div>
-
-    <!-- Program Kelompok Tab -->
-    <div id="content-kelompok" class="tab-content hidden">
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow p-6" style="border-left: 4px solid #d4a574;">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm font-semibold">Total Program</p>
-                        <p class="text-3xl font-bold text-gray-800">{{ $statistikKelompok['total'] }}</p>
+        <!-- Table -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            @if ($kelompokPrograms->isEmpty())
+                <div class="p-12 text-center">
+                    <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div class="bg-yellow-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20h12a6 6 0 00-6-6 6 6 0 00-6 6z"></path>
-                        </svg>
-                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">Belum Ada Program Kerja Kelompok</h3>
+                    <p class="text-sm text-gray-500 mt-1 max-w-md mx-auto">Program kerja kelompok di lokasi penempatan Anda akan muncul di sini.</p>
+                    <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl mt-4 transition shadow-md shadow-indigo-200">
+                        <i class="fas fa-plus mr-2"></i> Buat Program Kelompok
+                    </a>
                 </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-6" style="border-left: 4px solid #1a5d4d;">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm font-semibold">Rencana</p>
-                        <p class="text-3xl font-bold text-gray-800">{{ $statistikKelompok['rencana'] }}</p>
-                    </div>
-                    <div class="bg-blue-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50/50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-semibold">
+                                <th class="px-6 py-4">Judul Program</th>
+                                <th class="px-6 py-4">Ketua Pengusul</th>
+                                <th class="px-6 py-4">Lokasi</th>
+                                <th class="px-6 py-4">Jadwal</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm">
+                            @foreach ($kelompokPrograms as $program)
+                                <tr class="hover:bg-gray-50/70 transition-colors">
+                                    <td class="px-6 py-4 font-semibold text-gray-800">
+                                        <a href="{{ route('program-kerja.show-kelompok', $program) }}" class="hover:text-indigo-600 transition-colors">
+                                            {{ $program->judul }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-700">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+                                                {{ substr($program->mahasiswaKetua->nama ?? 'K', 0, 1) }}
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-xs">{{ $program->mahasiswaKetua->nama ?? '-' }}</div>
+                                                <div class="text-[10px] text-gray-400">{{ $program->nim_ketua }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">
+                                        <i class="fas fa-map-marker-alt text-rose-500 text-xs mr-1"></i>
+                                        {{ $program->lokasi ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">
+                                        <div class="text-xs">
+                                            <span class="font-medium text-gray-700">{{ $program->tanggal_mulai ? $program->tanggal_mulai->format('d M Y') : '-' }}</span>
+                                            s/d
+                                            <span class="font-medium text-gray-700">{{ $program->tanggal_selesai ? $program->tanggal_selesai->format('d M Y') : '-' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if ($program->status === 'rencana')
+                                            <span class="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold rounded-full">Rencana</span>
+                                        @elseif ($program->status === 'sedang_berjalan')
+                                            <span class="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold rounded-full">Sedang Berjalan</span>
+                                        @elseif ($program->status === 'selesai')
+                                            <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-full">Selesai</span>
+                                        @else
+                                            <span class="px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold rounded-full">{{ ucfirst($program->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <a href="{{ route('program-kerja.show-kelompok', $program) }}" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors" title="Detail & Anggota">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @if (auth('mahasiswa')->user()->nim === $program->nim_ketua)
+                                                <a href="{{ route('program-kerja.edit-kelompok', $program) }}" class="p-2 text-amber-600 hover:bg-amber-50 rounded-xl transition-colors" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('program-kerja.destroy-kelompok', $program) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus program kerja kelompok ini?')">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors" title="Hapus">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-            </div>
 
-            <div class="bg-white rounded-lg shadow p-6" style="border-left: 4px solid #d4a574;">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm font-semibold">Sedang Berjalan</p>
-                        <p class="text-3xl font-bold text-gray-800">{{ $statistikKelompok['sedang_berjalan'] }}</p>
+                @if ($kelompokPrograms->hasPages())
+                    <div class="p-4 border-t border-gray-100">
+                        {{ $kelompokPrograms->links() }}
                     </div>
-                    <div class="bg-orange-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 2m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-6" style="border-left: 4px solid #3b8686;">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm font-semibold">Selesai</p>
-                        <p class="text-3xl font-bold text-gray-800">{{ $statistikKelompok['selesai'] }}</p>
-                    </div>
-                    <div class="bg-green-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
+                @endif
+            @endif
         </div>
-
-        <div class="mb-6">
-            <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-block px-6 py-2 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition">
-                + Buat Program Kelompok
-            </a>
-        </div>
-
-        <!-- Programs Table -->
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <table class="w-full">
-                <thead class="bg-gray-100 border-b">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Judul</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Ketua</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal Mulai</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($kelompokPrograms as $program)
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="px-6 py-4">
-                                <span class="font-medium text-gray-800">{{ Str::limit($program->judul, 40) }}</span>
-                            </td>
-                            <td class="px-6 py-4 text-gray-600">{{ $program->mahasiswaKetua->nama ?? '-' }}</td>
-                            <td class="px-6 py-4 text-gray-600">{{ $program->tanggal_mulai->format('d M Y') }}</td>
-                            <td class="px-6 py-4">
-                                @if ($program->status === 'rencana')
-                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">Rencana</span>
-                                @elseif ($program->status === 'sedang_berjalan')
-                                    <span class="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">Sedang Berjalan</span>
-                                @elseif ($program->status === 'selesai')
-                                    <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Selesai</span>
-                                @else
-                                    <span class="px-3 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">Tunda</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="flex gap-2">
-                                    <a href="{{ route('program-kerja.show-kelompok', $program) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Lihat</a>
-                                    @if (auth('mahasiswa')->user()->nim === $program->nim_ketua)
-                                        <a href="{{ route('program-kerja.edit-kelompok', $program) }}" class="text-gray-600 hover:text-gray-800 text-sm font-medium">Edit</a>
-                                        <form action="{{ route('program-kerja.destroy-kelompok', $program) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">Belum ada program kerja kelompok di lokasi Anda</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        @if ($kelompokPrograms->hasPages())
-            <div class="mt-6">
-                {{ $kelompokPrograms->links() }}
-            </div>
-        @endif
     </div>
 </div>
-
-<script>
-function switchTab(tab) {
-    // Hide all contents
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('[id^="tab-"]').forEach(el => {
-        el.classList.remove('border-yellow-600', 'text-yellow-600');
-        el.classList.add('border-transparent', 'text-gray-400');
-    });
-
-    // Show selected content
-    document.getElementById('content-' + tab).classList.remove('hidden');
-    document.getElementById('tab-' + tab).classList.add('border-yellow-600', 'text-yellow-600');
-    document.getElementById('tab-' + tab).classList.remove('border-transparent', 'text-gray-400');
-}
-</script>
 @endsection

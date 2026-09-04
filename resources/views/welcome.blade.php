@@ -40,7 +40,7 @@
             </div>
             <div style="display: flex; gap: 20px; align-items: center;">
                 <a href="{{ url('/') }}" style="color: #f5e6d3; hover-color: #d4a574; transition: 0.3s;">Beranda</a>
-                <a href="{{ route('register.form') }}" style="color: #f5e6d3; hover-color: #d4a574; transition: 0.3s;">Daftar</a>
+                <a href="{{ url('/#pendaftaran') }}" style="color: #f5e6d3; hover-color: #d4a574; transition: 0.3s;">Daftar</a>
                 @auth
                     <a href="{{ url('/dashboard') }}" class="btn-gold">Dashboard</a>
                 @else
@@ -62,7 +62,7 @@
                     <p style="color: #f5e6d3; font-size: 1.1rem; margin-bottom: 30px; line-height: 1.8;">
                         Sinergi Markandeya hadir sebagai pusat literasi dan pengetahuan untuk mendukung pembelajaran, penelitian, dan pengabdian bagi seluruh civitas akademika dan masyarakat.
                     </p>
-                    <a href="{{ route('register.form') }}" class="btn-gold" style="display: inline-block;">
+                    <a href="{{ url('/#pendaftaran') }}" class="btn-gold" style="display: inline-block;">
                         Jelajahi Program →
                     </a>
                 </div>
@@ -125,7 +125,7 @@
             <p style="color: #f5e6d3; font-size: 1.1rem; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto;">
                 Tingkatkan pengetahuan, kembangkan keterampilan, dan berkontribusi untuk masa depan yang lebih baik.
             </p>
-            <a href="{{ route('register.form') }}" class="btn-gold" style="display: inline-block;">
+            <a href="{{ url('/#pendaftaran') }}" class="btn-gold" style="display: inline-block;">
                 Daftar Sekarang
             </a>
         </div>

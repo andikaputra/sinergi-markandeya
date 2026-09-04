@@ -14,11 +14,15 @@ return new class extends Migration
         // Ubah semua nilai lama ke 'aktif' dulu sebelum ubah enum
         \DB::table('mahasiswas')->whereIn('status', ['pending','ditolak'])->update(['status' => 'aktif']);
 
-        \DB::statement("ALTER TABLE mahasiswas MODIFY status ENUM('aktif','nonaktif') NOT NULL DEFAULT 'aktif'");
+        if (\DB::getDriverName() === 'mysql') {
+            \DB::statement("ALTER TABLE mahasiswas MODIFY status ENUM('aktif','nonaktif') NOT NULL DEFAULT 'aktif'");
+        }
     }
 
     public function down(): void
     {
-        \DB::statement("ALTER TABLE mahasiswas MODIFY status ENUM('pending','aktif','ditolak') NOT NULL DEFAULT 'pending'");
+        if (\DB::getDriverName() === 'mysql') {
+            \DB::statement("ALTER TABLE mahasiswas MODIFY status ENUM('pending','aktif','ditolak') NOT NULL DEFAULT 'pending'");
+        }
     }
 };

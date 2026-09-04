@@ -1,126 +1,144 @@
-@extends('layouts.app')
+@extends('layouts.adminmhs')
 
-@section('title', 'Detail Bimbingan')
+@section('title', 'Detail Bimbingan - ' . $bimbingan->topik)
 
 @section('content')
-<div style="background-color: #f5f3f0; min-height: 100vh; padding: 40px 20px;">
-    <div style="max-width: 900px; margin: 0 auto;">
-        <!-- Header with Back Button -->
-        <div style="margin-bottom: 30px;">
-            <a href="{{ route('bimbingan.dashboard') }}" style="color: #d4a574; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                ← Kembali ke Dashboard
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <a href="{{ route('bimbingan.dashboard') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-2xl flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-500 transition-all shadow-sm">
+                <i class="fas fa-chevron-left text-sm"></i>
             </a>
-        </div>
-
-        <!-- Status Header -->
-        <div style="background: white; padding: 24px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center;">
-                <div>
-                    <h1 style="margin: 0 0 8px 0; color: #1a5d4d; font-size: 1.8rem; font-weight: 700;">{{ $bimbingan->topik }}</h1>
-                    <p style="margin: 0; color: #666; font-size: 0.95rem;">
-                        📅 {{ $bimbingan->tanggal_bimbingan->format('d MMMM Y, H:i') }} WIB
-                    </p>
-                </div>
-                <div style="text-align: right;">
-                    @if($bimbingan->status === 'disetujui')
-                        <span style="background-color: #d4edda; color: #155724; padding: 12px 20px; border-radius: 20px; font-weight: 600; display: inline-block;">✅ Disetujui</span>
-                    @elseif($bimbingan->status === 'perlu_revisi')
-                        <span style="background-color: #ffe0b2; color: #e65100; padding: 12px 20px; border-radius: 20px; font-weight: 600; display: inline-block;">⚠️ Perlu Revisi</span>
-                    @else
-                        <span style="background-color: #e3f2fd; color: #1565c0; padding: 12px 20px; border-radius: 20px; font-weight: 600; display: inline-block;">⏳ Belum Direview</span>
-                    @endif
-                </div>
+            <div>
+                <h2 class="text-2xl font-black text-gray-800">Detail Sesi Bimbingan</h2>
+                <p class="text-xs text-gray-500">Informasi pengajuan, pokok bahasan, dan evaluasi dari dosen pembimbing</p>
             </div>
         </div>
 
-        <!-- Content Grid -->
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
-            <!-- Main Content -->
-            <div>
-                <!-- Deskripsi -->
-                <div style="background: white; padding: 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <h2 style="margin: 0 0 16px 0; color: #1a5d4d; font-size: 1.2rem; font-weight: 700;">Deskripsi Bimbingan</h2>
-                    <div style="color: #333; line-height: 1.8; background-color: #fafaf8; padding: 16px; border-radius: 8px; border-left: 4px solid #d4a574;">
-                        {{ $bimbingan->deskripsi }}
-                    </div>
-                </div>
+        <a href="{{ route('bimbingan.cetak') }}" target="_blank" class="inline-flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 hover:border-primary-500 text-gray-700 hover:text-primary-600 text-xs font-bold rounded-xl transition-all shadow-sm">
+            <i class="fas fa-print text-gold-500"></i>
+            <span>Cetak Kartu</span>
+        </a>
+    </div>
 
-                <!-- Materi Terlampir -->
-                @if($bimbingan->materi_terlampir)
-                <div style="background: white; padding: 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <h2 style="margin: 0 0 16px 0; color: #1a5d4d; font-size: 1.2rem; font-weight: 700;">📎 Materi Terlampir</h2>
-                    <a href="{{ asset('storage/bimbingan/' . $bimbingan->materi_terlampir) }}"
-                       target="_blank"
-                       style="display: inline-flex; align-items: center; gap: 12px; background-color: #f5f3f0; border: 2px solid #d4a574; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #1a5d4d; font-weight: 600; transition: all 0.3s;"
-                       onmouseover="this.style.backgroundColor='#efe9e0'"
-                       onmouseout="this.style.backgroundColor='#f5f3f0'">
-                        📥 {{ basename($bimbingan->materi_terlampir) }}
+    <!-- Status Banner -->
+    <div class="p-6 rounded-3xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm @if($bimbingan->status === 'disetujui') bg-emerald-50 border-emerald-200 text-emerald-900 @elseif($bimbingan->status === 'perlu_revisi') bg-amber-50 border-amber-200 text-amber-900 @else bg-blue-50 border-blue-200 text-blue-900 @endif">
+        <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold shrink-0 @if($bimbingan->status === 'disetujui') bg-emerald-100 text-emerald-700 @elseif($bimbingan->status === 'perlu_revisi') bg-amber-100 text-amber-700 @else bg-blue-100 text-blue-700 @endif">
+                @if($bimbingan->status === 'disetujui')
+                    <i class="fas fa-check-circle"></i>
+                @elseif($bimbingan->status === 'perlu_revisi')
+                    <i class="fas fa-exclamation-circle"></i>
+                @else
+                    <i class="fas fa-clock"></i>
+                @endif
+            </div>
+            <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider block opacity-75">Status Verifikasi Dosen</span>
+                <h3 class="text-lg font-black">
+                    @if($bimbingan->status === 'disetujui')
+                        Bimbingan Disetujui
+                    @elseif($bimbingan->status === 'perlu_revisi')
+                        Bimbingan Perlu Revisi
+                    @else
+                        Menunggu Review Dosen Pembimbing
+                    @endif
+                </h3>
+            </div>
+        </div>
+
+        <div class="text-xs font-semibold opacity-80 sm:text-right">
+            <p>Jadwal Bimbingan:</p>
+            <p class="font-bold text-sm">{{ \Carbon\Carbon::parse($bimbingan->tanggal_bimbingan)->translatedFormat('d F Y, H:i') }} WITA</p>
+        </div>
+    </div>
+
+    <!-- Catatan Dosen Pembimbing Section (Special Highlighting) -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 space-y-4">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center font-bold">
+                    <i class="fas fa-comment-dots text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="text-base font-black text-gray-800">Catatan & Masukan Dosen Pembimbing</h4>
+                    <p class="text-xs text-gray-400">Arahan revisi atau rekomendasi penyempurnaan laporan dari dosen</p>
+                </div>
+            </div>
+            <span class="text-xs font-bold text-gray-500">
+                {{ $bimbingan->dosenPembimbing?->dosen?->nama ?? 'Dosen Pembimbing' }}
+            </span>
+        </div>
+
+        @if($bimbingan->catatan_dosen)
+            <div class="p-6 bg-gradient-to-r from-amber-50/70 to-orange-50/70 border border-amber-200/80 rounded-2xl text-amber-950 leading-relaxed font-medium space-y-4">
+                <p class="whitespace-pre-line text-sm text-gray-800">{{ $bimbingan->catatan_dosen }}</p>
+                
+                @if($bimbingan->status === 'perlu_revisi')
+                <div class="pt-3 border-t border-amber-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <p class="text-xs text-amber-800 font-bold">
+                        <i class="fas fa-info-circle mr-1"></i> Silakan perbaiki draf Anda dan unggah kembali melalui tautan di samping.
+                    </p>
+                    <a href="{{ route('bimbingan.edit', $bimbingan->id) }}" class="inline-flex items-center justify-center space-x-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-black rounded-xl shadow-md shadow-amber-600/20 transition-all active:scale-95">
+                        <i class="fas fa-edit"></i>
+                        <span>Perbaiki & Unggah Revisi</span>
                     </a>
                 </div>
                 @endif
-
-                <!-- Catatan Dosen -->
-                @if($bimbingan->catatan_dosen)
-                <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <h2 style="margin: 0 0 16px 0; color: #1a5d4d; font-size: 1.2rem; font-weight: 700;">👨‍🏫 Catatan dari Dosen</h2>
-                    <div style="color: #333; line-height: 1.8; background-color: #fafaf8; padding: 16px; border-radius: 8px; border-left: 4px solid #d4a574;">
-                        {{ $bimbingan->catatan_dosen }}
-                    </div>
-                </div>
-                @endif
             </div>
+        @else
+            <div class="p-8 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                <i class="fas fa-hourglass-start text-gray-300 text-3xl mb-2"></i>
+                <p class="text-sm font-semibold text-gray-500">Dosen pembimbing belum memberikan catatan untuk sesi bimbingan ini.</p>
+                <p class="text-xs text-gray-400 mt-1">Catatan dan arahan akan otomatis tampil di sini setelah dosen me-review.</p>
+            </div>
+        @endif
+    </div>
 
-            <!-- Sidebar -->
-            <div>
-                <!-- Informasi Umum -->
-                <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 24px;">
-                    <h3 style="margin: 0 0 20px 0; color: #1a5d4d; font-size: 1.1rem; font-weight: 700;">Informasi Umum</h3>
+    <!-- Main Details Box -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 space-y-6">
+        <h4 class="text-lg font-black text-gray-800 border-b border-gray-100 pb-4">Materi & Pokok Bahasan Mahasiswa</h4>
 
-                    <div style="margin-bottom: 20px;">
-                        <p style="color: #999; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Dibuat</p>
-                        <p style="margin: 8px 0 0 0; color: #333; font-weight: 600;">{{ $bimbingan->created_at->format('d M Y, H:i') }}</p>
-                    </div>
+        <!-- Topik -->
+        <div class="space-y-1">
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Topik Konsultasi</span>
+            <p class="text-base font-bold text-gray-900">{{ $bimbingan->topik }}</p>
+        </div>
 
-                    <div style="margin-bottom: 20px;">
-                        <p style="color: #999; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Terakhir Diupdate</p>
-                        <p style="margin: 8px 0 0 0; color: #333; font-weight: 600;">{{ $bimbingan->updated_at->format('d M Y, H:i') }}</p>
-                    </div>
-
-                    <div>
-                        <p style="color: #999; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Status Permohonan</p>
-                        <div style="margin: 8px 0 0 0;">
-                            @if($bimbingan->status === 'disetujui')
-                                <p style="margin: 0; color: #155724; font-weight: 600;">✅ Disetujui</p>
-                            @elseif($bimbingan->status === 'perlu_revisi')
-                                <p style="margin: 0; color: #e65100; font-weight: 600;">⚠️ Perlu Revisi</p>
-                            @else
-                                <p style="margin: 0; color: #1565c0; font-weight: 600;">⏳ Menunggu Review</p>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dosen Pembimbing Card -->
-                <div style="background: linear-gradient(135deg, #1a5d4d 0%, #0f2d26 100%); color: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <h3 style="margin: 0 0 20px 0; font-size: 1.1rem; font-weight: 700;">👨‍🏫 Dosen Pembimbing</h3>
-
-                    <div style="margin-bottom: 16px;">
-                        <p style="color: #d4a574; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Nama</p>
-                        <p style="margin: 8px 0 0 0; font-weight: 600;">{{ $bimbingan->dosenPembimbing->dosen->nama ?? 'N/A' }}</p>
-                    </div>
-
-                    <div style="margin-bottom: 16px;">
-                        <p style="color: #d4a574; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">NIDN</p>
-                        <p style="margin: 8px 0 0 0; font-weight: 600;">{{ $bimbingan->dosenPembimbing->dosen->nidn ?? 'N/A' }}</p>
-                    </div>
-
-                    <div>
-                        <p style="color: #d4a574; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Email</p>
-                        <p style="margin: 8px 0 0 0; font-weight: 600; word-break: break-all;">{{ $bimbingan->dosenPembimbing->dosen->email ?? 'N/A' }}</p>
-                    </div>
-                </div>
+        <!-- Deskripsi -->
+        <div class="space-y-1">
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Deskripsi & Progres</span>
+            <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                {{ $bimbingan->deskripsi }}
             </div>
         </div>
+
+        <!-- Lampiran Dokumen -->
+        @if($bimbingan->materi_terlampir)
+        <div class="space-y-2 pt-2 border-t border-gray-100">
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Berkas Terlampir</span>
+            <div class="flex items-center justify-between p-4 bg-primary-50/40 border border-primary-100 rounded-2xl">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary-100 text-primary-700 flex items-center justify-center font-bold">
+                        <i class="fas fa-file-alt text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-gray-800">{{ $bimbingan->materi_terlampir }}</p>
+                        <p class="text-[10px] text-gray-400">Draft Laporan / Dokumen Bimbingan</p>
+                    </div>
+                </div>
+                <a
+                    href="{{ asset('storage/bimbingan/' . $bimbingan->materi_terlampir) }}"
+                    download
+                    class="inline-flex items-center space-x-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
+                >
+                    <i class="fas fa-download"></i>
+                    <span>Unduh Berkas</span>
+                </a>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 @endsection

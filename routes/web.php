@@ -261,7 +261,10 @@ Route::middleware(['auth:mahasiswa'])->group(function () {
     Route::get('/bimbingan', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'dashboard'])->name('bimbingan.dashboard');
     Route::get('/bimbingan/create', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'create'])->name('bimbingan.create');
     Route::post('/bimbingan', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'store'])->name('bimbingan.store');
+    Route::get('/bimbingan/cetak', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'cetak'])->name('bimbingan.cetak');
     Route::get('/bimbingan/{bimbingan}', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'show'])->name('bimbingan.show');
+    Route::get('/bimbingan/{bimbingan}/edit', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'edit'])->name('bimbingan.edit');
+    Route::put('/bimbingan/{bimbingan}', [\App\Http\Controllers\BimbinganMahasiswaController::class, 'update'])->name('bimbingan.update');
 
     Route::get('/program-kerja', [\App\Http\Controllers\ProgramKerjaController::class, 'index'])->name('program-kerja.index');
 
@@ -314,6 +317,7 @@ Route::middleware(['auth:dosen'])->prefix('dosen-pembimbing')->group(function ()
     Route::get('/bimbingan', [DosenController::class, 'bimbingan'])->name('dosen.bimbingan');
     Route::get('/mahasiswa/{nim}', [DosenController::class, 'detailMahasiswa'])->name('dosen.mahasiswa.detail');
     Route::post('/mahasiswa/{nim}/nilai', [DosenController::class, 'inputNilai'])->name('dosen.mahasiswa.nilai');
+    Route::post('/bimbingan/{id}/status', [DosenController::class, 'updateBimbinganStatus'])->name('dosen.bimbingan.status');
 
     // Fitur Penguji
     Route::get('/ujian', [DosenPengujiController::class, 'dosenIndex'])->name('dosen.ujian.index');

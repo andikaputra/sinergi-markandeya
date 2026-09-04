@@ -46,7 +46,9 @@ class KelompokProgramKerja extends Model
             return collect([]);
         }
 
-        $penempatan = match ($this->kategori) {
+        $kegiatanLower = strtolower($this->kategori ?? '');
+
+        $penempatan = match ($kegiatanLower) {
             'kkn' => PenempatanKkn::where('nim', $ketua->nim)->first(),
             'ppl' => PenempatanPpl::where('nim', $ketua->nim)->first(),
             'pkl' => PenempatanPkl::where('nim', $ketua->nim)->first(),
@@ -58,21 +60,25 @@ class KelompokProgramKerja extends Model
             return collect([$ketua]);
         }
 
-        $lokasiColumn = match ($this->kategori) {
+        $lokasiColumn = match ($kegiatanLower) {
             'kkn' => 'lokasi_kkn_id',
-            'ppl' => 'lokasi_ppl_id',
+            'ppl' => 'sekolah_id',
             'pkl' => 'lokasi_pkl_id',
             'magang' => 'lokasi_magang_id',
             default => null,
         };
 
-        $tabelPenempatan = match ($this->kategori) {
-            'kkn' => 'penempatan_kkns',
-            'ppl' => 'penempatan_ppls',
+        $tabelPenempatan = match ($kegiatanLower) {
+            'kkn' => 'pembagian_lokasi_kkn',
+            'ppl' => 'Penempatan_ppl',
             'pkl' => 'penempatan_pkls',
-            'magang' => 'penempatan_mamangs',
+            'magang' => 'penempatan_magangs',
             default => null,
         };
+
+        if (!$lokasiColumn || !$tabelPenempatan) {
+            return collect([$ketua]);
+        }
 
         return Mahasiswa::whereIn('nim', function ($query) use ($lokasiColumn, $tabelPenempatan, $penempatan) {
             $query->select('nim')
