@@ -121,10 +121,13 @@
                         @if($mahasiswas->isNotEmpty())
                         <div class="relative">
                             <input type="text" id="searchPeroranganInput" placeholder="Cari nama, NIM, prodi, atau lokasi penempatan {{ strtoupper($selectedKegiatan) }}..." 
-                                   class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                                   class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
                                 <i class="fas fa-search text-xs"></i>
                             </div>
+                            <button type="button" id="clearSearchPeroranganBtn" class="hidden absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600 transition-colors">
+                                <i class="fas fa-times-circle text-xs"></i>
+                            </button>
                         </div>
                         @endif
 
@@ -174,6 +177,11 @@
                                         </div>
                                     </label>
                                 @endforeach
+
+                                <div id="noResultsPerorangan" class="hidden p-8 text-center bg-white rounded-2xl border border-dashed border-gray-200">
+                                    <i class="fas fa-search text-gray-300 text-2xl mb-2"></i>
+                                    <p class="text-xs font-bold text-gray-500">Tidak ada mahasiswa yang cocok dengan kata kunci pencarian.</p>
+                                </div>
                             </div>
                             @else
                             <div class="p-10 text-center">
@@ -207,10 +215,13 @@
                         @if($kelompoks->isNotEmpty())
                         <div class="relative">
                             <input type="text" id="searchKelompokInput" placeholder="Cari nama kelompok, desa, sekolah, instansi, atau wilayah {{ strtoupper($selectedKegiatan) }}..." 
-                                   class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                                   class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
                                 <i class="fas fa-search text-xs"></i>
                             </div>
+                            <button type="button" id="clearSearchKelompokBtn" class="hidden absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600 transition-colors">
+                                <i class="fas fa-times-circle text-xs"></i>
+                            </button>
                         </div>
                         @endif
 
@@ -328,6 +339,11 @@
                                         </div>
                                     </div>
                                 @endforeach
+
+                                <div id="noResultsKelompok" class="hidden p-8 text-center bg-white rounded-2xl border border-dashed border-gray-200">
+                                    <i class="fas fa-search text-gray-300 text-2xl mb-2"></i>
+                                    <p class="text-xs font-bold text-gray-500">Tidak ada kelompok yang cocok dengan kata kunci pencarian.</p>
+                                </div>
                             </div>
                             @else
                             <div class="p-10 text-center">
@@ -600,15 +616,66 @@
         }
 
         // ----------------------------------------------------
-        // MODE PERORANGAN LOGIC
+        // ROBUST LIVE SEARCH (PERORANGAN)
         // ----------------------------------------------------
+        const searchPeroranganInput = document.getElementById('searchPeroranganInput');
+        const clearSearchPeroranganBtn = document.getElementById('clearSearchPeroranganBtn');
+        const noResultsPerorangan = document.getElementById('noResultsPerorangan');
+
+        function filterPerorangan(term) {
+            term = (term || '').toLowerCase().trim();
+            const cards = document.querySelectorAll('.student-item-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const searchData = ((card.getAttribute('data-search') || '') + ' ' + card.innerText).toLowerCase();
+                const isMatch = term === '' || searchData.includes(term);
+                if (isMatch) {
+                    card.style.setProperty('display', 'flex', 'important');
+                    visibleCount++;
+                } else {
+                    card.style.setProperty('display', 'none', 'important');
+                }
+            });
+
+            if (clearSearchPeroranganBtn) {
+                clearSearchPeroranganBtn.style.display = term !== '' ? 'flex' : 'none';
+            }
+
+            if (noResultsPerorangan) {
+                noResultsPerorangan.style.display = (visibleCount === 0 && cards.length > 0) ? 'block' : 'none';
+            }
+        }
+
+        if (searchPeroranganInput) {
+            ['input', 'keyup', 'change', 'paste'].forEach(evt => {
+                searchPeroranganInput.addEventListener(evt, function() {
+                    filterPerorangan(this.value);
+                });
+            });
+        }
+
+        if (clearSearchPeroranganBtn) {
+            clearSearchPeroranganBtn.addEventListener('click', function() {
+                if (searchPeroranganInput) {
+                    searchPeroranganInput.value = '';
+                    searchPeroranganInput.focus();
+                    filterPerorangan('');
+                }
+            });
+        }
+
+        // Select All Perorangan Button (respects search filter)
         const selectAllPeroranganBtn = document.getElementById('selectAllPeroranganBtn');
         if (selectAllPeroranganBtn) {
             let allSelected = false;
             selectAllPeroranganBtn.addEventListener('click', function() {
                 allSelected = !allSelected;
-                const visibleCheckboxes = document.querySelectorAll('.student-item-card:not(.hidden) .student-checkbox');
-                visibleCheckboxes.forEach(cb => cb.checked = allSelected);
+                const visibleCards = Array.from(document.querySelectorAll('.student-item-card')).filter(card => card.style.display !== 'none');
+                visibleCards.forEach(card => {
+                    const cb = card.querySelector('.student-checkbox');
+                    if (cb) cb.checked = allSelected;
+                });
                 selectAllPeroranganBtn.innerHTML = allSelected 
                     ? '<i class="fas fa-times"></i> <span>Batal Pilih</span>' 
                     : '<i class="fas fa-check-double"></i> <span>Pilih Semua</span>';
@@ -616,24 +683,56 @@
             });
         }
 
-        const searchPeroranganInput = document.getElementById('searchPeroranganInput');
-        if (searchPeroranganInput) {
-            searchPeroranganInput.addEventListener('input', function() {
-                const term = this.value.toLowerCase().trim();
-                document.querySelectorAll('.student-item-card').forEach(card => {
-                    const searchData = card.getAttribute('data-search') || '';
-                    if (searchData.includes(term)) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
+        // ----------------------------------------------------
+        // ROBUST LIVE SEARCH (KELOMPOK)
+        // ----------------------------------------------------
+        const searchKelompokInput = document.getElementById('searchKelompokInput');
+        const clearSearchKelompokBtn = document.getElementById('clearSearchKelompokBtn');
+        const noResultsKelompok = document.getElementById('noResultsKelompok');
+
+        function filterKelompok(term) {
+            term = (term || '').toLowerCase().trim();
+            const cards = document.querySelectorAll('.group-card-item');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const searchData = ((card.getAttribute('data-search') || '') + ' ' + card.innerText).toLowerCase();
+                const isMatch = term === '' || searchData.includes(term);
+                if (isMatch) {
+                    card.style.setProperty('display', 'block', 'important');
+                    visibleCount++;
+                } else {
+                    card.style.setProperty('display', 'none', 'important');
+                }
+            });
+
+            if (clearSearchKelompokBtn) {
+                clearSearchKelompokBtn.style.display = term !== '' ? 'flex' : 'none';
+            }
+
+            if (noResultsKelompok) {
+                noResultsKelompok.style.display = (visibleCount === 0 && cards.length > 0) ? 'block' : 'none';
+            }
+        }
+
+        if (searchKelompokInput) {
+            ['input', 'keyup', 'change', 'paste'].forEach(evt => {
+                searchKelompokInput.addEventListener(evt, function() {
+                    filterKelompok(this.value);
                 });
             });
         }
 
-        // ----------------------------------------------------
-        // MODE KELOMPOK LOGIC
-        // ----------------------------------------------------
+        if (clearSearchKelompokBtn) {
+            clearSearchKelompokBtn.addEventListener('click', function() {
+                if (searchKelompokInput) {
+                    searchKelompokInput.value = '';
+                    searchKelompokInput.focus();
+                    filterKelompok('');
+                }
+            });
+        }
+
         // Group Checkbox changed -> toggle its member checkboxes
         document.querySelectorAll('.group-checkbox').forEach(gcb => {
             gcb.addEventListener('change', function() {
@@ -669,40 +768,27 @@
             });
         });
 
-        // Select All Groups Button
+        // Select All Groups Button (respects search filter)
         const selectAllKelompokBtn = document.getElementById('selectAllKelompokBtn');
         if (selectAllKelompokBtn) {
             let allGroupsSelected = false;
             selectAllKelompokBtn.addEventListener('click', function() {
                 allGroupsSelected = !allGroupsSelected;
-                const visibleGroupCheckboxes = document.querySelectorAll('.group-card-item:not(.hidden) .group-checkbox:not(:disabled)');
-                visibleGroupCheckboxes.forEach(gcb => {
-                    gcb.checked = allGroupsSelected;
-                    gcb.indeterminate = false;
-                    const groupId = gcb.getAttribute('data-group-id');
-                    const memberCheckboxes = document.querySelectorAll('.group-member-checkbox-' + groupId + ':not(:disabled)');
-                    memberCheckboxes.forEach(mcb => mcb.checked = allGroupsSelected);
+                const visibleGroups = Array.from(document.querySelectorAll('.group-card-item')).filter(card => card.style.display !== 'none');
+                visibleGroups.forEach(card => {
+                    const gcb = card.querySelector('.group-checkbox:not(:disabled)');
+                    if (gcb) {
+                        gcb.checked = allGroupsSelected;
+                        gcb.indeterminate = false;
+                        const groupId = gcb.getAttribute('data-group-id');
+                        const memberCheckboxes = card.querySelectorAll('.group-member-checkbox-' + groupId + ':not(:disabled)');
+                        memberCheckboxes.forEach(mcb => mcb.checked = allGroupsSelected);
+                    }
                 });
                 selectAllKelompokBtn.innerHTML = allGroupsSelected 
                     ? '<i class="fas fa-times"></i> <span>Batal Pilih Semua</span>' 
                     : '<i class="fas fa-check-double"></i> <span>Pilih Semua Kelompok</span>';
                 updateSelectedCounter();
-            });
-        }
-
-        // Live Search Kelompok
-        const searchKelompokInput = document.getElementById('searchKelompokInput');
-        if (searchKelompokInput) {
-            searchKelompokInput.addEventListener('input', function() {
-                const term = this.value.toLowerCase().trim();
-                document.querySelectorAll('.group-card-item').forEach(card => {
-                    const searchData = card.getAttribute('data-search') || '';
-                    if (searchData.includes(term)) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
-                });
             });
         }
 
