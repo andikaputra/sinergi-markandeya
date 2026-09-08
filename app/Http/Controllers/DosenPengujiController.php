@@ -7,6 +7,14 @@ use App\Models\Mahasiswa;
 use App\Models\DosenPenguji;
 use App\Models\Jurnal;
 use App\Models\TahunAkademik;
+use App\Models\LokasiKkn;
+use App\Models\LokasiPpl;
+use App\Models\LokasiPkl;
+use App\Models\LokasiMagang;
+use App\Models\PenempatanKkn;
+use App\Models\PenempatanPpl;
+use App\Models\PenempatanPkl;
+use App\Models\PenempatanMagang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,44 +24,245 @@ class DosenPengujiController extends Controller
     public function adminIndex(Request $request)
     {
         $allowedKegiatan = Auth::user()->getAllowedKegiatan();
-        $selectedKegiatan = $request->input('kegiatan');
+        $reqKegiatan = $request->input('kegiatan');
+        if ($reqKegiatan) {
+            $matched = collect($allowedKegiatan)->first(fn($k) => strcasecmp($k, $reqKegiatan) === 0);
+            $selectedKegiatan = $matched ?: strtoupper($reqKegiatan);
+        } else {
+            $selectedKegiatan = in_array('KKN', $allowedKegiatan) ? 'KKN' : ($allowedKegiatan[0] ?? 'KKN');
+        }
 
-        $filterKegiatan = $selectedKegiatan ? [$selectedKegiatan] : $allowedKegiatan;
+        $selectedType = $request->input('type', 'perorangan'); // 'perorangan' or 'kelompok'
+        $filterKegiatan = [$selectedKegiatan];
 
+        // Query mahasiswa belum ada dosen penguji untuk mode perorangan
         $mahasiswas = Mahasiswa::whereDoesntHave('dosenPenguji')
             ->withKegiatanIn($filterKegiatan)
-            ->orderBy('nama')->get();
-
-        $dosens = Dosen::all();
-
-        $assignments = DosenPenguji::with(['mahasiswa', 'dosen'])
-            ->whereHas('mahasiswa', fn($q) => $q->withKegiatanIn($filterKegiatan))
+            ->with([
+                'penempatankkn.lokasikkn',
+                'penempatanppl.lokasippl',
+                'penempatanpkl.lokasipkl',
+                'penempatanmagang.lokasimagang',
+                'activeKegiatan',
+            ])
+            ->orderBy('nama')
             ->get();
 
-        return view('admin.assigndosenpenguji', compact('mahasiswas', 'dosens', 'assignments', 'allowedKegiatan', 'selectedKegiatan'));
+        // Build data kelompok berdasarkan lokasi penempatan mahasiswa untuk kegiatan terpilih
+        $kelompoks = collect();
+
+        if (in_array('KKN', $filterKegiatan)) {
+            $lokasis = LokasiKkn::with(['penempatankkn.mahasiswa' => function($q) {
+                $q->with(['dosenPenguji.dosen', 'activeKegiatan']);
+            }])->orderBy('desa')->get();
+
+            foreach ($lokasis as $lokasi) {
+                $members = $lokasi->penempatankkn->map(fn($p) => $p->mahasiswa)->filter();
+                $unassigned = $members->filter(fn($m) => !$m->dosenPenguji);
+                $assigned = $members->filter(fn($m) => (bool)$m->dosenPenguji);
+
+                $kelompoks->push((object)[
+                    'id' => 'KKN_' . $lokasi->id,
+                    'raw_id' => $lokasi->id,
+                    'kegiatan' => 'KKN',
+                    'nama' => 'Desa ' . $lokasi->desa,
+                    'detail' => trim(($lokasi->kecamatan ? 'Kec. ' . $lokasi->kecamatan : '') . ($lokasi->kabupaten ? ', ' . $lokasi->kabupaten : ''), ' ,'),
+                    'members' => $members,
+                    'unassigned_members' => $unassigned,
+                    'assigned_members' => $assigned,
+                    'total_count' => $members->count(),
+                    'unassigned_count' => $unassigned->count(),
+                    'assigned_count' => $assigned->count(),
+                    'is_fully_assigned' => $members->isNotEmpty() && $unassigned->isEmpty(),
+                    'is_empty' => $members->isEmpty(),
+                ]);
+            }
+        }
+
+        if (in_array('PPL', $filterKegiatan)) {
+            $lokasis = LokasiPpl::with(['penempatanppl.mahasiswa' => function($q) {
+                $q->with(['dosenPenguji.dosen', 'activeKegiatan']);
+            }])->orderBy('Sekolah')->get();
+
+            foreach ($lokasis as $lokasi) {
+                $members = $lokasi->penempatanppl->map(fn($p) => $p->mahasiswa)->filter();
+                $unassigned = $members->filter(fn($m) => !$m->dosenPenguji);
+                $assigned = $members->filter(fn($m) => (bool)$m->dosenPenguji);
+
+                $kelompoks->push((object)[
+                    'id' => 'PPL_' . $lokasi->id,
+                    'raw_id' => $lokasi->id,
+                    'kegiatan' => 'PPL',
+                    'nama' => $lokasi->Sekolah ?? $lokasi->sekolah ?? $lokasi->nama_sekolah ?? ('Sekolah #' . $lokasi->id),
+                    'detail' => trim(($lokasi->kecamatan ? 'Kec. ' . $lokasi->kecamatan : '') . ($lokasi->kabupaten ? ', ' . $lokasi->kabupaten : '') . ($lokasi->alamat ? ' - ' . $lokasi->alamat : ''), ' ,-'),
+                    'members' => $members,
+                    'unassigned_members' => $unassigned,
+                    'assigned_members' => $assigned,
+                    'total_count' => $members->count(),
+                    'unassigned_count' => $unassigned->count(),
+                    'assigned_count' => $assigned->count(),
+                    'is_fully_assigned' => $members->isNotEmpty() && $unassigned->isEmpty(),
+                    'is_empty' => $members->isEmpty(),
+                ]);
+            }
+        }
+
+        if (in_array('PKL', $filterKegiatan)) {
+            $lokasis = LokasiPkl::with(['penempatanpkl.mahasiswa' => function($q) {
+                $q->with(['dosenPenguji.dosen', 'activeKegiatan']);
+            }])->orderBy('nama_instansi')->get();
+
+            foreach ($lokasis as $lokasi) {
+                $members = $lokasi->penempatanpkl->map(fn($p) => $p->mahasiswa)->filter();
+                $unassigned = $members->filter(fn($m) => !$m->dosenPenguji);
+                $assigned = $members->filter(fn($m) => (bool)$m->dosenPenguji);
+
+                $kelompoks->push((object)[
+                    'id' => 'PKL_' . $lokasi->id,
+                    'raw_id' => $lokasi->id,
+                    'kegiatan' => 'PKL',
+                    'nama' => $lokasi->nama_instansi ?? ('Instansi #' . $lokasi->id),
+                    'detail' => $lokasi->alamat ?? '-',
+                    'members' => $members,
+                    'unassigned_members' => $unassigned,
+                    'assigned_members' => $assigned,
+                    'total_count' => $members->count(),
+                    'unassigned_count' => $unassigned->count(),
+                    'assigned_count' => $assigned->count(),
+                    'is_fully_assigned' => $members->isNotEmpty() && $unassigned->isEmpty(),
+                    'is_empty' => $members->isEmpty(),
+                ]);
+            }
+        }
+
+        if (in_array('Magang', $filterKegiatan)) {
+            $lokasis = LokasiMagang::with(['penempatanmagang.mahasiswa' => function($q) {
+                $q->with(['dosenPenguji.dosen', 'activeKegiatan']);
+            }])->orderBy('nama_instansi')->get();
+
+            foreach ($lokasis as $lokasi) {
+                $members = $lokasi->penempatanmagang->map(fn($p) => $p->mahasiswa)->filter();
+                $unassigned = $members->filter(fn($m) => !$m->dosenPenguji);
+                $assigned = $members->filter(fn($m) => (bool)$m->dosenPenguji);
+
+                $kelompoks->push((object)[
+                    'id' => 'MAGANG_' . $lokasi->id,
+                    'raw_id' => $lokasi->id,
+                    'kegiatan' => 'Magang',
+                    'nama' => $lokasi->nama_instansi ?? ('Instansi #' . $lokasi->id),
+                    'detail' => $lokasi->alamat ?? '-',
+                    'members' => $members,
+                    'unassigned_members' => $unassigned,
+                    'assigned_members' => $assigned,
+                    'total_count' => $members->count(),
+                    'unassigned_count' => $unassigned->count(),
+                    'assigned_count' => $assigned->count(),
+                    'is_fully_assigned' => $members->isNotEmpty() && $unassigned->isEmpty(),
+                    'is_empty' => $members->isEmpty(),
+                ]);
+            }
+        }
+
+        $dosens = Dosen::orderBy('nama', 'asc')->get();
+
+        $assignments = DosenPenguji::with([
+                'mahasiswa.penempatankkn.lokasikkn',
+                'mahasiswa.penempatanppl.lokasippl',
+                'mahasiswa.penempatanpkl.lokasipkl',
+                'mahasiswa.penempatanmagang.lokasimagang',
+                'mahasiswa.activeKegiatan',
+                'dosen'
+            ])
+            ->whereHas('mahasiswa', fn($q) => $q->withKegiatanIn($filterKegiatan))
+            ->latest('updated_at')
+            ->get();
+
+        return view('admin.assigndosenpenguji', compact(
+            'mahasiswas',
+            'kelompoks',
+            'dosens',
+            'assignments',
+            'allowedKegiatan',
+            'selectedKegiatan',
+            'selectedType'
+        ));
     }
 
     public function adminStore(Request $request)
     {
         $request->validate([
-            'nims' => 'required|array',
             'nidn' => 'required|exists:dosens,nidn',
+            'nims' => 'nullable|array',
+            'kelompok_ids' => 'nullable|array',
+            'kegiatan' => 'nullable|string',
+            'type' => 'nullable|string',
+        ], [
+            'nidn.required' => 'Pilih dosen penguji terlebih dahulu.',
+            'nidn.exists' => 'Dosen yang dipilih tidak valid.',
         ]);
 
-        foreach ($request->nims as $nim) {
-            DosenPenguji::updateOrCreate(
-                ['nim' => $nim],
-                ['nidn' => $request->nidn]
-            );
+        $kegiatan = $request->input('kegiatan', 'KKN');
+        $type = $request->input('type', 'perorangan');
+
+        $dosen = Dosen::where('nidn', $request->nidn)->firstOrFail();
+        $nimsToAssign = collect($request->input('nims', []));
+
+        // Jika ada kelompok_ids, ambil semua NIM anggota kelompok tersebut
+        if ($request->has('kelompok_ids') && is_array($request->kelompok_ids)) {
+            foreach ($request->kelompok_ids as $groupId) {
+                $parts = explode('_', $groupId, 2);
+                if (count($parts) === 2) {
+                    $grpKeg = strtoupper($parts[0]);
+                    $locId = $parts[1];
+
+                    $memberNims = match ($grpKeg) {
+                        'KKN' => PenempatanKkn::where('lokasi_kkn_id', $locId)->pluck('nim'),
+                        'PPL' => PenempatanPpl::where('sekolah_id', $locId)->pluck('nim'),
+                        'PKL' => PenempatanPkl::where('lokasi_pkl_id', $locId)->pluck('nim'),
+                        'MAGANG' => PenempatanMagang::where('lokasi_magang_id', $locId)->pluck('nim'),
+                        default => collect(),
+                    };
+
+                    $nimsToAssign = $nimsToAssign->merge($memberNims);
+                }
+            }
         }
 
-        return redirect()->back()->with('success', 'Dosen Penguji berhasil di-plot!');
+        $nimsToAssign = $nimsToAssign->unique()->filter()->values();
+
+        if ($nimsToAssign->isEmpty()) {
+            return redirect()->route('assign.dosenpenguji', ['kegiatan' => $kegiatan, 'type' => $type])
+                ->with('error', 'Pilih minimal satu mahasiswa atau kelompok untuk di-plot!');
+        }
+
+        DB::beginTransaction();
+        try {
+            $count = 0;
+            foreach ($nimsToAssign as $nim) {
+                if (Mahasiswa::where('nim', $nim)->exists()) {
+                    DosenPenguji::updateOrCreate(
+                        ['nim' => $nim],
+                        ['nidn' => $request->nidn]
+                    );
+                    $count++;
+                }
+            }
+            DB::commit();
+
+            return redirect()->route('assign.dosenpenguji', ['kegiatan' => $kegiatan, 'type' => $type])
+                ->with('success', "Berhasil mem-plot {$count} mahasiswa kegiatan {$kegiatan} ke Dosen Penguji {$dosen->nama}!");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('assign.dosenpenguji', ['kegiatan' => $kegiatan, 'type' => $type])
+                ->with('error', 'Gagal memproses plotting penguji: ' . $e->getMessage());
+        }
     }
 
     public function adminDelete($id)
     {
-        DosenPenguji::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Plotting Dosen Penguji dihapus.');
+        $assignment = DosenPenguji::findOrFail($id);
+        $assignment->delete();
+        return redirect()->back()->with('success', 'Plotting Dosen Penguji berhasil dihapus.');
     }
 
     public function import(Request $request)
