@@ -120,12 +120,19 @@
                         <!-- Live Search Input -->
                         @if($mahasiswas->isNotEmpty())
                         <div class="relative">
-                            <input type="text" id="searchPeroranganInput" placeholder="Cari nama, NIM, prodi, atau lokasi penempatan {{ strtoupper($selectedKegiatan) }}..." 
+                            <input type="text" 
+                                   id="searchPeroranganInput" 
+                                   oninput="filterPerorangan(this.value)" 
+                                   onkeyup="filterPerorangan(this.value)"
+                                   placeholder="Cari nama, NIM, prodi, atau lokasi penempatan {{ strtoupper($selectedKegiatan) }}..." 
                                    class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
                                 <i class="fas fa-search text-xs"></i>
                             </div>
-                            <button type="button" id="clearSearchPeroranganBtn" class="hidden absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600 transition-colors">
+                            <button type="button" 
+                                    id="clearSearchPeroranganBtn" 
+                                    onclick="clearSearchPerorangan()" 
+                                    class="hidden absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600 transition-colors">
                                 <i class="fas fa-times-circle text-xs"></i>
                             </button>
                         </div>
@@ -214,12 +221,19 @@
                         <!-- Live Search Input -->
                         @if($kelompoks->isNotEmpty())
                         <div class="relative">
-                            <input type="text" id="searchKelompokInput" placeholder="Cari nama kelompok, desa, sekolah, instansi, atau wilayah {{ strtoupper($selectedKegiatan) }}..." 
+                            <input type="text" 
+                                   id="searchKelompokInput" 
+                                   oninput="filterKelompok(this.value)" 
+                                   onkeyup="filterKelompok(this.value)"
+                                   placeholder="Cari nama kelompok, desa, sekolah, instansi, atau wilayah {{ strtoupper($selectedKegiatan) }}..." 
                                    class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
                                 <i class="fas fa-search text-xs"></i>
                             </div>
-                            <button type="button" id="clearSearchKelompokBtn" class="hidden absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600 transition-colors">
+                            <button type="button" 
+                                    id="clearSearchKelompokBtn" 
+                                    onclick="clearSearchKelompok()" 
+                                    class="hidden absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600 transition-colors">
                                 <i class="fas fa-times-circle text-xs"></i>
                             </button>
                         </div>
@@ -290,7 +304,9 @@
                                                         <span class="text-indigo-600 font-bold">{{ $grp->unassigned_count }} siap di-plot</span>
                                                     </div>
 
-                                                    <button type="button" class="accordion-toggle text-[11px] font-bold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1" data-target="accordion-body-{{ $grp->id }}">
+                                                    <button type="button" 
+                                                            onclick="toggleAccordion('accordion-body-{{ $grp->id }}', this)" 
+                                                            class="accordion-toggle text-[11px] font-bold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1">
                                                         <span>Lihat Anggota</span>
                                                         <i class="fas fa-chevron-down transition-transform duration-200 text-[10px]"></i>
                                                     </button>
@@ -551,118 +567,195 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        // Initialize DataTable
-        if ($.fn.DataTable.isDataTable('#assignmentsTable')) {
-            $('#assignmentsTable').DataTable().destroy();
-        }
-        $('#assignmentsTable').DataTable({
-            "language": {
-                "search": "",
-                "searchPlaceholder": "Cari data hasil plotting..."
-            },
-            "order": [[0, 'asc']],
-            "pageLength": 10,
-            "dom": '<"flex flex-col sm:flex-row sm:items-center sm:justify-between px-0 py-4 gap-4"lf>rt<"flex flex-col sm:flex-row sm:items-center sm:justify-between px-0 py-4 gap-4"ip>'
+    // ========================================================
+    // GLOBAL SEARCH & ACCORDION FUNCTIONS (DIRECTLY ACCESSIBLE)
+    // ========================================================
+    function filterPerorangan(query) {
+        const term = (query || '').toLowerCase().trim();
+        const cards = document.querySelectorAll('.student-item-card');
+        let visibleCount = 0;
+
+        cards.forEach(function(card) {
+            const dataSearch = card.getAttribute('data-search') || '';
+            const textContent = card.innerText || card.textContent || '';
+            const combinedText = (dataSearch + ' ' + textContent).toLowerCase();
+
+            if (term === '' || combinedText.indexOf(term) !== -1) {
+                card.style.removeProperty('display');
+                card.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                card.style.setProperty('display', 'none', 'important');
+                card.classList.add('hidden');
+            }
         });
 
-        // ----------------------------------------------------
-        // SELECTION COUNTER LOGIC
-        // ----------------------------------------------------
-        function updateSelectedCounter() {
-            let totalStudentsSelected = 0;
+        const clearBtn = document.getElementById('clearSearchPeroranganBtn');
+        if (clearBtn) {
+            clearBtn.style.display = term !== '' ? 'flex' : 'none';
+        }
 
-            const mode = "{{ $selectedType }}";
-
-            if (mode === 'perorangan') {
-                const checkedStudents = document.querySelectorAll('.student-checkbox:checked');
-                totalStudentsSelected = checkedStudents.length;
+        const noResults = document.getElementById('noResultsPerorangan');
+        if (noResults) {
+            if (visibleCount === 0 && cards.length > 0) {
+                noResults.style.removeProperty('display');
+                noResults.classList.remove('hidden');
             } else {
-                const countedNims = new Set();
+                noResults.style.setProperty('display', 'none', 'important');
+                noResults.classList.add('hidden');
+            }
+        }
 
-                // 1. Group checkboxes checked
-                document.querySelectorAll('.group-checkbox:checked').forEach(gcb => {
-                    const groupId = gcb.getAttribute('data-group-id');
-                    document.querySelectorAll('.group-member-checkbox-' + groupId + ':not(:disabled)').forEach(mcb => {
-                        countedNims.add(mcb.value);
-                    });
-                });
+        if (typeof updateSelectedCounter === 'function') {
+            updateSelectedCounter();
+        }
+    }
 
-                // 2. Individual member checkboxes checked inside accordion
-                document.querySelectorAll('.group-member-checkbox:checked:not(:disabled)').forEach(mcb => {
+    function clearSearchPerorangan() {
+        const input = document.getElementById('searchPeroranganInput');
+        if (input) {
+            input.value = '';
+            filterPerorangan('');
+            input.focus();
+        }
+    }
+
+    function filterKelompok(query) {
+        const term = (query || '').toLowerCase().trim();
+        const cards = document.querySelectorAll('.group-card-item');
+        let visibleCount = 0;
+
+        cards.forEach(function(card) {
+            const dataSearch = card.getAttribute('data-search') || '';
+            const textContent = card.innerText || card.textContent || '';
+            const combinedText = (dataSearch + ' ' + textContent).toLowerCase();
+
+            if (term === '' || combinedText.indexOf(term) !== -1) {
+                card.style.removeProperty('display');
+                card.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                card.style.setProperty('display', 'none', 'important');
+                card.classList.add('hidden');
+            }
+        });
+
+        const clearBtn = document.getElementById('clearSearchKelompokBtn');
+        if (clearBtn) {
+            clearBtn.style.display = term !== '' ? 'flex' : 'none';
+        }
+
+        const noResults = document.getElementById('noResultsKelompok');
+        if (noResults) {
+            if (visibleCount === 0 && cards.length > 0) {
+                noResults.style.removeProperty('display');
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.style.setProperty('display', 'none', 'important');
+                noResults.classList.add('hidden');
+            }
+        }
+
+        if (typeof updateSelectedCounter === 'function') {
+            updateSelectedCounter();
+        }
+    }
+
+    function clearSearchKelompok() {
+        const input = document.getElementById('searchKelompokInput');
+        if (input) {
+            input.value = '';
+            filterKelompok('');
+            input.focus();
+        }
+    }
+
+    function toggleAccordion(targetId, btn) {
+        const targetEl = document.getElementById(targetId);
+        if (!targetEl) return;
+        const icon = btn ? btn.querySelector('i') : null;
+
+        if (targetEl.classList.contains('hidden') || targetEl.style.display === 'none') {
+            targetEl.classList.remove('hidden');
+            targetEl.style.display = 'block';
+            if (icon) icon.style.transform = 'rotate(180deg)';
+        } else {
+            targetEl.classList.add('hidden');
+            targetEl.style.display = 'none';
+            if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    function updateSelectedCounter() {
+        let totalStudentsSelected = 0;
+        const mode = "{{ $selectedType }}";
+
+        if (mode === 'perorangan') {
+            const checkedStudents = document.querySelectorAll('.student-checkbox:checked');
+            totalStudentsSelected = checkedStudents.length;
+        } else {
+            const countedNims = new Set();
+
+            // 1. Group checkboxes checked
+            document.querySelectorAll('.group-checkbox:checked').forEach(function(gcb) {
+                const groupId = gcb.getAttribute('data-group-id');
+                document.querySelectorAll('.group-member-checkbox-' + groupId + ':not(:disabled)').forEach(function(mcb) {
                     countedNims.add(mcb.value);
                 });
+            });
 
-                totalStudentsSelected = countedNims.size;
-            }
+            // 2. Individual member checkboxes checked inside accordion
+            document.querySelectorAll('.group-member-checkbox:checked:not(:disabled)').forEach(function(mcb) {
+                countedNims.add(mcb.value);
+            });
 
-            const badge = document.getElementById('selectedCountBadge');
-            const subtitle = document.getElementById('selectedSummarySubtitle');
+            totalStudentsSelected = countedNims.size;
+        }
 
-            if (badge) {
-                badge.textContent = totalStudentsSelected + ' Mahasiswa';
-                if (totalStudentsSelected > 0) {
-                    badge.classList.remove('bg-indigo-600');
-                    badge.classList.add('bg-emerald-600');
-                } else {
-                    badge.classList.remove('bg-emerald-600');
-                    badge.classList.add('bg-indigo-600');
-                }
-            }
+        const badge = document.getElementById('selectedCountBadge');
+        const subtitle = document.getElementById('selectedSummarySubtitle');
 
-            if (subtitle) {
-                subtitle.textContent = totalStudentsSelected + ' mahasiswa siap di-plot';
+        if (badge) {
+            badge.textContent = totalStudentsSelected + ' Mahasiswa';
+            if (totalStudentsSelected > 0) {
+                badge.classList.remove('bg-indigo-600');
+                badge.classList.add('bg-emerald-600');
+            } else {
+                badge.classList.remove('bg-emerald-600');
+                badge.classList.add('bg-indigo-600');
             }
         }
 
-        // ----------------------------------------------------
-        // ROBUST LIVE SEARCH (PERORANGAN)
-        // ----------------------------------------------------
-        const searchPeroranganInput = document.getElementById('searchPeroranganInput');
-        const clearSearchPeroranganBtn = document.getElementById('clearSearchPeroranganBtn');
-        const noResultsPerorangan = document.getElementById('noResultsPerorangan');
-
-        function filterPerorangan(term) {
-            term = (term || '').toLowerCase().trim();
-            const cards = document.querySelectorAll('.student-item-card');
-            let visibleCount = 0;
-
-            cards.forEach(card => {
-                const searchData = ((card.getAttribute('data-search') || '') + ' ' + card.innerText).toLowerCase();
-                const isMatch = term === '' || searchData.includes(term);
-                if (isMatch) {
-                    card.style.setProperty('display', 'flex', 'important');
-                    visibleCount++;
-                } else {
-                    card.style.setProperty('display', 'none', 'important');
-                }
-            });
-
-            if (clearSearchPeroranganBtn) {
-                clearSearchPeroranganBtn.style.display = term !== '' ? 'flex' : 'none';
-            }
-
-            if (noResultsPerorangan) {
-                noResultsPerorangan.style.display = (visibleCount === 0 && cards.length > 0) ? 'block' : 'none';
-            }
+        if (subtitle) {
+            subtitle.textContent = totalStudentsSelected + ' mahasiswa siap di-plot';
         }
+    }
 
-        if (searchPeroranganInput) {
-            ['input', 'keyup', 'change', 'paste'].forEach(evt => {
-                searchPeroranganInput.addEventListener(evt, function() {
-                    filterPerorangan(this.value);
-                });
-            });
-        }
-
-        if (clearSearchPeroranganBtn) {
-            clearSearchPeroranganBtn.addEventListener('click', function() {
-                if (searchPeroranganInput) {
-                    searchPeroranganInput.value = '';
-                    searchPeroranganInput.focus();
-                    filterPerorangan('');
+    // ========================================================
+    // DOM READY INITIALIZATION
+    // ========================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Safe DataTable Init
+        try {
+            if (typeof $ !== 'undefined' && $.fn && $.fn.DataTable) {
+                const tableEl = document.getElementById('assignmentsTable');
+                if (tableEl && !tableEl.querySelector('tbody tr td[colspan]')) {
+                    if ($.fn.DataTable.isDataTable('#assignmentsTable')) {
+                        $('#assignmentsTable').DataTable().destroy();
+                    }
+                    $('#assignmentsTable').DataTable({
+                        "language": {
+                            "search": "",
+                            "searchPlaceholder": "Cari data hasil plotting..."
+                        },
+                        "order": [[0, 'asc']],
+                        "pageLength": 10,
+                        "dom": '<"flex flex-col sm:flex-row sm:items-center sm:justify-between px-0 py-4 gap-4"lf>rt<"flex flex-col sm:flex-row sm:items-center sm:justify-between px-0 py-4 gap-4"ip>'
+                    });
                 }
-            });
+            }
+        } catch(e) {
+            console.warn('DataTable initialization skipped:', e);
         }
 
         // Select All Perorangan Button (respects search filter)
@@ -671,11 +764,16 @@
             let allSelected = false;
             selectAllPeroranganBtn.addEventListener('click', function() {
                 allSelected = !allSelected;
-                const visibleCards = Array.from(document.querySelectorAll('.student-item-card')).filter(card => card.style.display !== 'none');
-                visibleCards.forEach(card => {
+                const visibleCards = Array.from(document.querySelectorAll('.student-item-card'))
+                    .filter(function(card) {
+                        return card.style.display !== 'none' && !card.classList.contains('hidden');
+                    });
+
+                visibleCards.forEach(function(card) {
                     const cb = card.querySelector('.student-checkbox');
                     if (cb) cb.checked = allSelected;
                 });
+
                 selectAllPeroranganBtn.innerHTML = allSelected 
                     ? '<i class="fas fa-times"></i> <span>Batal Pilih</span>' 
                     : '<i class="fas fa-check-double"></i> <span>Pilih Semua</span>';
@@ -683,69 +781,48 @@
             });
         }
 
-        // ----------------------------------------------------
-        // ROBUST LIVE SEARCH (KELOMPOK)
-        // ----------------------------------------------------
-        const searchKelompokInput = document.getElementById('searchKelompokInput');
-        const clearSearchKelompokBtn = document.getElementById('clearSearchKelompokBtn');
-        const noResultsKelompok = document.getElementById('noResultsKelompok');
+        // Select All Groups Button (respects search filter)
+        const selectAllKelompokBtn = document.getElementById('selectAllKelompokBtn');
+        if (selectAllKelompokBtn) {
+            let allGroupsSelected = false;
+            selectAllKelompokBtn.addEventListener('click', function() {
+                allGroupsSelected = !allGroupsSelected;
+                const visibleGroups = Array.from(document.querySelectorAll('.group-card-item'))
+                    .filter(function(card) {
+                        return card.style.display !== 'none' && !card.classList.contains('hidden');
+                    });
 
-        function filterKelompok(term) {
-            term = (term || '').toLowerCase().trim();
-            const cards = document.querySelectorAll('.group-card-item');
-            let visibleCount = 0;
-
-            cards.forEach(card => {
-                const searchData = ((card.getAttribute('data-search') || '') + ' ' + card.innerText).toLowerCase();
-                const isMatch = term === '' || searchData.includes(term);
-                if (isMatch) {
-                    card.style.setProperty('display', 'block', 'important');
-                    visibleCount++;
-                } else {
-                    card.style.setProperty('display', 'none', 'important');
-                }
-            });
-
-            if (clearSearchKelompokBtn) {
-                clearSearchKelompokBtn.style.display = term !== '' ? 'flex' : 'none';
-            }
-
-            if (noResultsKelompok) {
-                noResultsKelompok.style.display = (visibleCount === 0 && cards.length > 0) ? 'block' : 'none';
-            }
-        }
-
-        if (searchKelompokInput) {
-            ['input', 'keyup', 'change', 'paste'].forEach(evt => {
-                searchKelompokInput.addEventListener(evt, function() {
-                    filterKelompok(this.value);
+                visibleGroups.forEach(function(card) {
+                    const gcb = card.querySelector('.group-checkbox:not(:disabled)');
+                    if (gcb) {
+                        gcb.checked = allGroupsSelected;
+                        gcb.indeterminate = false;
+                        const groupId = gcb.getAttribute('data-group-id');
+                        const memberCheckboxes = card.querySelectorAll('.group-member-checkbox-' + groupId + ':not(:disabled)');
+                        memberCheckboxes.forEach(function(mcb) { mcb.checked = allGroupsSelected; });
+                    }
                 });
-            });
-        }
 
-        if (clearSearchKelompokBtn) {
-            clearSearchKelompokBtn.addEventListener('click', function() {
-                if (searchKelompokInput) {
-                    searchKelompokInput.value = '';
-                    searchKelompokInput.focus();
-                    filterKelompok('');
-                }
+                selectAllKelompokBtn.innerHTML = allGroupsSelected 
+                    ? '<i class="fas fa-times"></i> <span>Batal Pilih Semua</span>' 
+                    : '<i class="fas fa-check-double"></i> <span>Pilih Semua Kelompok</span>';
+                updateSelectedCounter();
             });
         }
 
         // Group Checkbox changed -> toggle its member checkboxes
-        document.querySelectorAll('.group-checkbox').forEach(gcb => {
+        document.querySelectorAll('.group-checkbox').forEach(function(gcb) {
             gcb.addEventListener('change', function() {
                 const groupId = this.getAttribute('data-group-id');
                 const isChecked = this.checked;
                 const memberCheckboxes = document.querySelectorAll('.group-member-checkbox-' + groupId + ':not(:disabled)');
-                memberCheckboxes.forEach(mcb => mcb.checked = isChecked);
+                memberCheckboxes.forEach(function(mcb) { mcb.checked = isChecked; });
                 updateSelectedCounter();
             });
         });
 
         // Individual Member Checkbox changed -> synchronize group checkbox
-        document.querySelectorAll('.group-member-checkbox').forEach(mcb => {
+        document.querySelectorAll('.group-member-checkbox').forEach(function(mcb) {
             mcb.addEventListener('change', function() {
                 const groupId = this.getAttribute('data-group');
                 const allMembers = document.querySelectorAll('.group-member-checkbox-' + groupId + ':not(:disabled)');
@@ -768,52 +845,8 @@
             });
         });
 
-        // Select All Groups Button (respects search filter)
-        const selectAllKelompokBtn = document.getElementById('selectAllKelompokBtn');
-        if (selectAllKelompokBtn) {
-            let allGroupsSelected = false;
-            selectAllKelompokBtn.addEventListener('click', function() {
-                allGroupsSelected = !allGroupsSelected;
-                const visibleGroups = Array.from(document.querySelectorAll('.group-card-item')).filter(card => card.style.display !== 'none');
-                visibleGroups.forEach(card => {
-                    const gcb = card.querySelector('.group-checkbox:not(:disabled)');
-                    if (gcb) {
-                        gcb.checked = allGroupsSelected;
-                        gcb.indeterminate = false;
-                        const groupId = gcb.getAttribute('data-group-id');
-                        const memberCheckboxes = card.querySelectorAll('.group-member-checkbox-' + groupId + ':not(:disabled)');
-                        memberCheckboxes.forEach(mcb => mcb.checked = allGroupsSelected);
-                    }
-                });
-                selectAllKelompokBtn.innerHTML = allGroupsSelected 
-                    ? '<i class="fas fa-times"></i> <span>Batal Pilih Semua</span>' 
-                    : '<i class="fas fa-check-double"></i> <span>Pilih Semua Kelompok</span>';
-                updateSelectedCounter();
-            });
-        }
-
-        // Accordion Toggle for Group Members
-        document.querySelectorAll('.accordion-toggle').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('data-target');
-                const targetEl = document.getElementById(targetId);
-                const icon = this.querySelector('i');
-
-                if (targetEl) {
-                    if (targetEl.classList.contains('hidden')) {
-                        targetEl.classList.remove('hidden');
-                        if (icon) icon.style.transform = 'rotate(180deg)';
-                    } else {
-                        targetEl.classList.add('hidden');
-                        if (icon) icon.style.transform = 'rotate(0deg)';
-                    }
-                }
-            });
-        });
-
         // Listen for all student checkboxes change
-        document.querySelectorAll('.student-checkbox').forEach(cb => {
+        document.querySelectorAll('.student-checkbox').forEach(function(cb) {
             cb.addEventListener('change', updateSelectedCounter);
         });
 
