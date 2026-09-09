@@ -11,7 +11,7 @@ class DosenPenguji extends Model
 
     protected $table = 'dosen_pengujis';
     protected $fillable = [
-        'nim', 'nidn', 'nilai',
+        'nim', 'nidn', 'nilai', 'catatan',
         'nilai_keterlaksanaan', 'nilai_kontribusi', 'nilai_kerjasama',
         'nilai_kreativitas', 'nilai_partisipasi',
     ];

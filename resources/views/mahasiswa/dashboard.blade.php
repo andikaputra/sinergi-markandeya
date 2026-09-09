@@ -320,19 +320,30 @@
         @endif
 
         @if($mahasiswa->dosenPenguji?->dosen)
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-            <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
-                <i class="fas fa-gavel text-indigo-500 mr-3"></i>
-                Dosen Penguji
-            </h4>
-            <div class="flex items-center space-x-4 p-5 bg-indigo-50 rounded-2xl border border-indigo-100">
-                <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl font-black flex-shrink-0 shadow-lg shadow-indigo-200">
-                    {{ substr($mahasiswa->dosenPenguji->dosen->nama, 0, 1) }}
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex flex-col justify-between">
+            <div>
+                <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-gavel text-indigo-500 mr-3"></i>
+                    Dosen Penguji
+                </h4>
+                <div class="flex items-center space-x-4 p-5 bg-indigo-50 rounded-2xl border border-indigo-100 mb-4">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl font-black flex-shrink-0 shadow-lg shadow-indigo-200">
+                        {{ substr($mahasiswa->dosenPenguji->dosen->nama, 0, 1) }}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-base font-bold text-gray-800 truncate">{{ $mahasiswa->dosenPenguji->dosen->nama }}</p>
+                        <p class="text-xs text-indigo-600 font-mono font-bold">NIDN: {{ $mahasiswa->dosenPenguji->dosen->nidn }}</p>
+                    </div>
                 </div>
-                <div class="min-w-0">
-                    <p class="text-base font-bold text-gray-800 truncate">{{ $mahasiswa->dosenPenguji->dosen->nama }}</p>
-                    <p class="text-xs text-indigo-600 font-mono font-bold">NIDN: {{ $mahasiswa->dosenPenguji->dosen->nidn }}</p>
+
+                @if($mahasiswa->dosenPenguji->catatan)
+                <div class="p-4 bg-amber-50/80 border border-amber-200 rounded-2xl text-xs text-amber-950 space-y-1">
+                    <strong class="text-amber-900 flex items-center gap-1.5 font-bold">
+                        <i class="fas fa-comment-dots text-amber-600"></i> Catatan/Revisi Ujian:
+                    </strong>
+                    <p class="text-gray-800 leading-relaxed italic whitespace-pre-wrap">{{ $mahasiswa->dosenPenguji->catatan }}</p>
                 </div>
+                @endif
             </div>
         </div>
         @endif

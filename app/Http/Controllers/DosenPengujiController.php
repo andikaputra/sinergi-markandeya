@@ -347,8 +347,9 @@ class DosenPengujiController extends Controller
         ])->where('nim', $nim)->firstOrFail();
 
         $jurnals = Jurnal::where('nim', $nim)->orderBy('tanggal', 'desc')->get();
+        $bimbingans = \App\Models\Bimbingan::where('nim', $nim)->orderBy('tanggal_bimbingan', 'desc')->get();
 
-        return view('dosen.ujian_detail', compact('mahasiswa', 'jurnals', 'isUjian'));
+        return view('dosen.ujian_detail', compact('mahasiswa', 'jurnals', 'bimbingans', 'isUjian'));
     }
 
     public function inputNilai(Request $request, $nim)
@@ -364,10 +365,17 @@ class DosenPengujiController extends Controller
         if ($mahasiswa->kegiatan === 'PPL') {
             $request->validate([
                 'nilai' => 'required|numeric|min:0|max:100',
+                'catatan' => 'nullable|string|max:5000',
+            ], [
+                'nilai.required' => 'Nilai ujian laporan wajib diisi.',
+                'nilai.numeric' => 'Nilai harus berupa angka.',
+                'nilai.min' => 'Nilai minimal adalah 0.',
+                'nilai.max' => 'Nilai maksimal adalah 100.',
             ]);
 
             $ujian->update([
                 'nilai' => $request->nilai,
+                'catatan' => $request->input('catatan'),
             ]);
         } else {
             $request->validate([
@@ -376,6 +384,13 @@ class DosenPengujiController extends Controller
                 'nilai_kerjasama' => 'required|numeric|min:0|max:100',
                 'nilai_kreativitas' => 'required|numeric|min:0|max:100',
                 'nilai_partisipasi' => 'required|numeric|min:0|max:100',
+                'catatan' => 'nullable|string|max:5000',
+            ], [
+                'nilai_keterlaksanaan.required' => 'Nilai program kerja (Prog) wajib diisi.',
+                'nilai_kontribusi.required' => 'Nilai kontribusi (Kont) wajib diisi.',
+                'nilai_kerjasama.required' => 'Nilai kerjasama tim (Tim) wajib diisi.',
+                'nilai_kreativitas.required' => 'Nilai kreativitas (Kreat) wajib diisi.',
+                'nilai_partisipasi.required' => 'Nilai etika/partisipasi (Etika) wajib diisi.',
             ]);
 
             $nilaiRata = round(($request->nilai_keterlaksanaan + $request->nilai_kontribusi + $request->nilai_kerjasama + $request->nilai_kreativitas + $request->nilai_partisipasi) / 5, 1);
@@ -387,9 +402,18 @@ class DosenPengujiController extends Controller
                 'nilai_kreativitas' => $request->nilai_kreativitas,
                 'nilai_partisipasi' => $request->nilai_partisipasi,
                 'nilai' => $nilaiRata,
+                'catatan' => $request->input('catatan'),
             ]);
         }
 
-        return redirect()->back()->with('success', 'Nilai ujian berhasil disimpan!');
+        // Kirim notifikasi ke mahasiswa
+        \App\Models\Notifikasi::kirim(
+            $nim,
+            'Nilai & Catatan Revisi Ujian',
+            "Dosen Penguji ({$dosen->nama}) telah menginput/memperbarui nilai dan catatan revisi ujian akhir Anda.",
+            'info'
+        );
+
+        return redirect()->back()->with('success', 'Nilai dan catatan/revisi ujian berhasil disimpan!');
     }
 }
