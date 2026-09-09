@@ -33,7 +33,7 @@ class DosenProgramKerjaController extends Controller
         $totalMahasiswa = $mahasiswaBimbinganNim->count();
         $totalProgram = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->count();
         $mahasiswaDenganProgram = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->distinct('nim')->count('nim');
-        $mahasiswaTanpaProgram = $totalMahasiswa - $mahasiswaDenganProgram;
+        $mahasiswaTanpaProgram = max(0, $totalMahasiswa - $mahasiswaDenganProgram);
 
         $statistikStatus = [
             'rencana' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'rencana')->count(),
@@ -67,27 +67,87 @@ class DosenProgramKerjaController extends Controller
         return view('dosen.program-kerja.mahasiswa-bimbingan', compact('mahasiswaBimbingan'));
     }
 
-    public function detailMahasiswa(Mahasiswa $mahasiswa)
+    public function detailMahasiswa($mahasiswa)
     {
         $dosen = Auth::guard('dosen')->user();
 
+        // Resolve Mahasiswa instance if parameter is passed as model, NIM, or ID
+        if ($mahasiswa instanceof Mahasiswa) {
+            $mhs = $mahasiswa;
+        } elseif (is_numeric($mahasiswa) && strlen((string)$mahasiswa) > 8) {
+            $mhs = Mahasiswa::where('nim', $mahasiswa)->firstOrFail();
+        } else {
+            $mhs = Mahasiswa::where('id', $mahasiswa)->orWhere('nim', $mahasiswa)->firstOrFail();
+        }
+
         $isBimbinganDosen = \App\Models\DosenPembimbing::where('nidn', $dosen->nidn)
-            ->where('nim', $mahasiswa->nim)
+            ->where('nim', $mhs->nim)
             ->exists();
 
         if (!$isBimbinganDosen) {
             abort(403, 'Anda tidak berwenang mengakses data mahasiswa ini');
         }
 
-        $individuPrograms = IndividuProgramKerja::where('nim', $mahasiswa->nim)
+        // Program Kerja Individu
+        $individuPrograms = IndividuProgramKerja::where('nim', $mhs->nim)
+            ->with(['luarans', 'dosenMonev.dosen'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Cari Program Kerja Kelompok mahasiswa jika ada
+        $kegiatanLower = strtolower($mhs->kegiatan ?? '');
+        $table = match($kegiatanLower) {
+            'kkn' => 'pembagian_lokasi_kkn',
+            'ppl' => 'Penempatan_ppl',
+            'pkl' => 'penempatan_pkls',
+            'magang' => 'penempatan_magangs',
+            default => null
+        };
+        $column = match($kegiatanLower) {
+            'kkn' => 'lokasi_kkn_id',
+            'ppl' => 'sekolah_id',
+            'pkl' => 'lokasi_pkl_id',
+            'magang' => 'lokasi_magang_id',
+            default => null
+        };
+
+        $groupNims = collect([$mhs->nim]);
+        if ($table && $column) {
+            $myLocationId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mhs->nim)->value($column);
+            if ($myLocationId) {
+                $groupNims = \Illuminate\Support\Facades\DB::table($table)->where($column, $myLocationId)->pluck('nim');
+            }
+        }
+
+        $kelompokPrograms = KelompokProgramKerja::whereIn('nim_ketua', $groupNims)
+            ->with(['luarans', 'dosenMonev.dosen', 'mahasiswaKetua'])
             ->orderBy('created_at', 'desc')
             ->get();
 
         $individuLuarans = IndividuLuaran::whereIn('individu_program_kerja_id', $individuPrograms->pluck('id'))
+            ->with('programKerja')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('dosen.program-kerja.detail-mahasiswa', compact('mahasiswa', 'individuPrograms', 'individuLuarans'));
+        $kelompokLuarans = KelompokLuaran::whereIn('kelompok_program_kerja_id', $kelompokPrograms->pluck('id'))
+            ->with('programKerja')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Alias variables for blade compatibility
+        $programs = $individuPrograms;
+        $luarans = $individuLuarans;
+        $mahasiswa = $mhs;
+
+        return view('dosen.program-kerja.detail-mahasiswa', compact(
+            'mahasiswa',
+            'individuPrograms',
+            'kelompokPrograms',
+            'individuLuarans',
+            'kelompokLuarans',
+            'programs',
+            'luarans'
+        ));
     }
 
     public function semuaProgram()

@@ -78,8 +78,8 @@
 
                         <!-- Luaran for this program -->
                         @php
-                            $programLuarans = $luarans->where('program_kerja_id', $program->id);
-                            $monev = $program->dosenMonev;
+                            $programLuarans = $program->luarans ?? $luarans->where('individu_program_kerja_id', $program->id);
+                            $monev = $program->monev ?? $program->dosenMonev;
                         @endphp
 
                         <!-- Dosen Monev Section -->

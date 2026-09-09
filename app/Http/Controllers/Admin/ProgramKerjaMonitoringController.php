@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ProgramKerja;
-use App\Models\Luaran;
+use App\Models\IndividuProgramKerja;
+use App\Models\IndividuLuaran;
 use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 
@@ -12,19 +12,19 @@ class ProgramKerjaMonitoringController extends Controller
 {
     public function dashboard()
     {
-        $totalProgram = ProgramKerja::count();
+        $totalProgram = IndividuProgramKerja::count();
         $totalMahasiswa = Mahasiswa::count();
-        $mahasiswaDenganProgram = ProgramKerja::distinct('nim')->count('nim');
-        $mahasiswaTanpaProgram = $totalMahasiswa - $mahasiswaDenganProgram;
+        $mahasiswaDenganProgram = IndividuProgramKerja::distinct('nim')->count('nim');
+        $mahasiswaTanpaProgram = max(0, $totalMahasiswa - $mahasiswaDenganProgram);
 
         $statistikStatus = [
-            'rencana' => ProgramKerja::where('status', 'rencana')->count(),
-            'sedang_berjalan' => ProgramKerja::where('status', 'sedang_berjalan')->count(),
-            'selesai' => ProgramKerja::where('status', 'selesai')->count(),
-            'tunda' => ProgramKerja::where('status', 'tunda')->count(),
+            'rencana' => IndividuProgramKerja::where('status', 'rencana')->count(),
+            'sedang_berjalan' => IndividuProgramKerja::where('status', 'sedang_berjalan')->count(),
+            'selesai' => IndividuProgramKerja::where('status', 'selesai')->count(),
+            'tunda' => IndividuProgramKerja::where('status', 'tunda')->count(),
         ];
 
-        $recentPrograms = ProgramKerja::with('mahasiswa')
+        $recentPrograms = IndividuProgramKerja::with('mahasiswa')
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
@@ -41,29 +41,39 @@ class ProgramKerjaMonitoringController extends Controller
 
     public function mahasiswaTanpaProgram()
     {
-        $mahasiswaTanpaProgram = Mahasiswa::whereNotIn('nim', ProgramKerja::distinct('nim')->pluck('nim'))
+        $mahasiswaTanpaProgram = Mahasiswa::whereNotIn('nim', IndividuProgramKerja::distinct('nim')->pluck('nim'))
             ->orderBy('nama', 'asc')
             ->paginate(20);
 
         return view('admin.program-kerja.mahasiswa-tanpa-program', compact('mahasiswaTanpaProgram'));
     }
 
-    public function detailMahasiswa(Mahasiswa $mahasiswa)
+    public function detailMahasiswa($mahasiswa)
     {
-        $programs = ProgramKerja::where('nim', $mahasiswa->nim)
+        if ($mahasiswa instanceof Mahasiswa) {
+            $mhs = $mahasiswa;
+        } else {
+            $mhs = Mahasiswa::where('nim', $mahasiswa)->orWhere('id', $mahasiswa)->firstOrFail();
+        }
+
+        $programs = IndividuProgramKerja::where('nim', $mhs->nim)
+            ->with(['luarans', 'dosenMonev.dosen'])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $luarans = Luaran::whereIn('program_kerja_id', $programs->pluck('id'))
+        $luarans = IndividuLuaran::whereIn('individu_program_kerja_id', $programs->pluck('id'))
+            ->with('programKerja')
             ->orderBy('created_at', 'desc')
             ->get();
+
+        $mahasiswa = $mhs;
 
         return view('admin.program-kerja.detail-mahasiswa', compact('mahasiswa', 'programs', 'luarans'));
     }
 
     public function semuaProgram()
     {
-        $programs = ProgramKerja::with('mahasiswa')
+        $programs = IndividuProgramKerja::with('mahasiswa')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -72,7 +82,7 @@ class ProgramKerjaMonitoringController extends Controller
 
     public function semuaLuaran()
     {
-        $luarans = Luaran::with('programKerja.mahasiswa')
+        $luarans = IndividuLuaran::with('programKerja.mahasiswa')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
