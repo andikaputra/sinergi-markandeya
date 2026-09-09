@@ -206,6 +206,13 @@
                                         <a href="{{ route('program-kerja.show-individu', $program) }}" class="hover:text-blue-600 transition-colors">
                                             {{ $program->judul }}
                                         </a>
+                                        @if ($program->catatan_dosen)
+                                            <div class="mt-1">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-md border border-blue-100">
+                                                    <i class="fas fa-comment-dots text-[9px]"></i> Ada Catatan Dosen
+                                                </span>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 text-gray-600">
                                         <i class="fas fa-map-marker-alt text-rose-500 text-xs mr-1"></i>
@@ -437,6 +444,13 @@
                                         <a href="{{ route('program-kerja.show-kelompok', $program) }}" class="hover:text-indigo-600 transition-colors">
                                             {{ $program->judul }}
                                         </a>
+                                        @if ($program->catatan_dosen)
+                                            <div class="mt-1">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 text-purple-700 text-[10px] font-bold rounded-md border border-purple-100">
+                                                    <i class="fas fa-comment-dots text-[9px]"></i> Ada Catatan Dosen
+                                                </span>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 text-gray-700">
                                         <div class="flex items-center gap-2">

@@ -358,6 +358,7 @@ Route::middleware(['auth:dosen'])->prefix('dosen-pembimbing')->group(function ()
     Route::get('/program-kerja/semua', [\App\Http\Controllers\DosenProgramKerjaController::class, 'semuaProgram'])->name('dosen.program-kerja.semua');
     Route::get('/program-kerja/luaran', [\App\Http\Controllers\DosenProgramKerjaController::class, 'semuaLuaran'])->name('dosen.program-kerja.luaran');
     Route::get('/program-kerja/{mahasiswa}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'detailMahasiswa'])->name('dosen.program-kerja.detail');
+    Route::post('/program-kerja/catatan/{type}/{id}', [\App\Http\Controllers\DosenProgramKerjaController::class, 'simpanCatatan'])->name('dosen.program-kerja.catatan');
 
     // Dosen Monev (Monitoring & Evaluasi)
     Route::get('/program-kerja-monev', [\App\Http\Controllers\DosenProgramKerjaController::class, 'monevDashboard'])->name('dosen.program-kerja.monev-dashboard');

@@ -265,6 +265,67 @@
                 </div>
             </div>
 
+            <!-- Dosen Pembimbing Notes Card -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-chalkboard-teacher text-indigo-600"></i>
+                        <span>Catatan Dosen Pembimbing</span>
+                    </h3>
+                    @if ($kelompokProgramKerja->catatan_dosen)
+                        <span class="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-bold rounded-full flex items-center gap-1">
+                            <i class="fas fa-check-circle"></i> Ada Catatan
+                        </span>
+                    @else
+                        <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-full flex items-center gap-1">
+                            <i class="fas fa-clock"></i> Belum Direview
+                        </span>
+                    @endif
+                </div>
+
+                @php
+                    $dosenReviewer = $kelompokProgramKerja->dosenCatatan ?? ($dosenPembimbing ?? null);
+                @endphp
+
+                <div class="space-y-4">
+                    @if ($dosenReviewer)
+                        <div class="p-4 bg-purple-50/60 rounded-2xl border border-purple-100 flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black text-base shadow-sm flex-shrink-0">
+                                {{ substr($dosenReviewer->nama, 0, 1) }}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="font-bold text-gray-900 text-sm truncate">{{ $dosenReviewer->nama }}</div>
+                                <div class="text-[11px] text-gray-500 font-mono">Dosen Pembimbing • NIDN: {{ $dosenReviewer->nidn }}</div>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($kelompokProgramKerja->catatan_dosen)
+                        <div class="p-4 bg-gradient-to-br from-purple-50 via-indigo-50/50 to-white border border-purple-200 rounded-2xl space-y-2">
+                            <div class="flex items-center justify-between text-xs text-purple-900 font-bold">
+                                <span class="flex items-center gap-1.5">
+                                    <i class="fas fa-quote-left text-purple-500 text-xs"></i>
+                                    Arahan / Catatan Bimbingan:
+                                </span>
+                                @if ($kelompokProgramKerja->catatan_dosen_at)
+                                    <span class="text-[10px] text-gray-500 font-normal">
+                                        {{ $kelompokProgramKerja->catatan_dosen_at->format('d M Y, H:i') }}
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="text-xs text-gray-800 leading-relaxed whitespace-pre-wrap font-medium pl-3 border-l-2 border-purple-500">
+                                {{ $kelompokProgramKerja->catatan_dosen }}
+                            </div>
+                        </div>
+                    @else
+                        <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-center">
+                            <i class="fas fa-comment-slash text-gray-300 text-xl mb-1.5 block"></i>
+                            <p class="text-xs text-gray-500 font-medium">Belum ada catatan atau arahan dari Dosen Pembimbing untuk program kerja kelompok ini.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             <!-- Dosen Monev Card -->
             <div x-data="{ monevImage: null }" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
                 <div class="flex items-center justify-between mb-4">

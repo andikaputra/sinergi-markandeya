@@ -186,8 +186,9 @@ class ProgramKerjaController extends Controller
             'selesai' => $luarans->where('status', 'selesai')->count(),
         ];
         $dosenMonev = $individuProgramKerja->monev;
+        $dosenPembimbing = $mahasiswa->dosenPembimbing?->dosen;
 
-        return view('mahasiswa.program-kerja.individu.show', compact('individuProgramKerja', 'luarans', 'statistikLuaran', 'dosenMonev'));
+        return view('mahasiswa.program-kerja.individu.show', compact('individuProgramKerja', 'luarans', 'statistikLuaran', 'dosenMonev', 'dosenPembimbing'));
     }
 
     public function editIndividu(IndividuProgramKerja $individuProgramKerja)
@@ -310,8 +311,9 @@ class ProgramKerjaController extends Controller
             'selesai' => $luarans->where('status', 'selesai')->count(),
         ];
         $dosenMonev = $kelompokProgramKerja->monev;
+        $dosenPembimbing = $mahasiswa->dosenPembimbing?->dosen;
 
-        return view('mahasiswa.program-kerja.kelompok.show', compact('kelompokProgramKerja', 'anggota', 'luarans', 'statistikLuaran', 'dosenMonev'));
+        return view('mahasiswa.program-kerja.kelompok.show', compact('kelompokProgramKerja', 'anggota', 'luarans', 'statistikLuaran', 'dosenMonev', 'dosenPembimbing'));
     }
 
     public function editKelompok(KelompokProgramKerja $kelompokProgramKerja)

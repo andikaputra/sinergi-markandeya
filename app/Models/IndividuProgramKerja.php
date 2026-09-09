@@ -17,12 +17,21 @@ class IndividuProgramKerja extends Model
         'tanggal_selesai',
         'lokasi',
         'status',
+        'catatan_dosen',
+        'catatan_dosen_at',
+        'catatan_dosen_nidn',
     ];
 
     protected $casts = [
         'tanggal_mulai' => 'date',
         'tanggal_selesai' => 'date',
+        'catatan_dosen_at' => 'datetime',
     ];
+
+    public function dosenCatatan()
+    {
+        return $this->belongsTo(Dosen::class, 'catatan_dosen_nidn', 'nidn');
+    }
 
     public function mahasiswa()
     {

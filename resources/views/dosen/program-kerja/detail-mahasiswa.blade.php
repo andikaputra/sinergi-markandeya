@@ -25,6 +25,20 @@
         </div>
     </div>
 
+    @if ($message = Session::get('success'))
+        <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3">
+            <i class="fas fa-check-circle text-emerald-500 text-lg"></i>
+            <span class="text-sm font-medium">{{ $message }}</span>
+        </div>
+    @endif
+
+    @if ($message = Session::get('error'))
+        <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl flex items-center gap-3">
+            <i class="fas fa-exclamation-circle text-rose-500 text-lg"></i>
+            <span class="text-sm font-medium">{{ $message }}</span>
+        </div>
+    @endif
+
     <!-- Mahasiswa Information Card -->
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
         <h3 class="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
@@ -112,6 +126,60 @@
                             </div>
                         </div>
 
+                        <!-- Catatan & Bimbingan Dosen Pembimbing (Individu) -->
+                        <div x-data="{ openForm: {{ $program->catatan_dosen ? 'false' : 'true' }} }" class="mt-4 p-5 rounded-2xl bg-gradient-to-br from-blue-50/70 via-indigo-50/40 to-slate-50 border border-blue-200/80 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-blue-200/50">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs shadow-sm">
+                                        <i class="fas fa-comment-dots"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs font-black text-blue-950 uppercase tracking-wider">Catatan & Arahan Dosen Pembimbing</span>
+                                        @if ($program->catatan_dosen_at)
+                                            <span class="text-[11px] text-gray-500 font-medium block">
+                                                Terakhir disimpan: {{ $program->catatan_dosen_at->format('d M Y, H:i') }} WIB
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <button type="button" @click="openForm = !openForm" class="px-3 py-1 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-sm transition">
+                                    <i :class="openForm ? 'fa-chevron-up' : 'fa-edit'" class="fas text-[10px]"></i>
+                                    <span x-text="openForm ? 'Tutup Form' : '{{ $program->catatan_dosen ? 'Ubah Catatan' : '+ Tulis Catatan' }}'"></span>
+                                </button>
+                            </div>
+
+                            @if ($program->catatan_dosen)
+                                <div x-show="!openForm" class="p-3.5 bg-white rounded-xl border border-blue-100 text-xs text-gray-800 leading-relaxed space-y-1">
+                                    <p class="whitespace-pre-wrap pl-3 border-l-2 border-blue-500 text-gray-700 font-medium">{{ $program->catatan_dosen }}</p>
+                                </div>
+                            @endif
+
+                            <div x-show="openForm" class="pt-1 space-y-3">
+                                <form action="{{ route('dosen.program-kerja.catatan', ['type' => 'individu', 'id' => $program->id]) }}" method="POST" class="space-y-3">
+                                    @csrf
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 mb-1">Catatan / Arahan untuk Mahasiswa:</label>
+                                        <textarea name="catatan_dosen" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-blue-200 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800" placeholder="Tuliskan catatan perbaikan, persetujuan, revisi, atau arahan tindak lanjut untuk program kerja ini...">{{ old('catatan_dosen', $program->catatan_dosen) }}</textarea>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <label class="text-xs font-bold text-gray-700">Status Program:</label>
+                                            <select name="status" class="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                                                <option value="rencana" @selected($program->status === 'rencana')>Rencana</option>
+                                                <option value="sedang_berjalan" @selected($program->status === 'sedang_berjalan')>Sedang Berjalan</option>
+                                                <option value="selesai" @selected($program->status === 'selesai')>Selesai</option>
+                                                <option value="tunda" @selected($program->status === 'tunda')>Tunda</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm transition inline-flex items-center gap-1.5 self-end sm:self-auto">
+                                            <i class="fas fa-save"></i>
+                                            <span>Simpan Catatan</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
                         <!-- Dosen Monev Evaluation Info (if available) -->
                         @php
                             $monev = $program->monev;
@@ -176,7 +244,7 @@
                                 </p>
                                 <div class="space-y-2">
                                     @foreach ($program->luarans as $luaran)
-                                        <div class="bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                         <div class="bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                             <div>
                                                 <p class="text-sm font-bold text-gray-900">{{ $luaran->judul }}</p>
                                                 <p class="text-xs text-gray-500 mt-0.5">{{ ucfirst($luaran->tipe) }} • Progress: <strong class="text-blue-600">{{ $luaran->persentase_selesai }}%</strong></p>
@@ -265,6 +333,60 @@
                             <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
                                 <span class="text-gray-400 font-bold uppercase tracking-wider block mb-1">Tanggal Selesai</span>
                                 <p class="text-gray-900 font-bold text-sm">{{ $program->tanggal_selesai ? $program->tanggal_selesai->format('d M Y') : '-' }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Catatan & Bimbingan Dosen Pembimbing (Kelompok) -->
+                        <div x-data="{ openForm: {{ $program->catatan_dosen ? 'false' : 'true' }} }" class="mt-4 p-5 rounded-2xl bg-gradient-to-br from-purple-50/70 via-indigo-50/40 to-slate-50 border border-purple-200/80 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-purple-200/50">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs shadow-sm">
+                                        <i class="fas fa-comment-dots"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs font-black text-purple-950 uppercase tracking-wider">Catatan & Arahan Dosen Pembimbing</span>
+                                        @if ($program->catatan_dosen_at)
+                                            <span class="text-[11px] text-gray-500 font-medium block">
+                                                Terakhir disimpan: {{ $program->catatan_dosen_at->format('d M Y, H:i') }} WIB
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <button type="button" @click="openForm = !openForm" class="px-3 py-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-sm transition">
+                                    <i :class="openForm ? 'fa-chevron-up' : 'fa-edit'" class="fas text-[10px]"></i>
+                                    <span x-text="openForm ? 'Tutup Form' : '{{ $program->catatan_dosen ? 'Ubah Catatan' : '+ Tulis Catatan' }}'"></span>
+                                </button>
+                            </div>
+
+                            @if ($program->catatan_dosen)
+                                <div x-show="!openForm" class="p-3.5 bg-white rounded-xl border border-purple-100 text-xs text-gray-800 leading-relaxed space-y-1">
+                                    <p class="whitespace-pre-wrap pl-3 border-l-2 border-purple-500 text-gray-700 font-medium">{{ $program->catatan_dosen }}</p>
+                                </div>
+                            @endif
+
+                            <div x-show="openForm" class="pt-1 space-y-3">
+                                <form action="{{ route('dosen.program-kerja.catatan', ['type' => 'kelompok', 'id' => $program->id]) }}" method="POST" class="space-y-3">
+                                    @csrf
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 mb-1">Catatan / Arahan untuk Kelompok Mahasiswa:</label>
+                                        <textarea name="catatan_dosen" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-purple-200 text-xs focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-800" placeholder="Tuliskan catatan perbaikan, persetujuan, revisi, atau arahan tindak lanjut untuk kelompok mahasiswa...">{{ old('catatan_dosen', $program->catatan_dosen) }}</textarea>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <label class="text-xs font-bold text-gray-700">Status Program:</label>
+                                            <select name="status" class="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-purple-500">
+                                                <option value="rencana" @selected($program->status === 'rencana')>Rencana</option>
+                                                <option value="sedang_berjalan" @selected($program->status === 'sedang_berjalan')>Sedang Berjalan</option>
+                                                <option value="selesai" @selected($program->status === 'selesai')>Selesai</option>
+                                                <option value="tunda" @selected($program->status === 'tunda')>Tunda</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow-sm transition inline-flex items-center gap-1.5 self-end sm:self-auto">
+                                            <i class="fas fa-save"></i>
+                                            <span>Simpan Catatan</span>
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
 

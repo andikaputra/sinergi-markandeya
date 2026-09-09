@@ -151,7 +151,7 @@ class DosenProgramKerjaController extends Controller
 
         // Program Kerja Individu
         $individuPrograms = IndividuProgramKerja::where('nim', $mhs->nim)
-            ->with(['luarans', 'dosenMonev.dosen'])
+            ->with(['luarans', 'dosenMonev.dosen', 'dosenCatatan'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -181,7 +181,7 @@ class DosenProgramKerjaController extends Controller
         }
 
         $kelompokPrograms = KelompokProgramKerja::whereIn('nim_ketua', $groupNims)
-            ->with(['luarans', 'dosenMonev.dosen', 'mahasiswaKetua'])
+            ->with(['luarans', 'dosenMonev.dosen', 'mahasiswaKetua', 'dosenCatatan'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -216,12 +216,12 @@ class DosenProgramKerjaController extends Controller
         $mahasiswaBimbingan = $this->getMahasiswaBimbingan();
 
         $individuPrograms = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbingan)
-            ->with(['mahasiswa', 'luarans'])
+            ->with(['mahasiswa', 'luarans', 'dosenCatatan'])
             ->orderBy('created_at', 'desc')
             ->paginate(15, ['*'], 'page_individu');
 
         $kelompokPrograms = $this->getKelompokProgramsQuery()
-            ->with(['mahasiswaKetua', 'luarans'])
+            ->with(['mahasiswaKetua', 'luarans', 'dosenCatatan'])
             ->orderBy('created_at', 'desc')
             ->paginate(15, ['*'], 'page_kelompok');
 
@@ -252,6 +252,87 @@ class DosenProgramKerjaController extends Controller
         $luarans = $individuLuarans; // For backward compatibility
 
         return view('dosen.program-kerja.semua-luaran', compact('individuLuarans', 'kelompokLuarans', 'luarans'));
+    }
+
+    public function simpanCatatan(Request $request, $type, $id)
+    {
+        $dosen = Auth::guard('dosen')->user();
+
+        $request->validate([
+            'catatan_dosen' => 'nullable|string|max:5000',
+            'status' => 'nullable|string|in:rencana,sedang_berjalan,selesai,tunda',
+        ], [
+            'catatan_dosen.max' => 'Catatan dosen maksimal 5000 karakter.',
+        ]);
+
+        if ($type === 'individu') {
+            $program = IndividuProgramKerja::findOrFail($id);
+
+            $isBimbingan = \App\Models\DosenPembimbing::where('nidn', $dosen->nidn)
+                ->where('nim', $program->nim)
+                ->exists();
+
+            if (!$isBimbingan) {
+                abort(403, 'Anda tidak berwenang memberikan catatan pada mahasiswa ini.');
+            }
+
+            $program->catatan_dosen = $request->input('catatan_dosen');
+            $program->catatan_dosen_at = now();
+            $program->catatan_dosen_nidn = $dosen->nidn;
+            if ($request->filled('status')) {
+                $program->status = $request->input('status');
+            }
+            $program->save();
+
+            // Send notification to student
+            if ($program->nim) {
+                Notifikasi::kirim(
+                    $program->nim,
+                    'Catatan Program Kerja dari Dosen Pembimbing',
+                    "Dosen Pembimbing ({$dosen->nama}) telah memberikan catatan/arahan pada program kerja '{$program->judul}'.",
+                    'info'
+                );
+            }
+
+            return back()->with('success', 'Catatan & arahan program kerja individu berhasil disimpan!');
+        } elseif ($type === 'kelompok') {
+            $program = KelompokProgramKerja::findOrFail($id);
+
+            $groupNims = $program->anggota()->pluck('nim')->toArray();
+            if (empty($groupNims)) {
+                $groupNims = [$program->nim_ketua];
+            }
+
+            $isBimbingan = \App\Models\DosenPembimbing::where('nidn', $dosen->nidn)
+                ->whereIn('nim', $groupNims)
+                ->exists();
+
+            if (!$isBimbingan) {
+                abort(403, 'Anda tidak berwenang memberikan catatan pada program kelompok ini.');
+            }
+
+            $program->catatan_dosen = $request->input('catatan_dosen');
+            $program->catatan_dosen_at = now();
+            $program->catatan_dosen_nidn = $dosen->nidn;
+            if ($request->filled('status')) {
+                $program->status = $request->input('status');
+            }
+            $program->save();
+
+            // Send notification to group members
+            foreach ($groupNims as $nim) {
+                Notifikasi::kirim(
+                    $nim,
+                    'Catatan Program Kerja Kelompok',
+                    "Dosen Pembimbing ({$dosen->nama}) telah memberikan catatan/arahan pada program kerja kelompok '{$program->judul}'.",
+                    'info'
+                );
+            }
+
+            return back()->with('success', 'Catatan & arahan program kerja kelompok berhasil disimpan!');
+        }
+
+        return back()->with('error', 'Tipe program kerja tidak valid.');
     }
 
     // Dosen Monev Methods

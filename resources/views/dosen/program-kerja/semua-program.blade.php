@@ -80,6 +80,13 @@
                                             <span class="truncate">{{ $program->lokasi }}</span>
                                         </div>
                                     @endif
+                                    @if($program->catatan_dosen)
+                                        <div class="mt-1">
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-md border border-blue-100" title="{{ $program->catatan_dosen }}">
+                                                <i class="fas fa-comment-dots text-[9px]"></i> Ada Catatan Pembimbing
+                                            </span>
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-xs text-gray-600 whitespace-nowrap">
                                     <div class="font-medium text-gray-800">{{ $program->tanggal_mulai ? $program->tanggal_mulai->format('d M Y') : '-' }}</div>
@@ -175,6 +182,13 @@
                                         <div class="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
                                             <i class="fas fa-map-marker-alt text-rose-500 text-[10px]"></i>
                                             <span class="truncate">{{ $program->lokasi }}</span>
+                                        </div>
+                                    @endif
+                                    @if($program->catatan_dosen)
+                                        <div class="mt-1">
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 text-purple-700 text-[10px] font-bold rounded-md border border-purple-100" title="{{ $program->catatan_dosen }}">
+                                                <i class="fas fa-comment-dots text-[9px]"></i> Ada Catatan Pembimbing
+                                            </span>
                                         </div>
                                     @endif
                                 </td>
