@@ -25,31 +25,92 @@ class DosenProgramKerjaController extends Controller
         })->pluck('nim');
     }
 
+    private function getKelompokProgramsQuery()
+    {
+        $mahasiswaBimbinganNim = $this->getMahasiswaBimbingan();
+
+        $kknLocationIds = \App\Models\PenempatanKkn::whereIn('nim', $mahasiswaBimbinganNim)->pluck('lokasi_kkn_id')->filter();
+        $pplLocationIds = \App\Models\PenempatanPpl::whereIn('nim', $mahasiswaBimbinganNim)->pluck('sekolah_id')->filter();
+        $pklLocationIds = \App\Models\PenempatanPkl::whereIn('nim', $mahasiswaBimbinganNim)->pluck('lokasi_pkl_id')->filter();
+        $magangLocationIds = \App\Models\PenempatanMagang::whereIn('nim', $mahasiswaBimbinganNim)->pluck('lokasi_magang_id')->filter();
+
+        $allGroupNims = collect($mahasiswaBimbinganNim);
+
+        if ($kknLocationIds->isNotEmpty()) {
+            $allGroupNims = $allGroupNims->merge(\App\Models\PenempatanKkn::whereIn('lokasi_kkn_id', $kknLocationIds)->pluck('nim'));
+        }
+        if ($pplLocationIds->isNotEmpty()) {
+            $allGroupNims = $allGroupNims->merge(\App\Models\PenempatanPpl::whereIn('sekolah_id', $pplLocationIds)->pluck('nim'));
+        }
+        if ($pklLocationIds->isNotEmpty()) {
+            $allGroupNims = $allGroupNims->merge(\App\Models\PenempatanPkl::whereIn('lokasi_pkl_id', $pklLocationIds)->pluck('nim'));
+        }
+        if ($magangLocationIds->isNotEmpty()) {
+            $allGroupNims = $allGroupNims->merge(\App\Models\PenempatanMagang::whereIn('lokasi_magang_id', $magangLocationIds)->pluck('nim'));
+        }
+
+        $allGroupNims = $allGroupNims->unique()->values();
+
+        return KelompokProgramKerja::whereIn('nim_ketua', $allGroupNims);
+    }
+
     public function dashboard()
     {
         $dosen = Auth::guard('dosen')->user();
         $mahasiswaBimbinganNim = $this->getMahasiswaBimbingan();
 
         $totalMahasiswa = $mahasiswaBimbinganNim->count();
-        $totalProgram = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->count();
-        $mahasiswaDenganProgram = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->distinct('nim')->count('nim');
+        $totalProgramIndividu = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->count();
+        $totalProgramKelompok = $this->getKelompokProgramsQuery()->count();
+        $totalProgram = $totalProgramIndividu + $totalProgramKelompok;
+
+        // Mahasiswa yang sudah membuat/tergabung dalam program kerja
+        $mhsIndividu = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->pluck('nim');
+        $mhsKelompok = collect();
+        foreach ($this->getKelompokProgramsQuery()->get() as $kp) {
+            $mhsKelompok = $mhsKelompok->merge($kp->anggota()->pluck('nim'));
+        }
+        $mahasiswaDenganProgram = $mhsIndividu->merge($mhsKelompok)->intersect($mahasiswaBimbinganNim)->unique()->count();
         $mahasiswaTanpaProgram = max(0, $totalMahasiswa - $mahasiswaDenganProgram);
 
+        $kelompokQuery = $this->getKelompokProgramsQuery();
+
         $statistikStatus = [
-            'rencana' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'rencana')->count(),
-            'sedang_berjalan' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'sedang_berjalan')->count(),
-            'selesai' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'selesai')->count(),
+            'rencana' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'rencana')->count()
+                         + (clone $kelompokQuery)->where('status', 'rencana')->count(),
+            'sedang_berjalan' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'sedang_berjalan')->count()
+                                 + (clone $kelompokQuery)->where('status', 'sedang_berjalan')->count(),
+            'selesai' => IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)->where('status', 'selesai')->count()
+                         + (clone $kelompokQuery)->where('status', 'selesai')->count(),
         ];
 
-        $recentPrograms = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)
+        $recentIndividu = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbinganNim)
             ->with('mahasiswa')
             ->orderBy('created_at', 'desc')
             ->limit(10)
-            ->get();
+            ->get()
+            ->map(function ($p) {
+                $p->program_type = 'individu';
+                return $p;
+            });
+
+        $recentKelompok = $this->getKelompokProgramsQuery()
+            ->with('mahasiswaKetua')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get()
+            ->map(function ($p) {
+                $p->program_type = 'kelompok';
+                return $p;
+            });
+
+        $recentPrograms = $recentIndividu->merge($recentKelompok)->sortByDesc('created_at')->take(10)->values();
 
         return view('dosen.program-kerja.dashboard', compact(
             'totalMahasiswa',
             'totalProgram',
+            'totalProgramIndividu',
+            'totalProgramKelompok',
             'mahasiswaDenganProgram',
             'mahasiswaTanpaProgram',
             'statistikStatus',
@@ -150,30 +211,47 @@ class DosenProgramKerjaController extends Controller
         ));
     }
 
-    public function semuaProgram()
+    public function semuaProgram(Request $request)
     {
         $mahasiswaBimbingan = $this->getMahasiswaBimbingan();
-        $programs = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbingan)
-            ->with('mahasiswa')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
 
-        return view('dosen.program-kerja.semua-program', compact('programs'));
+        $individuPrograms = IndividuProgramKerja::whereIn('nim', $mahasiswaBimbingan)
+            ->with(['mahasiswa', 'luarans'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15, ['*'], 'page_individu');
+
+        $kelompokPrograms = $this->getKelompokProgramsQuery()
+            ->with(['mahasiswaKetua', 'luarans'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15, ['*'], 'page_kelompok');
+
+        $programs = $individuPrograms; // For backward compatibility
+
+        return view('dosen.program-kerja.semua-program', compact('individuPrograms', 'kelompokPrograms', 'programs'));
     }
 
-    public function semuaLuaran()
+    public function semuaLuaran(Request $request)
     {
         $mahasiswaBimbingan = $this->getMahasiswaBimbingan();
-        $luarans = IndividuLuaran::whereIn('individu_program_kerja_id', function ($query) use ($mahasiswaBimbingan) {
+
+        $individuLuarans = IndividuLuaran::whereIn('individu_program_kerja_id', function ($query) use ($mahasiswaBimbingan) {
             $query->select('id')
                 ->from('individu_program_kerjas')
                 ->whereIn('nim', $mahasiswaBimbingan);
         })
         ->with('programKerja.mahasiswa')
         ->orderBy('created_at', 'desc')
-        ->paginate(20);
+        ->paginate(15, ['*'], 'page_individu_luaran');
 
-        return view('dosen.program-kerja.semua-luaran', compact('luarans'));
+        $kelompokProgramIds = $this->getKelompokProgramsQuery()->pluck('id');
+        $kelompokLuarans = KelompokLuaran::whereIn('kelompok_program_kerja_id', $kelompokProgramIds)
+            ->with('programKerja.mahasiswaKetua')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15, ['*'], 'page_kelompok_luaran');
+
+        $luarans = $individuLuarans; // For backward compatibility
+
+        return view('dosen.program-kerja.semua-luaran', compact('individuLuarans', 'kelompokLuarans', 'luarans'));
     }
 
     // Dosen Monev Methods

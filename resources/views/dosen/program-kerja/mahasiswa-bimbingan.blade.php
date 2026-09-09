@@ -33,26 +33,59 @@
                 <tbody class="divide-y divide-gray-100">
                     @forelse ($mahasiswaBimbingan as $mahasiswa)
                         @php
-                            $programCount = \App\Models\IndividuProgramKerja::where('nim', $mahasiswa->nim)->count();
+                            $indivCount = \App\Models\IndividuProgramKerja::where('nim', $mahasiswa->nim)->count();
+                            $kegLower = strtolower($mahasiswa->kegiatan ?? '');
+                            $table = match($kegLower) {
+                                'kkn' => 'pembagian_lokasi_kkn',
+                                'ppl' => 'Penempatan_ppl',
+                                'pkl' => 'penempatan_pkls',
+                                'magang' => 'penempatan_magangs',
+                                default => null
+                            };
+                            $column = match($kegLower) {
+                                'kkn' => 'lokasi_kkn_id',
+                                'ppl' => 'sekolah_id',
+                                'pkl' => 'lokasi_pkl_id',
+                                'magang' => 'lokasi_magang_id',
+                                default => null
+                            };
+                            $groupNims = collect([$mahasiswa->nim]);
+                            if ($table && $column) {
+                                $locId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mahasiswa->nim)->value($column);
+                                if ($locId) {
+                                    $groupNims = \Illuminate\Support\Facades\DB::table($table)->where($column, $locId)->pluck('nim');
+                                }
+                            }
+                            $kelompokCount = \App\Models\KelompokProgramKerja::whereIn('nim_ketua', $groupNims)->count();
+                            $totalProgramMhs = $indivCount + $kelompokCount;
                         @endphp
                         <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4 text-sm font-bold text-gray-900">{{ $mahasiswa->nim }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-700">{{ $mahasiswa->nama }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-600">{{ Str::limit($mahasiswa->prodi_full ?? '-', 30) }}</td>
+                            <td class="px-6 py-4 text-sm font-bold text-gray-900 font-mono">{{ $mahasiswa->nim }}</td>
+                            <td class="px-6 py-4 text-sm font-bold text-gray-800">{{ $mahasiswa->nama }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">{{ Str::limit($mahasiswa->prodi_full ?? ($mahasiswa->prodi ?? '-'), 30) }}</td>
                             <td class="px-6 py-4">
-                                @if ($programCount > 0)
-                                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                        {{ $programCount }} program
-                                    </span>
+                                @if ($totalProgramMhs > 0)
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        @if($indivCount > 0)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
+                                                {{ $indivCount }} Individu
+                                            </span>
+                                        @endif
+                                        @if($kelompokCount > 0)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-800">
+                                                {{ $kelompokCount }} Kelompok
+                                            </span>
+                                        @endif
+                                    </div>
                                 @else
-                                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
                                         Belum ada
                                     </span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-sm">
-                                <a href="{{ route('dosen.program-kerja.detail', $mahasiswa) }}" class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition inline-block">
-                                    Lihat Detail
+                                <a href="{{ route('dosen.program-kerja.detail', $mahasiswa) }}" class="px-3.5 py-1.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold text-xs transition inline-flex items-center gap-1.5 shadow-sm">
+                                    <i class="fas fa-eye text-[10px]"></i> Lihat Detail
                                 </a>
                             </td>
                         </tr>
