@@ -9,7 +9,11 @@ class PenempatanPpl extends Model
     //
 
     protected $table = 'Penempatan_ppl';
-    protected $fillable = ['nim', 'sekolah_id'];
+    protected $fillable = ['nim', 'sekolah_id', 'is_ketua'];
+
+    protected $casts = [
+        'is_ketua' => 'boolean',
+    ];
 
     public function mahasiswa()
     {

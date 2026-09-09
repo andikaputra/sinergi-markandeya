@@ -194,6 +194,7 @@ Route::middleware(['auth:web'])->group(function () {
 
     Route::get('/assign-lokasikkn', [LokasiKknController::class, 'indexasignlokasikkn'])->name('assign.lokasikkn');
     Route::post('/assign-lokasikkn', [LokasiKknController::class, 'assign'])->name('assign.lokasikkn.store');
+    Route::post('/assign-lokasikkn/{id}/set-ketua', [LokasiKknController::class, 'setKetua'])->name('assign.lokasikkn.set-ketua');
     Route::delete('/assign-lokasikkn/{id}', [LokasiKknController::class, 'deletelokasikkn'])->name('assign.lokasikkn.delete');
 
 
@@ -231,6 +232,7 @@ Route::middleware(['auth:web'])->group(function () {
 
     Route::get('/assign-lokasippl', [LokasiPplController::class, 'indexasignlokasippl'])->name('assign.lokasippl');
     Route::post('/assign-lokasippl', [LokasiPplController::class, 'assign'])->name('assign.lokasippl.store');
+    Route::post('/assign-lokasippl/{id}/set-ketua', [LokasiPplController::class, 'setKetua'])->name('assign.lokasippl.set-ketua');
     Route::delete('/assign-lokasippl/{id}', [LokasiPplController::class, 'deletelokasippl'])->name('assign.lokasippl.delete');
 
     Route::get('/pengajuan-pkladmin', [PengajuanLokasiPKLController::class, 'adminindex'])->name('pengajuanpkl.adminindex');

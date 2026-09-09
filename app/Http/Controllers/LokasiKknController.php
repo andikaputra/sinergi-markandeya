@@ -99,6 +99,21 @@ class LokasiKknController extends Controller
     }
     
 
+    public function setKetua($id)
+    {
+        $target = PenempatanKkn::findOrFail($id);
+        
+        // Reset all other students in the same location to is_ketua = false
+        PenempatanKkn::where('lokasi_kkn_id', $target->lokasi_kkn_id)->update(['is_ketua' => false]);
+        
+        // Set this student as ketua
+        $target->is_ketua = true;
+        $target->save();
+
+        $nama = $target->mahasiswa->nama ?? $target->nim;
+        return redirect()->back()->with('success', "Mahasiswa {$nama} berhasil ditetapkan sebagai Ketua Kelompok KKN!");
+    }
+
     public function deletelokasikkn($id)
     {
         PenempatanKkn::findOrFail($id)->delete();

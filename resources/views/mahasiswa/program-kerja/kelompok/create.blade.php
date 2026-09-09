@@ -20,10 +20,10 @@
 
     <!-- Form Card -->
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-        <div class="mb-6 p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl flex items-start gap-3">
-            <i class="fas fa-info-circle text-indigo-500 mt-0.5 text-sm"></i>
-            <p class="text-xs text-indigo-900 leading-relaxed">
-                <strong>Informasi Kelompok:</strong> Anda akan terdaftar sebagai <strong>Ketua Pengusul</strong> program kerja ini. Anggota kelompok otomatis terhubung dengan seluruh mahasiswa yang ditempatkan di lokasi yang sama dengan Anda.
+        <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
+            <i class="fas fa-crown text-amber-600 mt-0.5 text-sm"></i>
+            <p class="text-xs text-amber-900 leading-relaxed">
+                <strong>Status Ketua Kelompok:</strong> Anda tercatat sebagai <strong>Ketua Kelompok</strong> resmi untuk lokasi penempatan ini. Program kerja kelompok yang Anda buat di sini akan otomatis terhubung dengan seluruh rekan mahasiswa anggota kelompok di lokasi yang sama.
             </p>
         </div>
 

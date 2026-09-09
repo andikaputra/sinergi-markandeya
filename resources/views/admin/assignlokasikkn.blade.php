@@ -89,6 +89,7 @@
                     <tr>
                         <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
                         <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Lokasi Penempatan</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-center">Peran / Jabatan</th>
                         <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
                     </tr>
                 </thead>
@@ -97,12 +98,16 @@
                     <tr class="hover:bg-slate-50/30 transition-colors group">
                         <td class="px-6 py-5">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs">
-                                    {{ substr($assignment->mahasiswa->nama, 0, 1) }}
+                                <div class="w-10 h-10 rounded-xl {{ $assignment->is_ketua ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-400/40' : 'bg-slate-100 text-slate-500' }} flex items-center justify-center font-bold text-xs">
+                                    @if($assignment->is_ketua)
+                                        <i class="fas fa-crown text-amber-600"></i>
+                                    @else
+                                        {{ substr($assignment->mahasiswa->nama, 0, 1) }}
+                                    @endif
                                 </div>
                                 <div>
                                     <p class="text-sm font-bold text-gray-800">{{ $assignment->mahasiswa->nama }}</p>
-                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{{ $assignment->nim }}</p>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter font-mono">{{ $assignment->nim }}</p>
                                 </div>
                             </div>
                         </td>
@@ -111,6 +116,27 @@
                                 <i class="fas fa-map-marker-alt text-xs"></i>
                                 <span class="text-sm font-bold">Desa {{ $assignment->lokasikkn->desa }}</span>
                             </div>
+                        </td>
+                        <td class="px-6 py-5 text-center">
+                            @if($assignment->is_ketua)
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-300 shadow-sm">
+                                    <i class="fas fa-crown text-amber-600 text-[11px]"></i>
+                                    <span>Ketua Kelompok</span>
+                                </span>
+                            @else
+                                <div class="inline-flex items-center gap-2">
+                                    <span class="inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+                                        Anggota
+                                    </span>
+                                    <form action="{{ route('assign.lokasikkn.set-ketua', $assignment->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-500 hover:text-white text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all shadow-sm flex items-center gap-1" title="Tetapkan sebagai Ketua Kelompok Desa Ini" onclick="return confirm('Tetapkan {{ $assignment->mahasiswa->nama }} sebagai Ketua Kelompok di Desa {{ $assignment->lokasikkn->desa }}?')">
+                                            <i class="fas fa-crown text-[10px]"></i>
+                                            <span>Jadikan Ketua</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
                         </td>
                         <td class="px-6 py-5 text-right">
                             <form action="{{ route('assign.lokasikkn.delete', $assignment->id) }}" method="POST" class="inline">

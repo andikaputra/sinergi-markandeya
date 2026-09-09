@@ -24,10 +24,22 @@
                 </a>
             </template>
             <template x-if="activeTab === 'kelompok'">
-                <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-indigo-200 group">
-                    <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
-                    Buat Program Kelompok
-                </a>
+                @if ($isKetua)
+                    <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-indigo-200 group">
+                        <i class="fas fa-crown mr-2 text-amber-300 group-hover:scale-110 transition-transform"></i>
+                        Buat Program Kelompok
+                    </a>
+                @elseif (in_array(strtolower($kegiatan ?? ''), ['kkn', 'ppl']))
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-900 border border-amber-200 text-xs font-bold rounded-2xl">
+                        <i class="fas fa-crown text-amber-500"></i>
+                        <span>Ketua: {{ $ketuaKelompok->nama ?? 'Belum Ditunjuk' }}</span>
+                    </div>
+                @else
+                    <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-indigo-200 group">
+                        <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
+                        Buat Program Kelompok
+                    </a>
+                @endif
             </template>
         </div>
     </div>
@@ -250,6 +262,47 @@
 
     <!-- TAB 2: KELOMPOK -->
     <div x-show="activeTab === 'kelompok'" class="space-y-6" style="display: none;">
+        @if (in_array(strtolower($kegiatan ?? ''), ['kkn', 'ppl']))
+            @if ($isKetua)
+                <div class="p-4 sm:p-5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 rounded-3xl text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-xl flex-shrink-0">
+                            <i class="fas fa-crown text-amber-200"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-white flex items-center gap-2">
+                                <span>Anda adalah Ketua Kelompok</span>
+                                <span class="px-2 py-0.5 bg-white/20 text-white text-[10px] font-bold rounded-md uppercase">Resmi</span>
+                            </h4>
+                            <p class="text-xs text-amber-100 mt-0.5">Anda memiliki wewenang untuk membuat dan mengelola program kerja kelompok di lokasi penempatan ini.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('program-kerja.create-kelompok') }}" class="px-4 py-2 bg-white hover:bg-amber-50 text-amber-900 text-xs font-black rounded-xl shadow-sm transition inline-flex items-center gap-1.5 self-start sm:self-auto whitespace-nowrap">
+                        <i class="fas fa-plus text-[10px]"></i>
+                        <span>Buat Program Kelompok</span>
+                    </a>
+                </div>
+            @else
+                <div class="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-3xl flex items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-slate-200 text-slate-700 flex items-center justify-center text-lg flex-shrink-0">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="text-xs text-slate-700">
+                        <p class="font-bold text-slate-900 text-sm">Peran Anda: Anggota Kelompok</p>
+                        <p class="mt-0.5 text-slate-600 leading-relaxed">
+                            Pengajuan Program Kerja Kelompok dilakukan oleh Ketua Kelompok: 
+                            @if ($ketuaKelompok)
+                                <strong class="text-slate-900 font-bold">{{ $ketuaKelompok->nama }}</strong> (NIM: {{ $ketuaKelompok->nim }}).
+                            @else
+                                <span class="italic text-amber-700 font-semibold">(Ketua kelompok belum ditetapkan oleh Admin).</span>
+                            @endif
+                            Seluruh anggota di lokasi yang sama akan otomatis melihat dan berkontribusi pada program kerja kelompok yang diajukan ketua.
+                        </p>
+                    </div>
+                </div>
+            @endif
+        @endif
+
         @if ($dosenMonevKelompok && $dosenMonevKelompok->dosen)
             <div class="p-5 bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-900 rounded-3xl text-white shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div class="flex items-center gap-4">
@@ -350,10 +403,19 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <h3 class="text-lg font-bold text-gray-800">Belum Ada Program Kerja Kelompok</h3>
-                    <p class="text-sm text-gray-500 mt-1 max-w-md mx-auto">Program kerja kelompok di lokasi penempatan Anda akan muncul di sini.</p>
-                    <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl mt-4 transition shadow-md shadow-indigo-200">
-                        <i class="fas fa-plus mr-2"></i> Buat Program Kelompok
-                    </a>
+                    <p class="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+                        @if ($isKetua)
+                            Mulai tambahkan rencana program kerja kelompok Anda untuk lokasi penempatan ini.
+                        @else
+                            Program kerja kelompok akan muncul di sini setelah diajukan oleh Ketua Kelompok 
+                            ({{ $ketuaKelompok->nama ?? 'Ketua' }}).
+                        @endif
+                    </p>
+                    @if ($isKetua || !in_array(strtolower($kegiatan ?? ''), ['kkn', 'ppl']))
+                        <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl mt-4 transition shadow-md shadow-indigo-200">
+                            <i class="fas fa-plus mr-2"></i> Buat Program Kelompok
+                        </a>
+                    @endif
                 </div>
             @else
                 <div class="overflow-x-auto">

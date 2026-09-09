@@ -100,7 +100,47 @@ class ProgramKerjaController extends Controller
             }
         }
 
-        return view('mahasiswa.program-kerja.index', compact('individuPrograms', 'kelompokPrograms', 'statistikIndividu', 'statistikKelompok', 'kegiatan', 'dosenMonevIndividu', 'dosenMonevKelompok'));
+        // Cek status Ketua Kelompok (khusus KKN dan PPL)
+        $isKetua = true;
+        $ketuaKelompok = null;
+
+        if ($kegiatanLower === 'kkn') {
+            $myPenempatan = \App\Models\PenempatanKkn::where('nim', $mahasiswa->nim)->first();
+            if ($myPenempatan) {
+                $isKetua = (bool)$myPenempatan->is_ketua;
+                $ketuaPenempatan = \App\Models\PenempatanKkn::where('lokasi_kkn_id', $myPenempatan->lokasi_kkn_id)
+                    ->where('is_ketua', true)
+                    ->with('mahasiswa')
+                    ->first();
+                $ketuaKelompok = $ketuaPenempatan?->mahasiswa;
+            } else {
+                $isKetua = false;
+            }
+        } elseif ($kegiatanLower === 'ppl') {
+            $myPenempatan = \App\Models\PenempatanPpl::where('nim', $mahasiswa->nim)->first();
+            if ($myPenempatan) {
+                $isKetua = (bool)$myPenempatan->is_ketua;
+                $ketuaPenempatan = \App\Models\PenempatanPpl::where('sekolah_id', $myPenempatan->sekolah_id)
+                    ->where('is_ketua', true)
+                    ->with('mahasiswa')
+                    ->first();
+                $ketuaKelompok = $ketuaPenempatan?->mahasiswa;
+            } else {
+                $isKetua = false;
+            }
+        }
+
+        return view('mahasiswa.program-kerja.index', compact(
+            'individuPrograms',
+            'kelompokPrograms',
+            'statistikIndividu',
+            'statistikKelompok',
+            'kegiatan',
+            'dosenMonevIndividu',
+            'dosenMonevKelompok',
+            'isKetua',
+            'ketuaKelompok'
+        ));
     }
 
     // Individu Methods
@@ -200,6 +240,21 @@ class ProgramKerjaController extends Controller
     public function createKelompok()
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
+        $kegiatanLower = strtolower($mahasiswa->kegiatan ?? '');
+
+        if (in_array($kegiatanLower, ['kkn', 'ppl'])) {
+            $isKetua = match($kegiatanLower) {
+                'kkn' => (bool)\App\Models\PenempatanKkn::where('nim', $mahasiswa->nim)->value('is_ketua'),
+                'ppl' => (bool)\App\Models\PenempatanPpl::where('nim', $mahasiswa->nim)->value('is_ketua'),
+                default => false,
+            };
+
+            if (!$isKetua) {
+                return redirect()->route('program-kerja.index')
+                    ->with('error', 'Hanya Ketua Kelompok yang memiliki hak akses untuk membuat program kerja kelompok.');
+            }
+        }
+
         return view('mahasiswa.program-kerja.kelompok.create', compact('mahasiswa'));
     }
 
@@ -207,6 +262,20 @@ class ProgramKerjaController extends Controller
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
         $kegiatan = strtolower($mahasiswa->kegiatan ?? 'kkn');
+        $kegiatanLower = strtolower($kegiatan);
+
+        if (in_array($kegiatanLower, ['kkn', 'ppl'])) {
+            $isKetua = match($kegiatanLower) {
+                'kkn' => (bool)\App\Models\PenempatanKkn::where('nim', $mahasiswa->nim)->value('is_ketua'),
+                'ppl' => (bool)\App\Models\PenempatanPpl::where('nim', $mahasiswa->nim)->value('is_ketua'),
+                default => false,
+            };
+
+            if (!$isKetua) {
+                return redirect()->route('program-kerja.index')
+                    ->with('error', 'Hanya Ketua Kelompok yang dapat membuat program kerja kelompok.');
+            }
+        }
 
         $validated = $request->validate([
             'judul' => 'required|string|max:255',

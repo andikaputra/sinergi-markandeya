@@ -99,6 +99,21 @@ class LokasiPplController extends Controller
         return redirect()->back()->with('success', 'Sekolah berhasil ditetapkan!');
     }
 
+    public function setKetua($id)
+    {
+        $target = PenempatanPpl::findOrFail($id);
+        
+        // Reset all other students in the same school location to is_ketua = false
+        PenempatanPpl::where('sekolah_id', $target->sekolah_id)->update(['is_ketua' => false]);
+        
+        // Set this student as ketua
+        $target->is_ketua = true;
+        $target->save();
+
+        $nama = $target->mahasiswa->nama ?? $target->nim;
+        return redirect()->back()->with('success', "Mahasiswa {$nama} berhasil ditetapkan sebagai Ketua Kelompok PPL!");
+    }
+
     public function deleteLokasiPpl($id)
     {
         PenempatanPpl::findOrFail($id)->delete();
