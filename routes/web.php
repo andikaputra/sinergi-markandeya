@@ -187,6 +187,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/lokasikkn', [LokasiKknController::class, 'indexlokasikkn'])->name('lokasikkn.index');
     Route::get('/lokasikkn/create', [LokasiKknController::class, 'createlokasikkn'])->name('lokasikkn.create');
     Route::post('/lokasikkn/store', [LokasiKknController::class, 'storelokasikkn'])->name('lokasikkn.store');
+    Route::put('/lokasikkn/{id}', [LokasiKknController::class, 'update'])->name('lokasikkn.update');
     Route::put('/lokasikkn/{id}/kapasitas', [LokasiKknController::class, 'updateKapasitas'])->name('lokasikkn.kapasitas')->middleware('superadmin');
     Route::delete('/lokasikkn/{id}', [LokasiKknController::class, 'destroylokasikkn'])->name('lokasikkn.delete');
 
@@ -200,6 +201,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/lokasippl', [LokasiPplController::class, 'indexlokasippl'])->name('lokasippl.index');
     Route::get('/lokasippl/create', [LokasiPplController::class, 'createlokasippl'])->name('lokasippl.create');
     Route::post('/lokasippl/store', [LokasiPplController::class, 'storelokasippl'])->name('lokasippl.store');
+    Route::put('/lokasippl/{id}', [LokasiPplController::class, 'update'])->name('lokasippl.update');
     Route::put('/lokasippl/{id}/kapasitas', [LokasiPplController::class, 'updateKapasitas'])->name('lokasippl.kapasitas')->middleware('superadmin');
     Route::delete('/lokasippl/{id}', [LokasiPplController::class, 'destroylokasippl'])->name('lokasippl.delete');
 
@@ -207,6 +209,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/lokasipkl', [LokasiPklController::class, 'index'])->name('lokasipkl.index');
     Route::get('/lokasipkl/create', [LokasiPklController::class, 'create'])->name('lokasipkl.create');
     Route::post('/lokasipkl/store', [LokasiPklController::class, 'store'])->name('lokasipkl.store');
+    Route::put('/lokasipkl/{id}', [LokasiPklController::class, 'update'])->name('lokasipkl.update');
     Route::put('/lokasipkl/{id}/kapasitas', [LokasiPklController::class, 'updateKapasitas'])->name('lokasipkl.kapasitas')->middleware('superadmin');
     Route::delete('/lokasipkl/{id}', [LokasiPklController::class, 'destroy'])->name('lokasipkl.delete');
 
@@ -218,6 +221,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/lokasimagang', [LokasiMagangController::class, 'index'])->name('lokasimagang.index');
     Route::get('/lokasimagang/create', [LokasiMagangController::class, 'create'])->name('lokasimagang.create');
     Route::post('/lokasimagang/store', [LokasiMagangController::class, 'store'])->name('lokasimagang.store');
+    Route::put('/lokasimagang/{id}', [LokasiMagangController::class, 'update'])->name('lokasimagang.update');
     Route::put('/lokasimagang/{id}/kapasitas', [LokasiMagangController::class, 'updateKapasitas'])->name('lokasimagang.kapasitas')->middleware('superadmin');
     Route::delete('/lokasimagang/{id}', [LokasiMagangController::class, 'destroy'])->name('lokasimagang.delete');
 

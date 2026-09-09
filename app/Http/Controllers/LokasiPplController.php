@@ -22,14 +22,16 @@ class LokasiPplController extends Controller
     public function storeLokasiPpl(Request $request)
     {
         $request->validate([
-            'Sekolah' => 'required',
+            'Sekolah' => 'required|string|max:255',
+            'alamat' => 'nullable|string|max:500',
         ]);
 
         LokasiPpl::create([
             'Sekolah' => $request->Sekolah,
+            'alamat' => $request->alamat,
         ]);
 
-        return redirect()->route('lokasippl.index')->with('success', 'Tempat PPL berhasil ditambahkan!');
+        return redirect()->route('lokasippl.index')->with('success', 'Mitra Sekolah PPL berhasil ditambahkan!');
     }
 
     public function editLokasiPpl(LokasiPpl $LokasiPpl)
@@ -37,15 +39,17 @@ class LokasiPplController extends Controller
         return view('admin.LokasiPpl.edit', compact('LokasiPpl'));
     }
 
-    public function update(Request $request, LokasiPpl $LokasiPpl)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'Sekolah' => 'required',
+            'Sekolah' => 'required|string|max:255',
+            'alamat' => 'nullable|string|max:500',
         ]);
 
-        $LokasiPpl->update($request->only(['Sekolah']));
+        $lokasi = LokasiPpl::findOrFail($id);
+        $lokasi->update($request->only(['Sekolah', 'alamat']));
 
-        return redirect()->route('lokasippl.index')->with('success', 'Tempat PPL berhasil diperbarui!');
+        return redirect()->route('lokasippl.index')->with('success', 'Data Sekolah PPL berhasil diperbarui!');
     }
 
     public function updateKapasitas(Request $request, $id)

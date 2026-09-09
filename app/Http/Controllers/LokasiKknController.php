@@ -39,19 +39,20 @@ class LokasiKknController extends Controller
         return view('admin.tempat_kkn.edit', compact('tempatKKN'));
     }
 
-    public function update(Request $request, LokasiKkn $tempatKKN)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'desa' => 'required',
-            'alamat' => 'required',
-            'kecamatan' => 'required',
-            'kabupaten' => 'required',
-            'provinsi' => 'required',
+            'desa' => 'required|string|max:255',
+            'alamat' => 'nullable|string|max:500',
+            'kecamatan' => 'nullable|string|max:255',
+            'kabupaten' => 'nullable|string|max:255',
+            'provinsi' => 'nullable|string|max:255',
         ]);
 
+        $tempatKKN = LokasiKkn::findOrFail($id);
         $tempatKKN->update($request->only(['desa', 'alamat', 'kecamatan', 'kabupaten', 'provinsi']));
 
-        return redirect()->route('lokasikkn.index')->with('success', 'Tempat KKN berhasil diperbarui!');
+        return redirect()->route('lokasikkn.index')->with('success', 'Lokasi KKN berhasil diperbarui!');
     }
 
     public function updateKapasitas(Request $request, $id)

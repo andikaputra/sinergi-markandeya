@@ -39,6 +39,18 @@
                 </div>
             </div>
 
+            <div class="space-y-2">
+                <label for="alamat" class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Alamat Sekolah</label>
+                <div class="relative group">
+                    <div class="absolute top-4 left-0 pl-5 flex items-center pointer-events-none text-gray-300 group-focus-within:text-emerald-600 transition-colors">
+                        <i class="fas fa-map-marker-alt text-sm"></i>
+                    </div>
+                    <textarea name="alamat" id="alamat" rows="3"
+                        class="block w-full pl-12 pr-4 py-4 bg-slate-50 border border-gray-100 rounded-2xl text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-600 focus:bg-white transition-all font-medium"
+                        placeholder="Jl. Raya Utama No. 1..."></textarea>
+                </div>
+            </div>
+
             <div class="bg-emerald-50 p-6 rounded-3xl border border-emerald-100 mb-4">
                 <div class="flex items-start space-x-3">
                     <i class="fas fa-info-circle text-emerald-500 mt-1"></i>

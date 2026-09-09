@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class LokasiPpl extends Model
 {
     protected $table = 'lokasi_ppl';
-    protected $fillable = ['Sekolah', 'maks_peserta'];
+    protected $fillable = ['Sekolah', 'alamat', 'maks_peserta'];
 
     public function jumlahPendaftar(): int
     {

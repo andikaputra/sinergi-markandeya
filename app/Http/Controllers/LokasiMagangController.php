@@ -31,6 +31,20 @@ class LokasiMagangController extends Controller
         return redirect()->route('lokasimagang.index')->with('success', 'Lokasi Magang berhasil ditambahkan!');
     }
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama_instansi' => 'required|string|max:255',
+            'alamat' => 'nullable|string|max:500',
+            'kontak' => 'nullable|string|max:100',
+        ]);
+
+        $lokasi = LokasiMagang::findOrFail($id);
+        $lokasi->update($request->only(['nama_instansi', 'alamat', 'kontak']));
+
+        return redirect()->route('lokasimagang.index')->with('success', 'Lokasi Magang berhasil diperbarui!');
+    }
+
     public function updateKapasitas(Request $request, $id)
     {
         $request->validate(['maks_peserta' => 'nullable|integer|min:1|max:9999']);

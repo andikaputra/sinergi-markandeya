@@ -35,6 +35,22 @@ class LokasiPklController extends Controller
         return redirect()->route('lokasipkl.index')->with('success', 'Lokasi PKL berhasil ditambahkan!');
     }
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama_instansi' => 'required|string|max:255',
+            'alamat' => 'nullable|string|max:500',
+            'kontak' => 'nullable|string|max:100',
+            'email' => 'nullable|email|max:255',
+            'website' => 'nullable|string|max:255',
+        ]);
+
+        $lokasi = LokasiPkl::findOrFail($id);
+        $lokasi->update($request->only(['nama_instansi', 'alamat', 'kontak', 'email', 'website']));
+
+        return redirect()->route('lokasipkl.index')->with('success', 'Lokasi PKL berhasil diperbarui!');
+    }
+
     public function updateKapasitas(Request $request, $id)
     {
         $request->validate(['maks_peserta' => 'nullable|integer|min:1|max:9999']);
