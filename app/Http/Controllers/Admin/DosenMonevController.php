@@ -70,6 +70,9 @@ class DosenMonevController extends Controller
 
         $kegiatan = strtolower($request->query('kegiatan', 'kkn'));
         $type = $request->query('type', 'individu');
+        if ($kegiatan === 'pkl') {
+            $type = 'individu';
+        }
         $dosens = Dosen::orderBy('nama', 'asc')->get();
 
         $mahasiswas = collect();
@@ -113,8 +116,6 @@ class DosenMonevController extends Controller
                 $lokasis = LokasiKkn::with(['penempatankkn.mahasiswa'])->orderBy('desa', 'asc')->get();
             } elseif ($kegiatan === 'ppl') {
                 $lokasis = LokasiPpl::with(['penempatanppl.mahasiswa'])->orderBy('Sekolah', 'asc')->get();
-            } elseif ($kegiatan === 'pkl') {
-                $lokasis = LokasiPkl::with(['penempatanpkl.mahasiswa'])->orderBy('nama_instansi', 'asc')->get();
             } elseif ($kegiatan === 'magang') {
                 $lokasis = LokasiMagang::with(['penempatanmagang.mahasiswa'])->orderBy('nama_instansi', 'asc')->get();
             }
@@ -144,6 +145,10 @@ class DosenMonevController extends Controller
     {
         $monevType = $request->input('monev_type', 'individu');
         $kegiatan = strtolower($request->input('kegiatan', 'kkn'));
+
+        if ($kegiatan === 'pkl' && $monevType === 'kelompok') {
+            return redirect()->back()->with('error', 'Penugasan monev kelompok tidak tersedia untuk kegiatan PKL.');
+        }
 
         if ($monevType === 'individu') {
             $validated = $request->validate([
@@ -224,15 +229,70 @@ class DosenMonevController extends Controller
                         'program_id' => null,
                     ]);
                 }
+
+                // Otomatis sinkronkan seluruh mahasiswa di lokasi ini agar memegang Dosen Pemonev yang sama untuk individu
+                $nims = match($kegiatan) {
+                    'kkn' => \App\Models\PenempatanKkn::where('lokasi_kkn_id', $lokasiId)->pluck('nim'),
+                    'ppl' => \App\Models\PenempatanPpl::where('sekolah_id', $lokasiId)->pluck('nim'),
+                    'magang' => \App\Models\PenempatanMagang::where('lokasi_magang_id', $lokasiId)->pluck('nim'),
+                    default => collect(),
+                };
+
+                foreach ($nims as $nim) {
+                    $proker = IndividuProgramKerja::where('nim', $nim)->first();
+                    $mhsMonev = DosenMonev::where('monev_type', 'individu')
+                        ->where(function ($q) use ($kegiatan) {
+                            $q->where('kegiatan', $kegiatan)->orWhereNull('kegiatan');
+                        })
+                        ->where('nim', $nim)
+                        ->first();
+
+                    if ($mhsMonev) {
+                        $mhsMonev->update([
+                            'nidn' => $validated['nidn'],
+                            'kegiatan' => $kegiatan,
+                            'program_id' => $proker?->id ?? $mhsMonev->program_id,
+                        ]);
+                    } else {
+                        DosenMonev::create([
+                            'monev_type' => 'individu',
+                            'nim' => $nim,
+                            'kegiatan' => $kegiatan,
+                            'nidn' => $validated['nidn'],
+                            'program_id' => $proker?->id,
+                        ]);
+                    }
+                }
             }
         }
 
-        return redirect()->back()->with('success', 'Dosen pemonev berhasil ditugaskan!');
+        return redirect()->back()->with('success', 'Dosen pemonev berhasil ditugaskan dan disinkronkan ke seluruh mahasiswa kelompok!');
     }
 
     public function delete($id)
     {
         $monev = DosenMonev::findOrFail($id);
+        
+        if ($monev->monev_type === 'kelompok' && $monev->lokasi_id) {
+            $kegiatan = strtolower($monev->kegiatan ?? 'kkn');
+            $nims = match($kegiatan) {
+                'kkn' => \App\Models\PenempatanKkn::where('lokasi_kkn_id', $monev->lokasi_id)->pluck('nim'),
+                'ppl' => \App\Models\PenempatanPpl::where('sekolah_id', $monev->lokasi_id)->pluck('nim'),
+                'magang' => \App\Models\PenempatanMagang::where('lokasi_magang_id', $monev->lokasi_id)->pluck('nim'),
+                default => collect(),
+            };
+
+            // Hapus juga penugasan individu mahasiswa terkait yang belum dinilai
+            if ($nims->isNotEmpty()) {
+                DosenMonev::where('monev_type', 'individu')
+                    ->whereIn('nim', $nims)
+                    ->where('nidn', $monev->nidn)
+                    ->whereNull('nilai')
+                    ->whereNull('catatan')
+                    ->delete();
+            }
+        }
+
         $monev->delete();
 
         return redirect()->back()->with('success', 'Penugasan dosen pemonev berhasil dihapus');

@@ -50,6 +50,42 @@ class IndividuProgramKerja extends Model
 
     public function getMonevAttribute()
     {
+        $kegiatanLower = strtolower($this->kategori ?? '');
+
+        // 1. Untuk KKN, PPL, Magang: otomatis samakan dengan Dosen Pemonev Kelompok/Lokasi
+        if ($kegiatanLower !== 'pkl') {
+            $lokasiId = match($kegiatanLower) {
+                'kkn' => PenempatanKkn::where('nim', $this->nim)->value('lokasi_kkn_id'),
+                'ppl' => PenempatanPpl::where('nim', $this->nim)->value('sekolah_id'),
+                'magang' => PenempatanMagang::where('nim', $this->nim)->value('lokasi_magang_id'),
+                default => null,
+            };
+
+            if ($lokasiId) {
+                $kelompokMonev = DosenMonev::where('monev_type', 'kelompok')
+                    ->where(function ($q) use ($kegiatanLower) {
+                        $q->where('kegiatan', $kegiatanLower)
+                          ->orWhereNull('kegiatan');
+                    })
+                    ->where('lokasi_id', $lokasiId)
+                    ->first();
+
+                if ($kelompokMonev) {
+                    // Cek apakah ada record evaluasi individu khusus program ini / mahasiswa ini dengan NIDN pemonev kelompok
+                    $evaluasiIndividu = DosenMonev::where('monev_type', 'individu')
+                        ->where('nidn', $kelompokMonev->nidn)
+                        ->where(function ($q) {
+                            $q->where('program_id', $this->id)
+                              ->orWhere('nim', $this->nim);
+                        })
+                        ->first();
+
+                    return $evaluasiIndividu ?: $kelompokMonev;
+                }
+            }
+        }
+
+        // 2. Untuk PKL atau fallback jika monev kelompok belum di-plot
         if ($this->relationLoaded('dosenMonev') && $this->dosenMonev) {
             return $this->dosenMonev;
         }

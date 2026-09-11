@@ -283,8 +283,9 @@
         @endif
     </div>
 
-    <!-- Program Kerja Kelompok Section -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+    @if (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl')
+        <!-- Program Kerja Kelompok Section -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
         <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
             <h3 class="text-xl font-black text-gray-900 flex items-center gap-2">
                 <i class="fas fa-users text-purple-600"></i>
@@ -441,80 +442,69 @@
                                             </a>
                                         @endforeach
                                     </div>
-                                @endif
-                            </div>
-                        @endif
-
-                        <!-- Luaran Kelompok -->
-                        @if ($program->luarans && $program->luarans->count() > 0)
-                            <div class="mt-4 pt-4 border-t border-gray-100">
-                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                    <i class="fas fa-box-open text-purple-600"></i>
-                                    <span>Luaran Kelompok ({{ $program->luarans->count() }})</span>
-                                </p>
-                                <div class="space-y-2">
-                                    @foreach ($program->luarans as $luaran)
-                                        <div class="bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                            <div>
-                                                <p class="text-sm font-bold text-gray-900">{{ $luaran->judul }}</p>
-                                                <p class="text-xs text-gray-500 mt-0.5">{{ ucfirst($luaran->tipe) }} • Progress: <strong class="text-purple-600">{{ $luaran->persentase_selesai }}%</strong></p>
-                                            </div>
-                                            <div class="flex items-center gap-3">
-                                                @if ($luaran->file_path)
-                                                    <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-xs text-purple-600 hover:text-purple-800 font-bold inline-flex items-center gap-1">
-                                                        <i class="fas fa-paperclip"></i> Berkas
-                                                    </a>
-                                                @endif
-                                                <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-black uppercase
-                                                    @if($luaran->status === 'belum_dikerjakan') bg-red-50 text-red-700 border border-red-200
-                                                    @elseif($luaran->status === 'sedang_dikerjakan') bg-amber-50 text-amber-700 border border-amber-200
-                                                    @else bg-emerald-50 text-emerald-700 border border-emerald-200
-                                                    @endif
-                                                ">
-                                                    {{ str_replace('_', ' ', $luaran->status) }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    @endforeach
                                 </div>
-                            </div>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <div class="text-center py-12 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl border border-purple-100">
-                    <i class="fas fa-users"></i>
+                            @endif
+
+                            <!-- Catatan Monev (Evaluator Luar) jika ada -->
+                            @if ($program->monev && ($program->monev->catatan || $program->monev->nilai || $program->monev->link_monev))
+                                <div class="mt-4 p-4 bg-purple-50/60 rounded-2xl border border-purple-100 text-xs space-y-1">
+                                    <div class="flex items-center justify-between text-purple-900 font-bold">
+                                        <span><i class="fas fa-clipboard-check mr-1"></i> Evaluasi Dosen Pemonev: {{ $program->monev->dosen?->nama ?? '-' }}</span>
+                                        @if(!is_null($program->monev->nilai))
+                                            <span class="px-2 py-0.5 bg-purple-200 text-purple-900 rounded font-mono font-black">Nilai: {{ $program->monev->nilai }}</span>
+                                        @endif
+                                    </div>
+                                    @if ($program->monev->catatan)
+                                        <p class="text-purple-800 italic mt-1 leading-relaxed">"{{ $program->monev->catatan }}"</p>
+                                    @endif
+                                    @if ($program->monev->link_monev)
+                                        <div class="mt-1">
+                                            <a href="{{ $program->monev->link_monev }}" target="_blank" class="text-purple-700 hover:underline font-bold inline-flex items-center gap-1">
+                                                <i class="fab fa-google-drive"></i> Link Dokumentasi / Foto Monev
+                                            </a>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
                 </div>
-                <h4 class="text-base font-bold text-gray-800">Belum Ada Program Kerja Kelompok</h4>
-                <p class="text-xs text-gray-500 mt-1">Belum ada program kerja kelompok yang dibuat untuk lokasi penempatan mahasiswa ini.</p>
-            </div>
-        @endif
-    </div>
+            @else
+                <div class="text-center py-12 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+                    <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl border border-purple-100">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4 class="text-base font-bold text-gray-800">Belum Ada Program Kerja Kelompok</h4>
+                    <p class="text-xs text-gray-500 mt-1">Belum ada program kerja kelompok yang dibuat untuk lokasi penempatan mahasiswa ini.</p>
+                </div>
+            @endif
+        </div>
+    @endif
 
     <!-- All Luaran Overview Section (Individu & Kelompok) -->
-    @if ($individuLuarans->count() > 0 || $kelompokLuarans->count() > 0)
+    @if ($individuLuarans->count() > 0 || (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl' && $kelompokLuarans->count() > 0))
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8" x-data="{ luaranTab: 'individu' }">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
                 <h3 class="text-xl font-black text-gray-900 flex items-center gap-2">
                     <i class="fas fa-boxes text-blue-600"></i>
                     <span>Semua Luaran / Deliverables</span>
                 </h3>
-                <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-2xl">
-                    <button @click="luaranTab = 'individu'" 
-                        :class="luaranTab === 'individu' ? 'bg-white text-blue-700 shadow-sm font-bold' : 'text-gray-600 font-medium hover:text-gray-900'"
-                        class="px-4 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
-                        <i class="fas fa-user text-[10px]"></i>
-                        <span>Individu ({{ $individuLuarans->count() }})</span>
-                    </button>
-                    <button @click="luaranTab = 'kelompok'" 
-                        :class="luaranTab === 'kelompok' ? 'bg-white text-purple-700 shadow-sm font-bold' : 'text-gray-600 font-medium hover:text-gray-900'"
-                        class="px-4 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
-                        <i class="fas fa-users text-[10px]"></i>
-                        <span>Kelompok ({{ $kelompokLuarans->count() }})</span>
-                    </button>
-                </div>
+                @if (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl')
+                    <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-2xl">
+                        <button @click="luaranTab = 'individu'" 
+                            :class="luaranTab === 'individu' ? 'bg-white text-blue-700 shadow-sm font-bold' : 'text-gray-600 font-medium hover:text-gray-900'"
+                            class="px-4 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                            <i class="fas fa-user text-[10px]"></i>
+                            <span>Individu ({{ $individuLuarans->count() }})</span>
+                        </button>
+                        <button @click="luaranTab = 'kelompok'" 
+                            :class="luaranTab === 'kelompok' ? 'bg-white text-purple-700 shadow-sm font-bold' : 'text-gray-600 font-medium hover:text-gray-900'"
+                            class="px-4 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                            <i class="fas fa-users text-[10px]"></i>
+                            <span>Kelompok ({{ $kelompokLuarans->count() }})</span>
+                        </button>
+                    </div>
+                @endif
             </div>
 
             <!-- Tab Individu Luaran Table -->
@@ -573,63 +563,64 @@
                 @endif
             </div>
 
-            <!-- Tab Kelompok Luaran Table -->
-            <div x-show="luaranTab === 'kelompok'" style="display: none;">
-                @if($kelompokLuarans->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Judul Luaran</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Program Kerja Kelompok</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Tipe</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Progress</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                @foreach ($kelompokLuarans as $luaran)
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-6 py-4 text-sm font-bold text-gray-900">
-                                            {{ $luaran->judul }}
-                                            @if ($luaran->file_path)
-                                                <br>
-                                                <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-xs text-purple-600 hover:underline inline-flex items-center gap-1 mt-1">
-                                                    <i class="fas fa-paperclip"></i> Lihat Berkas
-                                                </a>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-600 font-medium">{{ $luaran->programKerja?->judul ?? '-' }}</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">{{ ucfirst($luaran->tipe) }}</td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-24 bg-gray-200 rounded-full h-2">
-                                                    <div class="bg-purple-600 h-2 rounded-full" style="width: {{ $luaran->persentase_selesai }}%"></div>
-                                                </div>
-                                                <span class="text-xs font-bold text-gray-600">{{ $luaran->persentase_selesai }}%</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold
-                                                @if($luaran->status === 'belum_dikerjakan') bg-red-100 text-red-800
-                                                @elseif($luaran->status === 'sedang_dikerjakan') bg-orange-100 text-orange-800
-                                                @else bg-green-100 text-green-800
-                                                @endif
-                                            ">
-                                                {{ str_replace('_', ' ', ucfirst($luaran->status)) }}
-                                            </span>
-                                        </td>
+            @if (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl')
+                <!-- Tab Kelompok Luaran Table -->
+                <div x-show="luaranTab === 'kelompok'" style="display: none;">
+                    @if($kelompokLuarans->count() > 0)
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50 border-b border-gray-100">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Judul Luaran</th>
+                                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Program Kerja Kelompok</th>
+                                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Tipe</th>
+                                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Progress</th>
+                                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Status</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <p class="text-center py-6 text-sm text-gray-400">Belum ada luaran kelompok di lokasi ini.</p>
-                @endif
-            </div>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    @foreach ($kelompokLuarans as $luaran)
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="px-6 py-4 text-sm font-bold text-gray-900">
+                                                {{ $luaran->judul }}
+                                                @if ($luaran->file_path)
+                                                    <br>
+                                                    <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-xs text-purple-600 hover:underline inline-flex items-center gap-1 mt-1">
+                                                        <i class="fas fa-paperclip"></i> Lihat Berkas
+                                                    </a>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-600 font-medium">{{ $luaran->programKerja?->judul ?? '-' }}</td>
+                                            <td class="px-6 py-4 text-sm text-gray-600">{{ ucfirst($luaran->tipe) }}</td>
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-24 bg-gray-200 rounded-full h-2">
+                                                        <div class="bg-purple-600 h-2 rounded-full" style="width: {{ $luaran->persentase_selesai }}%"></div>
+                                                    </div>
+                                                    <span class="text-xs font-bold text-gray-600">{{ $luaran->persentase_selesai }}%</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold
+                                                    @if($luaran->status === 'belum_dikerjakan') bg-red-100 text-red-800
+                                                    @elseif($luaran->status === 'sedang_dikerjakan') bg-orange-100 text-orange-800
+                                                    @else bg-green-100 text-green-800
+                                                    @endif
+                                                ">
+                                                    {{ str_replace('_', ' ', ucfirst($luaran->status)) }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-center py-6 text-sm text-gray-400">Belum ada luaran kelompok di lokasi ini.</p>
+                    @endif
+                </div>
+            @endif
         </div>
     @endif
 </div>
 @endsection
-

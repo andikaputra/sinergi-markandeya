@@ -14,33 +14,46 @@
                 <span class="text-xs text-gray-400">• Mahasiswa Portal</span>
             </div>
             <h2 class="text-2xl font-black text-gray-800 tracking-tight mt-1">Program Kerja & Luaran</h2>
-            <p class="text-sm text-gray-500">Kelola rencana kerja individu dan kelompok beserta target deliverable luaran kegiatan.</p>
+            <p class="text-sm text-gray-500">
+                @if (strtolower($kegiatan ?? '') === 'pkl')
+                    Kelola rencana kerja individu beserta target deliverable luaran kegiatan.
+                @else
+                    Kelola rencana kerja individu dan kelompok beserta target deliverable luaran kegiatan.
+                @endif
+            </p>
         </div>
         <div class="flex flex-wrap gap-2">
-            <template x-if="activeTab === 'individu'">
+            @if (strtolower($kegiatan ?? '') === 'pkl')
                 <a href="{{ route('program-kerja.create-individu') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-blue-200 group">
                     <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform"></i>
                     Buat Program Individu
                 </a>
-            </template>
-            <template x-if="activeTab === 'kelompok'">
-                @if ($isKetua)
-                    <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-indigo-200 group">
-                        <i class="fas fa-crown mr-2 text-amber-300 group-hover:scale-110 transition-transform"></i>
-                        Buat Program Kelompok
+            @else
+                <template x-if="activeTab === 'individu'">
+                    <a href="{{ route('program-kerja.create-individu') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-blue-200 group">
+                        <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform"></i>
+                        Buat Program Individu
                     </a>
-                @elseif (in_array(strtolower($kegiatan ?? ''), ['kkn', 'ppl']))
-                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-900 border border-amber-200 text-xs font-bold rounded-2xl">
-                        <i class="fas fa-crown text-amber-500"></i>
-                        <span>Ketua: {{ $ketuaKelompok->nama ?? 'Belum Ditunjuk' }}</span>
-                    </div>
-                @else
-                    <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-indigo-200 group">
-                        <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
-                        Buat Program Kelompok
-                    </a>
-                @endif
-            </template>
+                </template>
+                <template x-if="activeTab === 'kelompok'">
+                    @if ($isKetua)
+                        <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-indigo-200 group">
+                            <i class="fas fa-crown mr-2 text-amber-300 group-hover:scale-110 transition-transform"></i>
+                            Buat Program Kelompok
+                        </a>
+                    @elseif (in_array(strtolower($kegiatan ?? ''), ['kkn', 'ppl']))
+                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-900 border border-amber-200 text-xs font-bold rounded-2xl">
+                            <i class="fas fa-crown text-amber-500"></i>
+                            <span>Ketua: {{ $ketuaKelompok->nama ?? 'Belum Ditunjuk' }}</span>
+                        </div>
+                    @else
+                        <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-indigo-200 group">
+                            <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
+                            Buat Program Kelompok
+                        </a>
+                    @endif
+                </template>
+            @endif
         </div>
     </div>
 
@@ -58,27 +71,29 @@
         </div>
     @endif
 
-    <!-- Tabs Navigation -->
-    <div class="flex border-b border-gray-200 gap-4">
-        <button @click="activeTab = 'individu'" 
-            :class="activeTab === 'individu' ? 'border-blue-600 text-blue-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium'"
-            class="pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
-            <i class="fas fa-user text-sm"></i>
-            <span>Program Individu</span>
-            <span class="px-2 py-0.5 text-xs rounded-full" :class="activeTab === 'individu' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'">
-                {{ $statistikIndividu['total'] }}
-            </span>
-        </button>
-        <button @click="activeTab = 'kelompok'" 
-            :class="activeTab === 'kelompok' ? 'border-indigo-600 text-indigo-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium'"
-            class="pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
-            <i class="fas fa-users text-sm"></i>
-            <span>Program Kelompok</span>
-            <span class="px-2 py-0.5 text-xs rounded-full" :class="activeTab === 'kelompok' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600'">
-                {{ $statistikKelompok['total'] }}
-            </span>
-        </button>
-    </div>
+    @if (strtolower($kegiatan ?? '') !== 'pkl')
+        <!-- Tabs Navigation -->
+        <div class="flex border-b border-gray-200 gap-4">
+            <button @click="activeTab = 'individu'" 
+                :class="activeTab === 'individu' ? 'border-blue-600 text-blue-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium'"
+                class="pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
+                <i class="fas fa-user text-sm"></i>
+                <span>Program Individu</span>
+                <span class="px-2 py-0.5 text-xs rounded-full" :class="activeTab === 'individu' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'">
+                    {{ $statistikIndividu['total'] }}
+                </span>
+            </button>
+            <button @click="activeTab = 'kelompok'" 
+                :class="activeTab === 'kelompok' ? 'border-indigo-600 text-indigo-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium'"
+                class="pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
+                <i class="fas fa-users text-sm"></i>
+                <span>Program Kelompok</span>
+                <span class="px-2 py-0.5 text-xs rounded-full" :class="activeTab === 'kelompok' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600'">
+                    {{ $statistikKelompok['total'] }}
+                </span>
+            </button>
+        </div>
+    @endif
 
     <!-- TAB 1: INDIVIDU -->
     <div x-show="activeTab === 'individu'" class="space-y-6">
@@ -267,8 +282,9 @@
         </div>
     </div>
 
-    <!-- TAB 2: KELOMPOK -->
-    <div x-show="activeTab === 'kelompok'" class="space-y-6" style="display: none;">
+    @if (strtolower($kegiatan ?? '') !== 'pkl')
+        <!-- TAB 2: KELOMPOK -->
+        <div x-show="activeTab === 'kelompok'" class="space-y-6" style="display: none;">
         @if (in_array(strtolower($kegiatan ?? ''), ['kkn', 'ppl']))
             @if ($isKetua)
                 <div class="p-4 sm:p-5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 rounded-3xl text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -517,5 +533,6 @@
             @endif
         </div>
     </div>
+    @endif
 </div>
 @endsection

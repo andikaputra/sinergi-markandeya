@@ -38,25 +38,23 @@
                             $table = match($kegLower) {
                                 'kkn' => 'pembagian_lokasi_kkn',
                                 'ppl' => 'Penempatan_ppl',
-                                'pkl' => 'penempatan_pkls',
                                 'magang' => 'penempatan_magangs',
                                 default => null
                             };
                             $column = match($kegLower) {
                                 'kkn' => 'lokasi_kkn_id',
                                 'ppl' => 'sekolah_id',
-                                'pkl' => 'lokasi_pkl_id',
                                 'magang' => 'lokasi_magang_id',
                                 default => null
                             };
                             $groupNims = collect([$mahasiswa->nim]);
-                            if ($table && $column) {
+                            if ($kegLower !== 'pkl' && $table && $column) {
                                 $locId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mahasiswa->nim)->value($column);
                                 if ($locId) {
                                     $groupNims = \Illuminate\Support\Facades\DB::table($table)->where($column, $locId)->pluck('nim');
                                 }
                             }
-                            $kelompokCount = \App\Models\KelompokProgramKerja::whereIn('nim_ketua', $groupNims)->count();
+                            $kelompokCount = $kegLower === 'pkl' ? 0 : \App\Models\KelompokProgramKerja::where('kategori', '!=', 'pkl')->whereIn('nim_ketua', $groupNims)->count();
                             $totalProgramMhs = $indivCount + $kelompokCount;
                         @endphp
                         <tr class="hover:bg-gray-50 transition">

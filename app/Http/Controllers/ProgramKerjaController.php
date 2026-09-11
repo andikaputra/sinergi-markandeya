@@ -34,14 +34,12 @@ class ProgramKerjaController extends Controller
         $table = match($kegiatanLower) {
             'kkn' => 'pembagian_lokasi_kkn',
             'ppl' => 'Penempatan_ppl',
-            'pkl' => 'penempatan_pkls',
             'magang' => 'penempatan_magangs',
             default => null
         };
         $column = match($kegiatanLower) {
             'kkn' => 'lokasi_kkn_id',
             'ppl' => 'sekolah_id',
-            'pkl' => 'lokasi_pkl_id',
             'magang' => 'lokasi_magang_id',
             default => null
         };
@@ -54,15 +52,32 @@ class ProgramKerjaController extends Controller
             }
         }
 
-        $kelompokQuery = KelompokProgramKerja::where(function ($q) use ($kegiatan, $kegiatanLower) {
-            $q->where('kategori', $kegiatan)
-              ->orWhere('kategori', $kegiatanLower)
-              ->orWhere('kategori', strtoupper($kegiatanLower));
-        })->whereIn('nim_ketua', $groupNims);
+        if ($kegiatanLower === 'pkl') {
+            $kelompokPrograms = KelompokProgramKerja::whereRaw('1 = 0')->paginate(10, ['*'], 'page_kelompok', 1);
+            $statistikKelompok = [
+                'total' => 0,
+                'rencana' => 0,
+                'sedang_berjalan' => 0,
+                'selesai' => 0,
+            ];
+        } else {
+            $kelompokQuery = KelompokProgramKerja::where(function ($q) use ($kegiatan, $kegiatanLower) {
+                $q->where('kategori', $kegiatan)
+                  ->orWhere('kategori', $kegiatanLower)
+                  ->orWhere('kategori', strtoupper($kegiatanLower));
+            })->whereIn('nim_ketua', $groupNims);
 
-        $kelompokPrograms = (clone $kelompokQuery)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'page_kelompok', 1);
+            $kelompokPrograms = (clone $kelompokQuery)
+                ->orderBy('created_at', 'desc')
+                ->paginate(10, ['*'], 'page_kelompok', 1);
+
+            $statistikKelompok = [
+                'total' => (clone $kelompokQuery)->count(),
+                'rencana' => (clone $kelompokQuery)->where('status', 'rencana')->count(),
+                'sedang_berjalan' => (clone $kelompokQuery)->where('status', 'sedang_berjalan')->count(),
+                'selesai' => (clone $kelompokQuery)->where('status', 'selesai')->count(),
+            ];
+        }
 
         $statistikIndividu = [
             'total' => IndividuProgramKerja::where('nim', $mahasiswa->nim)->where(function ($q) use ($kegiatan, $kegiatanLower) {
@@ -79,19 +94,8 @@ class ProgramKerjaController extends Controller
             })->where('status', 'selesai')->count(),
         ];
 
-        $statistikKelompok = [
-            'total' => (clone $kelompokQuery)->count(),
-            'rencana' => (clone $kelompokQuery)->where('status', 'rencana')->count(),
-            'sedang_berjalan' => (clone $kelompokQuery)->where('status', 'sedang_berjalan')->count(),
-            'selesai' => (clone $kelompokQuery)->where('status', 'selesai')->count(),
-        ];
-
-        $dosenMonevIndividu = \App\Models\DosenMonev::where('monev_type', 'individu')
-            ->where('nim', $mahasiswa->nim)
-            ->first();
-
         $dosenMonevKelompok = null;
-        if ($table && $column) {
+        if ($kegiatanLower !== 'pkl' && $table && $column) {
             $myLocationId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mahasiswa->nim)->value($column);
             if ($myLocationId) {
                 $dosenMonevKelompok = \App\Models\DosenMonev::where('monev_type', 'kelompok')
@@ -100,11 +104,24 @@ class ProgramKerjaController extends Controller
             }
         }
 
+        $dosenMonevIndividu = \App\Models\DosenMonev::where('monev_type', 'individu')
+            ->where('nim', $mahasiswa->nim)
+            ->first();
+
+        // Untuk KKN, PPL, Magang: jika Dosen Pemonev Kelompok ada, gunakan Dosen Pemonev Kelompok untuk individu juga
+        if ($kegiatanLower !== 'pkl' && $dosenMonevKelompok) {
+            if (!$dosenMonevIndividu || $dosenMonevIndividu->nidn !== $dosenMonevKelompok->nidn) {
+                $dosenMonevIndividu = $dosenMonevKelompok;
+            }
+        }
+
         // Cek status Ketua Kelompok (khusus KKN dan PPL)
         $isKetua = true;
         $ketuaKelompok = null;
 
-        if ($kegiatanLower === 'kkn') {
+        if ($kegiatanLower === 'pkl') {
+            $isKetua = false;
+        } elseif ($kegiatanLower === 'kkn') {
             $myPenempatan = \App\Models\PenempatanKkn::where('nim', $mahasiswa->nim)->first();
             if ($myPenempatan) {
                 $isKetua = (bool)$myPenempatan->is_ketua;
@@ -243,6 +260,11 @@ class ProgramKerjaController extends Controller
         $mahasiswa = Auth::guard('mahasiswa')->user();
         $kegiatanLower = strtolower($mahasiswa->kegiatan ?? '');
 
+        if ($kegiatanLower === 'pkl') {
+            return redirect()->route('program-kerja.index')
+                ->with('error', 'Program kerja kelompok tidak tersedia untuk kegiatan PKL.');
+        }
+
         if (in_array($kegiatanLower, ['kkn', 'ppl'])) {
             $isKetua = match($kegiatanLower) {
                 'kkn' => (bool)\App\Models\PenempatanKkn::where('nim', $mahasiswa->nim)->value('is_ketua'),
@@ -264,6 +286,11 @@ class ProgramKerjaController extends Controller
         $mahasiswa = Auth::guard('mahasiswa')->user();
         $kegiatan = strtolower($mahasiswa->kegiatan ?? 'kkn');
         $kegiatanLower = strtolower($kegiatan);
+
+        if ($kegiatanLower === 'pkl') {
+            return redirect()->route('program-kerja.index')
+                ->with('error', 'Program kerja kelompok tidak tersedia untuk kegiatan PKL.');
+        }
 
         if (in_array($kegiatanLower, ['kkn', 'ppl'])) {
             $isKetua = match($kegiatanLower) {
@@ -298,6 +325,11 @@ class ProgramKerjaController extends Controller
     public function showKelompok(KelompokProgramKerja $kelompokProgramKerja)
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
+
+        if (strtolower($kelompokProgramKerja->kategori ?? '') === 'pkl') {
+            abort(404);
+        }
+
         $anggota = $kelompokProgramKerja->anggota();
         $isAnggota = $anggota->contains('nim', $mahasiswa->nim);
 
@@ -320,6 +352,10 @@ class ProgramKerjaController extends Controller
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
 
+        if (strtolower($kelompokProgramKerja->kategori ?? '') === 'pkl') {
+            abort(404);
+        }
+
         if ($kelompokProgramKerja->nim_ketua !== $mahasiswa->nim) {
             abort(403);
         }
@@ -330,6 +366,10 @@ class ProgramKerjaController extends Controller
     public function updateKelompok(Request $request, KelompokProgramKerja $kelompokProgramKerja)
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
+
+        if (strtolower($kelompokProgramKerja->kategori ?? '') === 'pkl') {
+            abort(404);
+        }
 
         if ($kelompokProgramKerja->nim_ketua !== $mahasiswa->nim) {
             abort(403);
@@ -352,6 +392,10 @@ class ProgramKerjaController extends Controller
     public function destroyKelompok(KelompokProgramKerja $kelompokProgramKerja)
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
+
+        if (strtolower($kelompokProgramKerja->kategori ?? '') === 'pkl') {
+            abort(404);
+        }
 
         if ($kelompokProgramKerja->nim_ketua !== $mahasiswa->nim) {
             abort(403);
@@ -387,6 +431,11 @@ class ProgramKerjaController extends Controller
     public function storeLuaranKelompok(Request $request, KelompokProgramKerja $kelompokProgramKerja)
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
+
+        if (strtolower($kelompokProgramKerja->kategori ?? '') === 'pkl') {
+            abort(404);
+        }
+
         $anggota = $kelompokProgramKerja->anggota();
         $isAnggota = $anggota->contains('nim', $mahasiswa->nim);
 

@@ -70,7 +70,6 @@ class KelompokProgramKerja extends Model
             $lokasiId = match($kegiatanLower) {
                 'kkn' => PenempatanKkn::where('nim', $ketua->nim)->value('lokasi_kkn_id'),
                 'ppl' => PenempatanPpl::where('nim', $ketua->nim)->value('sekolah_id'),
-                'pkl' => PenempatanPkl::where('nim', $ketua->nim)->value('lokasi_pkl_id'),
                 'magang' => PenempatanMagang::where('nim', $ketua->nim)->value('lokasi_magang_id'),
                 default => null,
             };
@@ -101,7 +100,6 @@ class KelompokProgramKerja extends Model
         $penempatan = match ($kegiatanLower) {
             'kkn' => PenempatanKkn::where('nim', $ketua->nim)->first(),
             'ppl' => PenempatanPpl::where('nim', $ketua->nim)->first(),
-            'pkl' => PenempatanPkl::where('nim', $ketua->nim)->first(),
             'magang' => PenempatanMagang::where('nim', $ketua->nim)->first(),
             default => null,
         };
@@ -113,7 +111,6 @@ class KelompokProgramKerja extends Model
         $lokasiColumn = match ($kegiatanLower) {
             'kkn' => 'lokasi_kkn_id',
             'ppl' => 'sekolah_id',
-            'pkl' => 'lokasi_pkl_id',
             'magang' => 'lokasi_magang_id',
             default => null,
         };
@@ -121,7 +118,6 @@ class KelompokProgramKerja extends Model
         $tabelPenempatan = match ($kegiatanLower) {
             'kkn' => 'pembagian_lokasi_kkn',
             'ppl' => 'Penempatan_ppl',
-            'pkl' => 'penempatan_pkls',
             'magang' => 'penempatan_magangs',
             default => null,
         };

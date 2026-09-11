@@ -48,7 +48,7 @@
         <!-- Kegiatan Tabs -->
         <div class="flex flex-wrap gap-2">
             @foreach (['kkn' => 'KKN', 'ppl' => 'PPL', 'pkl' => 'PKL', 'magang' => 'Magang'] as $kegKey => $kegLabel)
-                <a href="?kegiatan={{ $kegKey }}&type={{ $type }}" class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all {{ $kegiatan === $kegKey ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                <a href="?kegiatan={{ $kegKey }}&type={{ $kegKey === 'pkl' ? 'individu' : $type }}" class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all {{ $kegiatan === $kegKey ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
                     {{ $kegLabel }}
                 </a>
             @endforeach
@@ -59,9 +59,11 @@
             <a href="?kegiatan={{ $kegiatan }}&type=individu" class="px-5 py-2 rounded-lg text-xs font-bold transition-all {{ $type === 'individu' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-800' }}">
                 <i class="fas fa-user mr-1.5"></i> Mahasiswa (Individu)
             </a>
-            <a href="?kegiatan={{ $kegiatan }}&type=kelompok" class="px-5 py-2 rounded-lg text-xs font-bold transition-all {{ $type === 'kelompok' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-800' }}">
-                <i class="fas fa-users mr-1.5"></i> Kelompok / Lokasi
-            </a>
+            @if ($kegiatan !== 'pkl')
+                <a href="?kegiatan={{ $kegiatan }}&type=kelompok" class="px-5 py-2 rounded-lg text-xs font-bold transition-all {{ $type === 'kelompok' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-800' }}">
+                    <i class="fas fa-users mr-1.5"></i> Kelompok / Lokasi
+                </a>
+            @endif
         </div>
     </div>
 

@@ -31,7 +31,6 @@ class DosenProgramKerjaController extends Controller
 
         $kknLocationIds = \App\Models\PenempatanKkn::whereIn('nim', $mahasiswaBimbinganNim)->pluck('lokasi_kkn_id')->filter();
         $pplLocationIds = \App\Models\PenempatanPpl::whereIn('nim', $mahasiswaBimbinganNim)->pluck('sekolah_id')->filter();
-        $pklLocationIds = \App\Models\PenempatanPkl::whereIn('nim', $mahasiswaBimbinganNim)->pluck('lokasi_pkl_id')->filter();
         $magangLocationIds = \App\Models\PenempatanMagang::whereIn('nim', $mahasiswaBimbinganNim)->pluck('lokasi_magang_id')->filter();
 
         $allGroupNims = collect($mahasiswaBimbinganNim);
@@ -42,16 +41,13 @@ class DosenProgramKerjaController extends Controller
         if ($pplLocationIds->isNotEmpty()) {
             $allGroupNims = $allGroupNims->merge(\App\Models\PenempatanPpl::whereIn('sekolah_id', $pplLocationIds)->pluck('nim'));
         }
-        if ($pklLocationIds->isNotEmpty()) {
-            $allGroupNims = $allGroupNims->merge(\App\Models\PenempatanPkl::whereIn('lokasi_pkl_id', $pklLocationIds)->pluck('nim'));
-        }
         if ($magangLocationIds->isNotEmpty()) {
             $allGroupNims = $allGroupNims->merge(\App\Models\PenempatanMagang::whereIn('lokasi_magang_id', $magangLocationIds)->pluck('nim'));
         }
 
         $allGroupNims = $allGroupNims->unique()->values();
 
-        return KelompokProgramKerja::whereIn('nim_ketua', $allGroupNims);
+        return KelompokProgramKerja::where('kategori', '!=', 'pkl')->whereIn('nim_ketua', $allGroupNims);
     }
 
     public function dashboard()
@@ -155,45 +151,42 @@ class DosenProgramKerjaController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Cari Program Kerja Kelompok mahasiswa jika ada
+        // Cari Program Kerja Kelompok mahasiswa jika ada (kecuali PKL)
         $kegiatanLower = strtolower($mhs->kegiatan ?? '');
         $table = match($kegiatanLower) {
             'kkn' => 'pembagian_lokasi_kkn',
             'ppl' => 'Penempatan_ppl',
-            'pkl' => 'penempatan_pkls',
             'magang' => 'penempatan_magangs',
             default => null
         };
         $column = match($kegiatanLower) {
             'kkn' => 'lokasi_kkn_id',
             'ppl' => 'sekolah_id',
-            'pkl' => 'lokasi_pkl_id',
             'magang' => 'lokasi_magang_id',
             default => null
         };
 
-        $groupNims = collect([$mhs->nim]);
-        if ($table && $column) {
+        if ($kegiatanLower === 'pkl' || !$table || !$column) {
+            $kelompokPrograms = collect();
+            $kelompokLuarans = collect();
+        } else {
+            $groupNims = collect([$mhs->nim]);
             $myLocationId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mhs->nim)->value($column);
             if ($myLocationId) {
                 $groupNims = \Illuminate\Support\Facades\DB::table($table)->where($column, $myLocationId)->pluck('nim');
             }
+
+            $kelompokPrograms = KelompokProgramKerja::where('kategori', '!=', 'pkl')
+                ->whereIn('nim_ketua', $groupNims)
+                ->with(['luarans', 'dosenMonev.dosen', 'mahasiswaKetua', 'dosenCatatan'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $kelompokLuarans = KelompokLuaran::whereIn('kelompok_program_kerja_id', $kelompokPrograms->pluck('id'))
+                ->with('programKerja')
+                ->orderBy('created_at', 'desc')
+                ->get();
         }
-
-        $kelompokPrograms = KelompokProgramKerja::whereIn('nim_ketua', $groupNims)
-            ->with(['luarans', 'dosenMonev.dosen', 'mahasiswaKetua', 'dosenCatatan'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $individuLuarans = IndividuLuaran::whereIn('individu_program_kerja_id', $individuPrograms->pluck('id'))
-            ->with('programKerja')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $kelompokLuarans = KelompokLuaran::whereIn('kelompok_program_kerja_id', $kelompokPrograms->pluck('id'))
-            ->with('programKerja')
-            ->orderBy('created_at', 'desc')
-            ->get();
 
         // Alias variables for blade compatibility
         $programs = $individuPrograms;
