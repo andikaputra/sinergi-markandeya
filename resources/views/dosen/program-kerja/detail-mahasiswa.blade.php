@@ -223,11 +223,11 @@
                                     </div>
                                 @endif
 
-                                @if(!empty($monev->foto_monev) && count($monev->foto_monev) > 0)
+                                @if($monev && !empty($monev->foto_urls))
                                     <div class="flex items-center gap-2 overflow-x-auto py-1">
-                                        @foreach($monev->foto_monev as $f)
-                                            <a href="{{ asset('storage/' . ltrim($f, '/')) }}" target="_blank" class="block w-16 h-16 rounded-xl overflow-hidden border border-indigo-200 bg-black flex-shrink-0 hover:opacity-80 transition">
-                                                <img src="{{ asset('storage/' . ltrim($f, '/')) }}" class="w-full h-full object-cover">
+                                        @foreach($monev->foto_urls as $fotoUrl)
+                                            <a href="{{ $fotoUrl }}" target="_blank" class="block w-16 h-16 rounded-xl overflow-hidden border border-indigo-200 bg-black flex-shrink-0 hover:opacity-80 transition">
+                                                <img src="{{ $fotoUrl }}" class="w-full h-full object-cover">
                                             </a>
                                         @endforeach
                                     </div>
@@ -434,16 +434,17 @@
                                     </div>
                                 @endif
 
-                                @if(!empty($monevKel->foto_monev) && count($monevKel->foto_monev) > 0)
+                                @if($monevKel && !empty($monevKel->foto_urls))
                                     <div class="flex items-center gap-2 overflow-x-auto py-1">
-                                        @foreach($monevKel->foto_monev as $f)
-                                            <a href="{{ asset('storage/' . ltrim($f, '/')) }}" target="_blank" class="block w-16 h-16 rounded-xl overflow-hidden border border-purple-200 bg-black flex-shrink-0 hover:opacity-80 transition">
-                                                <img src="{{ asset('storage/' . ltrim($f, '/')) }}" class="w-full h-full object-cover">
+                                        @foreach($monevKel->foto_urls as $fotoUrl)
+                                            <a href="{{ $fotoUrl }}" target="_blank" class="block w-16 h-16 rounded-xl overflow-hidden border border-purple-200 bg-black flex-shrink-0 hover:opacity-80 transition">
+                                                <img src="{{ $fotoUrl }}" class="w-full h-full object-cover">
                                             </a>
                                         @endforeach
                                     </div>
-                                </div>
-                            @endif
+                                @endif
+                            </div>
+                        @endif
 
                             <!-- Catatan Monev (Evaluator Luar) jika ada -->
                             @if ($program->monev && ($program->monev->catatan || $program->monev->nilai || $program->monev->link_monev))

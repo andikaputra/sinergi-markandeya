@@ -9,6 +9,10 @@ use App\Models\KelompokLuaran;
 use App\Models\DosenMonev;
 use App\Models\Mahasiswa;
 use App\Models\Notifikasi;
+use App\Models\PenempatanKkn;
+use App\Models\PenempatanPpl;
+use App\Models\PenempatanMagang;
+use App\Models\PenempatanPkl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -29,20 +33,20 @@ class DosenProgramKerjaController extends Controller
     {
         $mahasiswaBimbinganNim = $this->getMahasiswaBimbingan();
 
-        $kknLocationIds = \App\Models\PenempatanKkn::whereIn('nim', $mahasiswaBimbinganNim)->pluck('lokasi_kkn_id')->filter();
-        $pplLocationIds = \App\Models\PenempatanPpl::whereIn('nim', $mahasiswaBimbinganNim)->pluck('sekolah_id')->filter();
-        $magangLocationIds = \App\Models\PenempatanMagang::whereIn('nim', $mahasiswaBimbinganNim)->pluck('lokasi_magang_id')->filter();
+        $kknLocationIds = PenempatanKkn::whereIn('nim', $mahasiswaBimbinganNim)->pluck('lokasi_kkn_id')->filter();
+        $pplLocationIds = PenempatanPpl::whereIn('nim', $mahasiswaBimbinganNim)->pluck('sekolah_id')->filter();
+        $magangLocationIds = PenempatanMagang::whereIn('nim', $mahasiswaBimbinganNim)->pluck('lokasi_magang_id')->filter();
 
         $allGroupNims = collect($mahasiswaBimbinganNim);
 
         if ($kknLocationIds->isNotEmpty()) {
-            $allGroupNims = $allGroupNims->merge(\App\Models\PenempatanKkn::whereIn('lokasi_kkn_id', $kknLocationIds)->pluck('nim'));
+            $allGroupNims = $allGroupNims->merge(PenempatanKkn::whereIn('lokasi_kkn_id', $kknLocationIds)->pluck('nim'));
         }
         if ($pplLocationIds->isNotEmpty()) {
-            $allGroupNims = $allGroupNims->merge(\App\Models\PenempatanPpl::whereIn('sekolah_id', $pplLocationIds)->pluck('nim'));
+            $allGroupNims = $allGroupNims->merge(PenempatanPpl::whereIn('sekolah_id', $pplLocationIds)->pluck('nim'));
         }
         if ($magangLocationIds->isNotEmpty()) {
-            $allGroupNims = $allGroupNims->merge(\App\Models\PenempatanMagang::whereIn('lokasi_magang_id', $magangLocationIds)->pluck('nim'));
+            $allGroupNims = $allGroupNims->merge(PenempatanMagang::whereIn('lokasi_magang_id', $magangLocationIds)->pluck('nim'));
         }
 
         $allGroupNims = $allGroupNims->unique()->values();
@@ -132,40 +136,39 @@ class DosenProgramKerjaController extends Controller
         if ($mahasiswa instanceof Mahasiswa) {
             $mhs = $mahasiswa;
         } elseif (is_numeric($mahasiswa) && strlen((string)$mahasiswa) > 8) {
-            $mhs = Mahasiswa::where('nim', $mahasiswa)->firstOrFail();
+            $mhs = Mahasiswa::where('nim', (string)$mahasiswa)->first();
         } else {
-            $mhs = Mahasiswa::where('id', $mahasiswa)->orWhere('nim', $mahasiswa)->firstOrFail();
+            $mhs = Mahasiswa::where('nim', (string)$mahasiswa)->orWhere('id', $mahasiswa)->first();
+        }
+
+        if (!$mhs) {
+            abort(404, 'Data mahasiswa tidak ditemukan.');
         }
 
         $mahasiswaBimbinganNim = $this->getMahasiswaBimbingan();
         $isDirectBimbingan = $mahasiswaBimbinganNim->contains($mhs->nim);
 
-        $isGroupBimbingan = false;
-        if (!$isDirectBimbingan) {
-            $kegiatanLower = strtolower($mhs->kegiatan ?? '');
-            $table = match($kegiatanLower) {
-                'kkn' => 'pembagian_lokasi_kkn',
-                'ppl' => 'Penempatan_ppl',
-                'magang' => 'penempatan_magangs',
-                default => null
-            };
-            $column = match($kegiatanLower) {
-                'kkn' => 'lokasi_kkn_id',
-                'ppl' => 'sekolah_id',
-                'magang' => 'lokasi_magang_id',
-                default => null
-            };
+        $kegiatanLower = strtolower($mhs->kegiatan ?? '');
+        $groupNims = collect([$mhs->nim]);
 
-            if ($table && $column) {
-                $locationId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mhs->nim)->value($column);
-                if ($locationId) {
-                    $isGroupBimbingan = \Illuminate\Support\Facades\DB::table($table)
-                        ->where($column, $locationId)
-                        ->whereIn('nim', $mahasiswaBimbinganNim)
-                        ->exists();
-                }
+        if ($kegiatanLower === 'kkn') {
+            $locId = PenempatanKkn::where('nim', $mhs->nim)->value('lokasi_kkn_id');
+            if ($locId) {
+                $groupNims = PenempatanKkn::where('lokasi_kkn_id', $locId)->pluck('nim');
+            }
+        } elseif ($kegiatanLower === 'ppl') {
+            $locId = PenempatanPpl::where('nim', $mhs->nim)->value('sekolah_id');
+            if ($locId) {
+                $groupNims = PenempatanPpl::where('sekolah_id', $locId)->pluck('nim');
+            }
+        } elseif ($kegiatanLower === 'magang') {
+            $locId = PenempatanMagang::where('nim', $mhs->nim)->value('lokasi_magang_id');
+            if ($locId) {
+                $groupNims = PenempatanMagang::where('lokasi_magang_id', $locId)->pluck('nim');
             }
         }
+
+        $isGroupBimbingan = $groupNims->intersect($mahasiswaBimbinganNim)->isNotEmpty();
 
         if (!$isDirectBimbingan && !$isGroupBimbingan) {
             abort(403, 'Anda tidak berwenang mengakses data mahasiswa ini');
@@ -183,30 +186,10 @@ class DosenProgramKerjaController extends Controller
             ->get();
 
         // Cari Program Kerja Kelompok mahasiswa jika ada (kecuali PKL)
-        $kegiatanLower = strtolower($mhs->kegiatan ?? '');
-        $table = match($kegiatanLower) {
-            'kkn' => 'pembagian_lokasi_kkn',
-            'ppl' => 'Penempatan_ppl',
-            'magang' => 'penempatan_magangs',
-            default => null
-        };
-        $column = match($kegiatanLower) {
-            'kkn' => 'lokasi_kkn_id',
-            'ppl' => 'sekolah_id',
-            'magang' => 'lokasi_magang_id',
-            default => null
-        };
-
-        if ($kegiatanLower === 'pkl' || !$table || !$column) {
+        if ($kegiatanLower === 'pkl') {
             $kelompokPrograms = collect();
             $kelompokLuarans = collect();
         } else {
-            $groupNims = collect([$mhs->nim]);
-            $myLocationId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mhs->nim)->value($column);
-            if ($myLocationId) {
-                $groupNims = \Illuminate\Support\Facades\DB::table($table)->where($column, $myLocationId)->pluck('nim');
-            }
-
             $kelompokPrograms = KelompokProgramKerja::where('kategori', '!=', 'pkl')
                 ->whereIn('nim_ketua', $groupNims)
                 ->with(['luarans', 'dosenMonev.dosen', 'mahasiswaKetua', 'dosenCatatan'])

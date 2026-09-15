@@ -389,14 +389,11 @@
                     </div>
                 @endif
 
-                @if (!empty($monev->foto_monev) && count($monev->foto_monev) > 0)
+                @if (!empty($monev->foto_urls) && count($monev->foto_urls) > 0)
                     <div class="space-y-3">
-                        <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Foto Diunggah ke Server ({{ count($monev->foto_monev) }})</h4>
+                        <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Foto Diunggah ke Server ({{ count($monev->foto_urls) }})</h4>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                            @foreach ($monev->foto_monev as $index => $photoPath)
-                                @php
-                                    $photoUrl = asset('storage/' . ltrim($photoPath, '/'));
-                                @endphp
+                            @foreach ($monev->foto_urls as $index => $photoUrl)
                                 <div class="group relative rounded-2xl overflow-hidden border border-gray-200 bg-slate-950 aspect-square shadow-sm flex flex-col justify-between">
                                     <!-- Image with click to view -->
                                     <img src="{{ $photoUrl }}" alt="Dokumentasi Monev {{ $index + 1 }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer" @click="selectedImage = '{{ $photoUrl }}'">

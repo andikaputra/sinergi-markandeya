@@ -119,7 +119,7 @@
                                 $lokasiName = ($lok?->kecamatan ? 'Kec. ' . $lok->kecamatan : '') . ($lok?->kabupaten ? ', ' . $lok->kabupaten : '');
                             }
 
-                            $hasPhotos = !empty($monev->foto_monev) && count($monev->foto_monev) > 0;
+                            $hasPhotos = !empty($monev->foto_urls) && count($monev->foto_urls) > 0;
                             $hasNotes = !empty($monev->catatan);
                             $hasScore = !is_null($monev->nilai);
                         @endphp
@@ -189,7 +189,7 @@
 
                                     @if ($hasPhotos)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
-                                            <i class="fas fa-camera"></i> {{ count($monev->foto_monev) }} Foto
+                                            <i class="fas fa-camera"></i> {{ count($monev->foto_urls) }} Foto
                                         </span>
                                     @elseif (!$monev->link_monev)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 text-gray-500">

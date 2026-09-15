@@ -69,16 +69,28 @@ class DosenMonev extends Model
      */
     public function getFotoUrlsAttribute(): array
     {
-        if (empty($this->foto_monev) || !is_array($this->foto_monev)) {
+        if (empty($this->foto_monev)) {
             return [];
         }
 
-        return array_map(function ($path) {
+        $photos = $this->foto_monev;
+        if (is_string($photos)) {
+            $decoded = json_decode($photos, true);
+            $photos = is_array($decoded) ? $decoded : [$photos];
+        }
+
+        if (!is_array($photos)) {
+            return [];
+        }
+
+        $validPhotos = array_filter($photos, fn($p) => !empty($p) && is_string($p));
+
+        return array_values(array_map(function ($path) {
             if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
                 return $path;
             }
             return asset('storage/' . ltrim($path, '/'));
-        }, $this->foto_monev);
+        }, $validPhotos));
     }
 }
 
