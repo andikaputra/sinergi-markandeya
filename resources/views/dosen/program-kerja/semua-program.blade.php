@@ -110,8 +110,11 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-center">
-                                    @if($program->mahasiswa)
-                                        <a href="{{ route('dosen.program-kerja.detail', $program->mahasiswa) }}" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm">
+                                    @php
+                                        $targetNimInd = $program->mahasiswa?->nim ?? $program->nim;
+                                    @endphp
+                                    @if($targetNimInd)
+                                        <a href="{{ route('dosen.program-kerja.detail', $targetNimInd) }}" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm">
                                             <i class="fas fa-eye text-[10px]"></i> Lihat
                                         </a>
                                     @else
@@ -214,8 +217,11 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-center">
-                                    @if($program->mahasiswaKetua)
-                                        <a href="{{ route('dosen.program-kerja.detail', $program->mahasiswaKetua) }}" class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm">
+                                    @php
+                                        $targetNimKel = $program->mahasiswaKetua?->nim ?? $program->nim_ketua;
+                                    @endphp
+                                    @if($targetNimKel)
+                                        <a href="{{ route('dosen.program-kerja.detail', $targetNimKel) }}" class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm">
                                             <i class="fas fa-eye text-[10px]"></i> Lihat
                                         </a>
                                     @else

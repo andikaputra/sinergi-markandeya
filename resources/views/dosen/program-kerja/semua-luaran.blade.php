@@ -71,13 +71,16 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm">
-                                    @if ($luaran->programKerja?->mahasiswa)
-                                        <a href="{{ route('dosen.program-kerja.detail', $luaran->programKerja->mahasiswa) }}" class="text-blue-600 hover:text-blue-700 font-bold">
-                                            {{ $luaran->programKerja->mahasiswa->nama }}
+                                    @php
+                                        $targetNimLuaranInd = $luaran->programKerja?->mahasiswa?->nim ?? $luaran->programKerja?->nim;
+                                    @endphp
+                                    @if ($targetNimLuaranInd)
+                                        <a href="{{ route('dosen.program-kerja.detail', $targetNimLuaranInd) }}" class="text-blue-600 hover:text-blue-700 font-bold">
+                                            {{ $luaran->programKerja?->mahasiswa?->nama ?? '-' }}
                                         </a>
-                                        <div class="text-xs text-gray-500 font-mono mt-0.5">NIM: {{ $luaran->programKerja->nim }}</div>
+                                        <div class="text-xs text-gray-500 font-mono mt-0.5">NIM: {{ $targetNimLuaranInd }}</div>
                                     @else
-                                        <span class="text-gray-400 font-mono text-xs">{{ $luaran->programKerja?->nim ?? '-' }}</span>
+                                        <span class="text-gray-400 font-mono text-xs">-</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-700 font-medium max-w-xs">
@@ -161,17 +164,20 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm">
                                     <div class="flex items-center gap-2 mb-1">
-                                        <span class="px-2 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-black rounded uppercase">Kelompok</span>
-                                    </div>
-                                    @if ($luaran->programKerja?->mahasiswaKetua)
-                                        <a href="{{ route('dosen.program-kerja.detail', $luaran->programKerja->mahasiswaKetua) }}" class="text-purple-600 hover:text-purple-700 font-bold">
-                                            {{ $luaran->programKerja->mahasiswaKetua->nama }}
-                                        </a>
-                                        <div class="text-xs text-gray-500 font-mono mt-0.5">Ketua NIM: {{ $luaran->programKerja->nim_ketua }}</div>
-                                    @else
-                                        <span class="text-gray-400 font-mono text-xs">{{ $luaran->programKerja?->nim_ketua ?? '-' }}</span>
-                                    @endif
-                                </td>
+                                         <span class="px-2 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-black rounded uppercase">Kelompok</span>
+                                     </div>
+                                     @php
+                                         $targetNimLuaranKel = $luaran->programKerja?->mahasiswaKetua?->nim ?? $luaran->programKerja?->nim_ketua;
+                                     @endphp
+                                     @if ($targetNimLuaranKel)
+                                         <a href="{{ route('dosen.program-kerja.detail', $targetNimLuaranKel) }}" class="text-purple-600 hover:text-purple-700 font-bold">
+                                             {{ $luaran->programKerja?->mahasiswaKetua?->nama ?? '-' }}
+                                         </a>
+                                         <div class="text-xs text-gray-500 font-mono mt-0.5">Ketua NIM: {{ $targetNimLuaranKel }}</div>
+                                     @else
+                                         <span class="text-gray-400 font-mono text-xs">-</span>
+                                     @endif
+                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-700 font-medium max-w-xs">
                                     <span class="truncate block">{{ $luaran->programKerja?->judul ?? '-' }}</span>
                                 </td>

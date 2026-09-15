@@ -137,6 +137,7 @@
                         @php
                             $isKelompok = ($program->program_type ?? 'individu') === 'kelompok';
                             $mhsTarget = $isKelompok ? $program->mahasiswaKetua : $program->mahasiswa;
+                            $targetNim = $mhsTarget?->nim ?? ($program->nim ?? $program->nim_ketua);
                         @endphp
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
@@ -174,8 +175,8 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $program->created_at->format('d M Y') }}</td>
                             <td class="px-6 py-4 text-sm">
-                                @if($mhsTarget)
-                                    <a href="{{ route('dosen.program-kerja.detail', $mhsTarget) }}" class="px-3.5 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition inline-flex items-center gap-1.5 shadow-sm">
+                                @if($targetNim)
+                                    <a href="{{ route('dosen.program-kerja.detail', $targetNim) }}" class="px-3.5 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition inline-flex items-center gap-1.5 shadow-sm">
                                         <i class="fas fa-eye text-[10px]"></i> Lihat
                                     </a>
                                 @else

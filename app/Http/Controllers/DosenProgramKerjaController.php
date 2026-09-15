@@ -137,17 +137,48 @@ class DosenProgramKerjaController extends Controller
             $mhs = Mahasiswa::where('id', $mahasiswa)->orWhere('nim', $mahasiswa)->firstOrFail();
         }
 
-        $isBimbinganDosen = \App\Models\DosenPembimbing::where('nidn', $dosen->nidn)
-            ->where('nim', $mhs->nim)
-            ->exists();
+        $mahasiswaBimbinganNim = $this->getMahasiswaBimbingan();
+        $isDirectBimbingan = $mahasiswaBimbinganNim->contains($mhs->nim);
 
-        if (!$isBimbinganDosen) {
+        $isGroupBimbingan = false;
+        if (!$isDirectBimbingan) {
+            $kegiatanLower = strtolower($mhs->kegiatan ?? '');
+            $table = match($kegiatanLower) {
+                'kkn' => 'pembagian_lokasi_kkn',
+                'ppl' => 'Penempatan_ppl',
+                'magang' => 'penempatan_magangs',
+                default => null
+            };
+            $column = match($kegiatanLower) {
+                'kkn' => 'lokasi_kkn_id',
+                'ppl' => 'sekolah_id',
+                'magang' => 'lokasi_magang_id',
+                default => null
+            };
+
+            if ($table && $column) {
+                $locationId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mhs->nim)->value($column);
+                if ($locationId) {
+                    $isGroupBimbingan = \Illuminate\Support\Facades\DB::table($table)
+                        ->where($column, $locationId)
+                        ->whereIn('nim', $mahasiswaBimbinganNim)
+                        ->exists();
+                }
+            }
+        }
+
+        if (!$isDirectBimbingan && !$isGroupBimbingan) {
             abort(403, 'Anda tidak berwenang mengakses data mahasiswa ini');
         }
 
         // Program Kerja Individu
         $individuPrograms = IndividuProgramKerja::where('nim', $mhs->nim)
             ->with(['luarans', 'dosenMonev.dosen', 'dosenCatatan'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $individuLuarans = IndividuLuaran::whereIn('individu_program_kerja_id', $individuPrograms->pluck('id'))
+            ->with('programKerja')
             ->orderBy('created_at', 'desc')
             ->get();
 
