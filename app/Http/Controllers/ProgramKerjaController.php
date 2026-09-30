@@ -99,20 +99,28 @@ class ProgramKerjaController extends Controller
             $myLocationId = \Illuminate\Support\Facades\DB::table($table)->where('nim', $mahasiswa->nim)->value($column);
             if ($myLocationId) {
                 $dosenMonevKelompok = \App\Models\DosenMonev::where('monev_type', 'kelompok')
+                    ->where(function ($q) use ($kegiatanLower) {
+                        if ($kegiatanLower) {
+                            $q->where('kegiatan', $kegiatanLower)->orWhereNull('kegiatan');
+                        }
+                    })
                     ->where('lokasi_id', $myLocationId)
                     ->first();
             }
         }
 
         $dosenMonevIndividu = \App\Models\DosenMonev::where('monev_type', 'individu')
+            ->where(function ($q) use ($kegiatanLower) {
+                if ($kegiatanLower) {
+                    $q->where('kegiatan', $kegiatanLower)->orWhereNull('kegiatan');
+                }
+            })
             ->where('nim', $mahasiswa->nim)
             ->first();
 
-        // Untuk KKN, PPL, Magang: jika Dosen Pemonev Kelompok ada, gunakan Dosen Pemonev Kelompok untuk individu juga
-        if ($kegiatanLower !== 'pkl' && $dosenMonevKelompok) {
-            if (!$dosenMonevIndividu || $dosenMonevIndividu->nidn !== $dosenMonevKelompok->nidn) {
-                $dosenMonevIndividu = $dosenMonevKelompok;
-            }
+        // Gunakan Dosen Pemonev Kelompok sebagai fallback jika pemonev individu belum di-plot
+        if (!$dosenMonevIndividu && $kegiatanLower !== 'pkl' && $dosenMonevKelompok) {
+            $dosenMonevIndividu = $dosenMonevKelompok;
         }
 
         // Cek status Ketua Kelompok (khusus KKN dan PPL)

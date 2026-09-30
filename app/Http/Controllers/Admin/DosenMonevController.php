@@ -161,18 +161,14 @@ class DosenMonevController extends Controller
             ]);
 
             foreach ($validated['nims'] as $nim) {
-                $proker = IndividuProgramKerja::where('nim', $nim)->first();
+                $prokerIds = IndividuProgramKerja::where('nim', $nim)->pluck('id');
+                
                 $existing = DosenMonev::where('monev_type', 'individu')
                     ->where(function ($q) use ($kegiatan) {
                         $q->where('kegiatan', $kegiatan)
                           ->orWhereNull('kegiatan');
                     })
-                    ->where(function ($q) use ($nim, $proker) {
-                        $q->where('nim', $nim);
-                        if ($proker) {
-                            $q->orWhere('program_id', $proker->id);
-                        }
-                    })
+                    ->where('nim', $nim)
                     ->first();
 
                 if ($existing) {
@@ -180,7 +176,7 @@ class DosenMonevController extends Controller
                         'nidn' => $validated['nidn'],
                         'nim' => $nim,
                         'kegiatan' => $kegiatan,
-                        'program_id' => $proker?->id,
+                        'program_id' => $prokerIds->first() ?? $existing->program_id,
                     ]);
                 } else {
                     DosenMonev::create([
@@ -188,8 +184,22 @@ class DosenMonevController extends Controller
                         'nim' => $nim,
                         'kegiatan' => $kegiatan,
                         'nidn' => $validated['nidn'],
-                        'program_id' => $proker?->id,
+                        'program_id' => $prokerIds->first() ?? null,
                     ]);
+                }
+
+                // Sinkronkan juga record evaluasi proker terkait agar NIDN tidak tertinggal dengan dosen lama
+                if ($prokerIds->isNotEmpty()) {
+                    DosenMonev::where('monev_type', 'individu')
+                        ->whereIn('program_id', $prokerIds)
+                        ->where(function ($q) {
+                            $q->whereNull('catatan')->whereNull('nilai')->whereNull('foto_monev');
+                        })
+                        ->update([
+                            'nidn' => $validated['nidn'],
+                            'nim' => $nim,
+                            'kegiatan' => $kegiatan,
+                        ]);
                 }
             }
         } else {
@@ -239,7 +249,7 @@ class DosenMonevController extends Controller
                 };
 
                 foreach ($nims as $nim) {
-                    $proker = IndividuProgramKerja::where('nim', $nim)->first();
+                    $prokerIds = IndividuProgramKerja::where('nim', $nim)->pluck('id');
                     $mhsMonev = DosenMonev::where('monev_type', 'individu')
                         ->where(function ($q) use ($kegiatan) {
                             $q->where('kegiatan', $kegiatan)->orWhereNull('kegiatan');
@@ -251,7 +261,7 @@ class DosenMonevController extends Controller
                         $mhsMonev->update([
                             'nidn' => $validated['nidn'],
                             'kegiatan' => $kegiatan,
-                            'program_id' => $proker?->id ?? $mhsMonev->program_id,
+                            'program_id' => $prokerIds->first() ?? $mhsMonev->program_id,
                         ]);
                     } else {
                         DosenMonev::create([
@@ -259,8 +269,21 @@ class DosenMonevController extends Controller
                             'nim' => $nim,
                             'kegiatan' => $kegiatan,
                             'nidn' => $validated['nidn'],
-                            'program_id' => $proker?->id,
+                            'program_id' => $prokerIds->first() ?? null,
                         ]);
+                    }
+
+                    if ($prokerIds->isNotEmpty()) {
+                        DosenMonev::where('monev_type', 'individu')
+                            ->whereIn('program_id', $prokerIds)
+                            ->where(function ($q) {
+                                $q->whereNull('catatan')->whereNull('nilai')->whereNull('foto_monev');
+                            })
+                            ->update([
+                                'nidn' => $validated['nidn'],
+                                'nim' => $nim,
+                                'kegiatan' => $kegiatan,
+                            ]);
                     }
                 }
             }

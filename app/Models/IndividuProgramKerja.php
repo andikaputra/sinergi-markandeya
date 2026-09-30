@@ -52,7 +52,28 @@ class IndividuProgramKerja extends Model
     {
         $kegiatanLower = strtolower($this->kategori ?? '');
 
-        // 1. Untuk KKN, PPL, Magang: otomatis samakan dengan Dosen Pemonev Kelompok/Lokasi
+        // 1. Prioritaskan penugasan aktif Dosen Pemonev Individu berdasarkan NIM mahasiswa
+        $monevIndividu = DosenMonev::where('monev_type', 'individu')
+            ->where(function ($q) use ($kegiatanLower) {
+                if ($kegiatanLower) {
+                    $q->where('kegiatan', $kegiatanLower)
+                      ->orWhereNull('kegiatan');
+                }
+            })
+            ->where('nim', $this->nim)
+            ->first();
+
+        if ($monevIndividu) {
+            // Cek apakah ada record evaluasi khusus program ini yang dibuat oleh dosen tersebut
+            $evaluasiKhusus = DosenMonev::where('monev_type', 'individu')
+                ->where('nidn', $monevIndividu->nidn)
+                ->where('program_id', $this->id)
+                ->first();
+
+            return $evaluasiKhusus ?: $monevIndividu;
+        }
+
+        // 2. Fallback untuk KKN, PPL, Magang: ambil dari Dosen Pemonev Kelompok/Lokasi
         if ($kegiatanLower !== 'pkl') {
             $lokasiId = match($kegiatanLower) {
                 'kkn' => PenempatanKkn::where('nim', $this->nim)->value('lokasi_kkn_id'),
@@ -71,7 +92,6 @@ class IndividuProgramKerja extends Model
                     ->first();
 
                 if ($kelompokMonev) {
-                    // Cek apakah ada record evaluasi individu khusus program ini / mahasiswa ini dengan NIDN pemonev kelompok
                     $evaluasiIndividu = DosenMonev::where('monev_type', 'individu')
                         ->where('nidn', $kelompokMonev->nidn)
                         ->where(function ($q) {
@@ -85,16 +105,13 @@ class IndividuProgramKerja extends Model
             }
         }
 
-        // 2. Untuk PKL atau fallback jika monev kelompok belum di-plot
+        // 3. Fallback jika ada relation eager loaded atau by program_id
         if ($this->relationLoaded('dosenMonev') && $this->dosenMonev) {
             return $this->dosenMonev;
         }
 
         return DosenMonev::where('monev_type', 'individu')
-            ->where(function ($q) {
-                $q->where('program_id', $this->id)
-                  ->orWhere('nim', $this->nim);
-            })
+            ->where('program_id', $this->id)
             ->first();
     }
 }

@@ -64,13 +64,12 @@ class AuthController extends Controller
     // ────────────────────────────────────────────────────────────────────────
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required',
-            'password' => 'required'
-        ]);
+        $loginValue = $request->input('email') ?? $request->input('username');
+        $password = $request->input('password');
 
-        $loginValue = $request->email;
-        $password = $request->password;
+        if (!$loginValue || !$password) {
+            return back()->withErrors(['email' => 'Username/NIM/Email dan Password wajib diisi.']);
+        }
 
         if (filter_var($loginValue, FILTER_VALIDATE_EMAIL)) {
             // Email login: mahasiswa or pembimbing_luar (local only)
