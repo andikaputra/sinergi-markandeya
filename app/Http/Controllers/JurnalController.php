@@ -11,8 +11,8 @@ class JurnalController extends Controller
 {
     public function index()
     {
-        $nim = Auth::user()->nim;
-        $jurnals = Jurnal::where('nim', $nim)->orderBy('tanggal', 'desc')->get();
+        $mahasiswa = Auth::guard('mahasiswa')->user();
+        $jurnals = Jurnal::where('nim', $mahasiswa->nim)->orderBy('tanggal', 'desc')->get();
         return view('mahasiswa.jurnals.index', compact('jurnals'));
     }
 
@@ -23,13 +23,15 @@ class JurnalController extends Controller
 
     public function store(Request $request)
     {
+        $mahasiswa = Auth::guard('mahasiswa')->user();
+
         $request->validate([
             'tanggal' => 'required|date',
             'kegiatan' => 'required|string',
         ]);
 
         Jurnal::create([
-            'nim' => Auth::user()->nim,
+            'nim' => $mahasiswa->nim,
             'tanggal' => $request->tanggal,
             'kegiatan' => $request->kegiatan,
         ]);
@@ -37,9 +39,51 @@ class JurnalController extends Controller
         return redirect()->route('jurnal.index')->with('success', 'Jurnal berhasil ditambahkan.');
     }
 
+    public function edit(Jurnal $jurnal)
+    {
+        $mahasiswa = Auth::guard('mahasiswa')->user();
+        if ($jurnal->nim !== $mahasiswa->nim) {
+            abort(403, 'Anda tidak memiliki akses ke jurnal ini.');
+        }
+
+        return view('mahasiswa.jurnals.edit', compact('jurnal'));
+    }
+
+    public function update(Request $request, Jurnal $jurnal)
+    {
+        $mahasiswa = Auth::guard('mahasiswa')->user();
+        if ($jurnal->nim !== $mahasiswa->nim) {
+            abort(403, 'Anda tidak memiliki akses ke jurnal ini.');
+        }
+
+        $request->validate([
+            'tanggal' => 'required|date',
+            'kegiatan' => 'required|string',
+        ]);
+
+        $jurnal->update([
+            'tanggal' => $request->tanggal,
+            'kegiatan' => $request->kegiatan,
+        ]);
+
+        return redirect()->route('jurnal.index')->with('success', 'Jurnal berhasil diperbarui.');
+    }
+
+    public function destroy(Jurnal $jurnal)
+    {
+        $mahasiswa = Auth::guard('mahasiswa')->user();
+        if ($jurnal->nim !== $mahasiswa->nim) {
+            abort(403, 'Anda tidak memiliki akses ke jurnal ini.');
+        }
+
+        $jurnal->delete();
+
+        return redirect()->route('jurnal.index')->with('success', 'Jurnal berhasil dihapus.');
+    }
+
     public function cetak()
     {
-        $mahasiswa = Auth::user();
+        $mahasiswa = Auth::guard('mahasiswa')->user();
         $jurnals = Jurnal::where('nim', $mahasiswa->nim)->orderBy('tanggal', 'asc')->get();
         
         // Ambil data dosen pembimbing

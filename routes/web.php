@@ -275,6 +275,9 @@ Route::middleware(['auth:mahasiswa'])->group(function () {
     Route::get('/jurnal', [JurnalController::class, 'index'])->name('jurnal.index');
     Route::get('/jurnal/create', [JurnalController::class, 'create'])->name('jurnal.create');
     Route::post('/jurnal/store', [JurnalController::class, 'store'])->name('jurnal.store');
+    Route::get('/jurnal/{jurnal}/edit', [JurnalController::class, 'edit'])->name('jurnal.edit');
+    Route::put('/jurnal/{jurnal}', [JurnalController::class, 'update'])->name('jurnal.update');
+    Route::delete('/jurnal/{jurnal}', [JurnalController::class, 'destroy'])->name('jurnal.destroy');
     Route::get('/jurnal/cetak', [JurnalController::class, 'cetak'])->name('jurnal.cetak');
 
     Route::get('/publikasi', [PublikasiController::class, 'index'])->name('publikasi.index');
