@@ -105,7 +105,7 @@ class DosenMonevController extends Controller
                       });
                 });
             }
-            $assignments = $query->with(['dosen', 'mahasiswa', 'programKerja'])
+            $assignments = $query->with(['tahaps', 'dosen', 'mahasiswa', 'programKerja'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
 
@@ -129,7 +129,7 @@ class DosenMonevController extends Controller
                       ->orWhereNull('kegiatan');
                 });
             }
-            $assignments = $query->with(['dosen', 'lokasiKkn', 'lokasiPpl', 'lokasiPkl', 'lokasiMagang', 'programKerja'])
+            $assignments = $query->with(['tahaps', 'dosen', 'lokasiKkn', 'lokasiPpl', 'lokasiPkl', 'lokasiMagang', 'programKerja'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
 

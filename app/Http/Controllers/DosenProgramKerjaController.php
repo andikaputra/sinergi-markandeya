@@ -7,6 +7,7 @@ use App\Models\KelompokProgramKerja;
 use App\Models\IndividuLuaran;
 use App\Models\KelompokLuaran;
 use App\Models\DosenMonev;
+use App\Models\DosenMonevTahap;
 use App\Models\Mahasiswa;
 use App\Models\Notifikasi;
 use App\Models\PenempatanKkn;
@@ -347,16 +348,24 @@ class DosenProgramKerjaController extends Controller
     {
         $dosen = Auth::guard('dosen')->user();
         $monevPrograms = DosenMonev::where('nidn', $dosen->nidn)
-            ->with(['mahasiswa', 'programKerja', 'lokasiKkn', 'lokasiPpl', 'lokasiPkl', 'lokasiMagang'])
+            ->with(['tahaps', 'mahasiswa', 'programKerja', 'lokasiKkn', 'lokasiPpl', 'lokasiPkl', 'lokasiMagang'])
             ->orderBy('updated_at', 'desc')
             ->paginate(20);
 
         $totalTugas = DosenMonev::where('nidn', $dosen->nidn)->count();
         $totalSelesai = DosenMonev::where('nidn', $dosen->nidn)
             ->where(function ($q) {
-                $q->whereNotNull('catatan')->orWhereNotNull('nilai')->orWhereNotNull('foto_monev');
+                $q->whereHas('tahaps', function ($t) {
+                    $t->whereNotNull('catatan')
+                      ->orWhereNotNull('nilai')
+                      ->orWhereNotNull('foto_monev')
+                      ->orWhereNotNull('link_monev');
+                })
+                ->orWhereNotNull('catatan')
+                ->orWhereNotNull('nilai')
+                ->orWhereNotNull('foto_monev');
             })->count();
-        $totalBelum = $totalTugas - $totalSelesai;
+        $totalBelum = max(0, $totalTugas - $totalSelesai);
 
         return view('dosen.program-kerja.monev-dashboard', compact('monevPrograms', 'totalTugas', 'totalSelesai', 'totalBelum'));
     }
@@ -371,26 +380,36 @@ class DosenProgramKerjaController extends Controller
                 ->where(function ($q) use ($programId) {
                     $q->where('program_id', $programId)->orWhere('id', $programId);
                 })
+                ->with('tahaps')
                 ->firstOrFail();
         } else {
             $monev = DosenMonev::where('nidn', $dosen->nidn)
                 ->where('id', $idOrType)
+                ->with('tahaps')
                 ->firstOrFail();
         }
 
         $type = $monev->monev_type;
+        $activeTahap = (int) $request->query('tahap', session('active_tahap', 1));
+        if (!in_array($activeTahap, [1, 2, 3])) {
+            $activeTahap = 1;
+        }
+
+        $tahap1 = $monev->getTahap(1);
+        $tahap2 = $monev->getTahap(2);
+        $tahap3 = $monev->getTahap(3);
 
         if ($type === 'individu') {
             $program = $monev->program_id ? IndividuProgramKerja::with('mahasiswa')->find($monev->program_id) : null;
             $mahasiswa = $monev->mahasiswa ?: ($program?->mahasiswa ?: Mahasiswa::where('nim', $monev->nim)->first());
             $luarans = $program ? $program->luarans : collect();
-            return view('dosen.program-kerja.monev-detail', compact('program', 'monev', 'type', 'mahasiswa', 'luarans'));
+            return view('dosen.program-kerja.monev-detail', compact('program', 'monev', 'type', 'mahasiswa', 'luarans', 'activeTahap', 'tahap1', 'tahap2', 'tahap3'));
         } else {
             $program = $monev->program_id ? KelompokProgramKerja::with('mahasiswaKetua')->find($monev->program_id) : null;
             $anggota = $program ? $program->anggota() : collect();
             $luarans = $program ? $program->luarans : collect();
             $lokasi = $monev->lokasiKkn ?: ($monev->lokasiPpl ?: ($monev->lokasiPkl ?: $monev->lokasiMagang));
-            return view('dosen.program-kerja.monev-detail', compact('program', 'monev', 'type', 'anggota', 'luarans', 'lokasi'));
+            return view('dosen.program-kerja.monev-detail', compact('program', 'monev', 'type', 'anggota', 'luarans', 'lokasi', 'activeTahap', 'tahap1', 'tahap2', 'tahap3'));
         }
     }
 
@@ -412,8 +431,13 @@ class DosenProgramKerjaController extends Controller
         }
 
         $type = $monev->monev_type;
+        $tahapKe = (int) $request->input('tahap_ke', 1);
+        if (!in_array($tahapKe, [1, 2, 3])) {
+            $tahapKe = 1;
+        }
 
         $request->validate([
+            'tahap_ke' => 'required|integer|in:1,2,3',
             'nilai' => 'nullable|numeric|min:0|max:100',
             'catatan' => 'nullable|string|max:5000',
             'tanggal_monev' => 'nullable|date',
@@ -421,6 +445,7 @@ class DosenProgramKerjaController extends Controller
             'foto_monev' => 'nullable|array',
             'foto_monev.*' => 'nullable|file|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
         ], [
+            'tahap_ke.in' => 'Tahap monev hanya tersedia untuk Monev 1, Monev 2, dan Monev 3',
             'nilai.numeric' => 'Nilai harus berupa angka',
             'nilai.min' => 'Nilai minimal adalah 0',
             'nilai.max' => 'Nilai maksimal adalah 100',
@@ -429,34 +454,59 @@ class DosenProgramKerjaController extends Controller
             'foto_monev.*.max' => 'Ukuran setiap foto maksimal 10MB',
         ]);
 
-        $currentPhotos = is_array($monev->foto_monev) ? $monev->foto_monev : [];
+        $tahap = DosenMonevTahap::firstOrNew([
+            'dosen_monev_id' => $monev->id,
+            'tahap_ke' => $tahapKe,
+        ]);
+
+        $currentPhotos = is_array($tahap->foto_monev) ? $tahap->foto_monev : [];
 
         // Upload new photos if present
         if ($request->hasFile('foto_monev')) {
             foreach ($request->file('foto_monev') as $file) {
                 if ($file->isValid()) {
-                    $filename = 'monev_' . $type . '_' . $monev->id . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $filename = 'monev_' . $type . '_' . $monev->id . '_tahap' . $tahapKe . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                     $path = $file->storeAs('monev', $filename, 'public');
                     $currentPhotos[] = $path;
                 }
             }
         }
 
-        $monev->nilai = $request->filled('nilai') ? $request->input('nilai') : $monev->nilai;
-        $monev->catatan = $request->input('catatan');
-        $monev->tanggal_monev = $request->filled('tanggal_monev') ? $request->input('tanggal_monev') : ($monev->tanggal_monev ?: now()->toDateString());
-        $monev->link_monev = $request->input('link_monev');
-        $monev->foto_monev = $currentPhotos;
+        $tahap->nilai = $request->filled('nilai') ? $request->input('nilai') : $tahap->nilai;
+        $tahap->catatan = $request->input('catatan');
+        $tahap->tanggal_monev = $request->filled('tanggal_monev') ? $request->input('tanggal_monev') : ($tahap->tanggal_monev ?: now()->toDateString());
+        $tahap->link_monev = $request->input('link_monev');
+        $tahap->foto_monev = $currentPhotos;
+        $tahap->save();
+
+        // Also sync to main dosen_monev row for backward compatibility
+        if ($tahapKe === 1 || empty($monev->catatan)) {
+            $monev->catatan = $tahap->catatan;
+            $monev->tanggal_monev = $tahap->tanggal_monev;
+            $monev->link_monev = $tahap->link_monev;
+            if (!empty($currentPhotos)) {
+                $monev->foto_monev = $currentPhotos;
+            }
+        }
+        $monev->nilai = $monev->rata_rata_nilai;
+        $monev->touch();
         $monev->save();
 
         // Send notifications
+        $tahapLabel = match($tahapKe) {
+            1 => 'Monev 1 (Tahap Awal)',
+            2 => 'Monev 2 (Tahap Progres)',
+            3 => 'Monev 3 (Tahap Akhir)',
+            default => 'Monev Tahap ' . $tahapKe,
+        };
+
         if ($type === 'individu') {
             $nim = $monev->nim ?: ($monev->programKerja?->nim);
             if ($nim) {
                 Notifikasi::kirim(
                     $nim,
-                    'Hasil Monev Program Kerja',
-                    "Dosen Monev ({$dosen->nama}) telah memperbarui catatan & dokumentasi hasil monev.",
+                    "Hasil {$tahapLabel}",
+                    "Dosen Monev ({$dosen->nama}) telah memperbarui catatan & dokumentasi hasil {$tahapLabel}.",
                     'info'
                 );
             }
@@ -464,7 +514,7 @@ class DosenProgramKerjaController extends Controller
             if ($monev->program_id) {
                 $program = KelompokProgramKerja::find($monev->program_id);
                 if ($program && $program->nim_ketua) {
-                    Notifikasi::kirim($program->nim_ketua, 'Hasil Monev Kelompok', "Dosen Monev ({$dosen->nama}) telah mengunggah catatan & foto hasil monev.", 'info');
+                    Notifikasi::kirim($program->nim_ketua, "Hasil {$tahapLabel}", "Dosen Monev ({$dosen->nama}) telah mengunggah catatan & foto hasil {$tahapLabel}.", 'info');
                 }
             } elseif ($monev->lokasi_id) {
                 $nims = match($monev->kegiatan) {
@@ -475,12 +525,14 @@ class DosenProgramKerjaController extends Controller
                     default => collect(),
                 };
                 foreach ($nims as $nim) {
-                    Notifikasi::kirim($nim, 'Hasil Monev Kelompok/Lokasi', "Dosen Monev ({$dosen->nama}) telah mengunggah catatan & foto hasil monev.", 'info');
+                    Notifikasi::kirim($nim, "Hasil {$tahapLabel}", "Dosen Monev ({$dosen->nama}) telah mengunggah catatan & foto hasil {$tahapLabel}.", 'info');
                 }
             }
         }
 
-        return back()->with('success', 'Catatan, nilai, dan foto dokumentasi hasil monev berhasil disimpan!');
+        return redirect()->back()
+            ->with('success', "Catatan, nilai, dan dokumentasi {$tahapLabel} berhasil disimpan!")
+            ->with('active_tahap', $tahapKe);
     }
 
     public function deleteFotoMonev(Request $request, $idOrType, $programIdOrPhotoIndex = null, $photoIndex = null)
@@ -492,16 +544,32 @@ class DosenProgramKerjaController extends Controller
                 ->where('monev_type', $idOrType)
                 ->where('program_id', $programIdOrPhotoIndex)
                 ->firstOrFail();
-            $targetIndex = $photoIndex;
+            $targetIndex = (int) $photoIndex;
         } else {
             $monev = DosenMonev::where('nidn', $dosen->nidn)
                 ->where('id', $idOrType)
                 ->firstOrFail();
-            $targetIndex = $programIdOrPhotoIndex;
+            $targetIndex = (int) $programIdOrPhotoIndex;
         }
 
-        $photos = is_array($monev->foto_monev) ? $monev->foto_monev : [];
+        $tahapKe = (int) $request->input('tahap', $request->query('tahap', 1));
+        $tahap = DosenMonevTahap::where('dosen_monev_id', $monev->id)->where('tahap_ke', $tahapKe)->first();
 
+        if ($tahap && is_array($tahap->foto_monev) && isset($tahap->foto_monev[$targetIndex])) {
+            $photos = $tahap->foto_monev;
+            $photoPath = $photos[$targetIndex];
+            Storage::disk('public')->delete($photoPath);
+            array_splice($photos, $targetIndex, 1);
+            $tahap->foto_monev = array_values($photos);
+            $tahap->save();
+
+            return redirect()->back()
+                ->with('success', "Foto dokumentasi Monev Tahap {$tahapKe} berhasil dihapus.")
+                ->with('active_tahap', $tahapKe);
+        }
+
+        // Fallback for legacy record in dosen_monevs
+        $photos = is_array($monev->foto_monev) ? $monev->foto_monev : [];
         if (isset($photos[$targetIndex])) {
             $photoPath = $photos[$targetIndex];
             Storage::disk('public')->delete($photoPath);
@@ -509,10 +577,40 @@ class DosenProgramKerjaController extends Controller
             $monev->foto_monev = array_values($photos);
             $monev->save();
 
-            return back()->with('success', 'Foto hasil monev berhasil dihapus.');
+            return redirect()->back()
+                ->with('success', 'Foto hasil monev berhasil dihapus.')
+                ->with('active_tahap', $tahapKe);
         }
 
-        return back()->with('error', 'Foto tidak ditemukan.');
+        return redirect()->back()
+            ->with('error', 'Foto tidak ditemukan.')
+            ->with('active_tahap', $tahapKe);
+    }
+
+    public function deleteFotoMonevTahap(Request $request, $id, $tahap, $index)
+    {
+        $dosen = Auth::guard('dosen')->user();
+        $monev = DosenMonev::where('nidn', $dosen->nidn)->where('id', $id)->firstOrFail();
+        $tahapKe = (int) $tahap;
+        $targetIndex = (int) $index;
+
+        $tahapRecord = DosenMonevTahap::where('dosen_monev_id', $monev->id)->where('tahap_ke', $tahapKe)->first();
+        if ($tahapRecord && is_array($tahapRecord->foto_monev) && isset($tahapRecord->foto_monev[$targetIndex])) {
+            $photos = $tahapRecord->foto_monev;
+            $photoPath = $photos[$targetIndex];
+            Storage::disk('public')->delete($photoPath);
+            array_splice($photos, $targetIndex, 1);
+            $tahapRecord->foto_monev = array_values($photos);
+            $tahapRecord->save();
+
+            return redirect()->back()
+                ->with('success', "Foto dokumentasi Monev Tahap {$tahapKe} berhasil dihapus.")
+                ->with('active_tahap', $tahapKe);
+        }
+
+        return redirect()->back()
+            ->with('error', 'Foto tidak ditemukan.')
+            ->with('active_tahap', $tahapKe);
     }
 }
 

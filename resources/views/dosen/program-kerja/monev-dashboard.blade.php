@@ -15,9 +15,9 @@
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-semibold uppercase tracking-wider">
                     <i class="fas fa-search-location"></i> Panel Dosen Pemonev
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">Monitoring & Evaluasi Program Kerja</h1>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">Monitoring & Evaluasi (Monev) Program Kerja</h1>
                 <p class="text-slate-300 text-sm max-w-2xl">
-                    Kelola dan lakukan evaluasi lapangan/program kerja mahasiswa yang ditugaskan kepada Anda. Unggah catatan evaluasi, dokumentasi foto kegiatan, serta nilai monev.
+                    Kelola dan lakukan evaluasi lapangan mahasiswa yang ditugaskan kepada Anda dalam <strong>3 Tahap Monev</strong> (Monev 1 Awal, Monev 2 Tengah/Progres, dan Monev 3 Akhir).
                 </p>
             </div>
             <div class="flex items-center gap-3">
@@ -60,7 +60,7 @@
             <div>
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Sudah Dimonev</p>
                 <h3 class="text-3xl font-black text-emerald-600 mt-2">{{ $totalSelesai }}</h3>
-                <p class="text-xs text-gray-500 mt-1">Ada catatan / foto / nilai</p>
+                <p class="text-xs text-gray-500 mt-1">Minimal 1 tahap monev terisi</p>
             </div>
             <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 text-2xl font-bold border border-emerald-100">
                 <i class="fas fa-check-double"></i>
@@ -71,7 +71,7 @@
             <div>
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Belum Dimonev</p>
                 <h3 class="text-3xl font-black text-amber-600 mt-2">{{ $totalBelum }}</h3>
-                <p class="text-xs text-gray-500 mt-1">Menunggu evaluasi lapangan</p>
+                <p class="text-xs text-gray-500 mt-1">Belum ada tahap monev terisi</p>
             </div>
             <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 text-2xl font-bold border border-amber-100">
                 <i class="fas fa-hourglass-half"></i>
@@ -84,7 +84,7 @@
         <div class="p-6 sm:p-8 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="text-xl font-black text-gray-900">Daftar Mahasiswa & Kelompok yang Anda Monev</h2>
-                <p class="text-sm text-gray-500 mt-1">Klik pada kartu untuk menginput catatan evaluasi dan mengunggah foto dokumentasi hasil monev</p>
+                <p class="text-sm text-gray-500 mt-1">Dosen dapat mengajukan evaluasi hingga <strong>3x Monev</strong> per mahasiswa/kelompok (Tahap 1, Tahap 2, dan Tahap 3)</p>
             </div>
         </div>
 
@@ -112,21 +112,23 @@
                                 };
                             } else {
                                 $program = $monev->program_id ? App\Models\KelompokProgramKerja::find($monev->program_id) : null;
-                                $lok = $monev->lokasiKkn ?: ($monev->lokasiPpl ?: ($monev->lokasiPkl ?: $monev->lokasiMagang));
+                                $lok = $monev->lokasiKkn ?: ($monev->lokasiPpl ?: ($monev->lokasiPpl ?: $monev->lokasiMagang));
                                 $picName = $program?->mahasiswaKetua?->nama ?? ($lok?->desa ?? $lok?->Sekolah ?? $lok?->sekolah ?? $lok?->nama_sekolah ?? $lok?->nama_instansi ?? 'Kelompok #' . $monev->lokasi_id);
                                 $picNim = $program?->nim_ketua ?? '-';
                                 $title = $program?->judul ?? ('Monev Kelompok ' . $kegiatan . ' - ' . $picName);
                                 $lokasiName = ($lok?->kecamatan ? 'Kec. ' . $lok->kecamatan : '') . ($lok?->kabupaten ? ', ' . $lok->kabupaten : '');
                             }
 
-                            $hasPhotos = !empty($monev->foto_urls) && count($monev->foto_urls) > 0;
-                            $hasNotes = !empty($monev->catatan);
-                            $hasScore = !is_null($monev->nilai);
+                            $t1 = $monev->getTahap(1);
+                            $t2 = $monev->getTahap(2);
+                            $t3 = $monev->getTahap(3);
+                            $selesaiCount = $monev->monev_selesai_count;
+                            $avgScore = $monev->rata_rata_nilai;
                         @endphp
 
-                        <div class="bg-white rounded-2xl border border-gray-200 hover:border-indigo-400 hover:shadow-lg transition-all duration-200 flex flex-col justify-between overflow-hidden group">
+                        <div class="bg-white rounded-3xl border border-gray-200 hover:border-indigo-400 hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group">
                             <div class="p-6">
-                                <!-- Top Badges -->
+                                <!-- Top Badges & Score -->
                                 <div class="flex items-center justify-between gap-2 mb-3">
                                     <div class="flex items-center gap-2">
                                         <span class="px-2.5 py-1 rounded-lg text-xs font-bold border {{ $typeBadgeClass }}">
@@ -136,21 +138,28 @@
                                             {{ $kegiatan }}
                                         </span>
                                     </div>
-                                    @if ($hasScore)
-                                        <div class="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full font-black text-sm">
-                                            <i class="fas fa-star text-amber-500 text-xs"></i>
-                                            <span>{{ $monev->nilai }}</span>
-                                        </div>
-                                    @endif
+                                    
+                                    <!-- Progress Pill -->
+                                    <div class="flex items-center gap-2">
+                                        @if (!is_null($avgScore))
+                                            <div class="flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full font-black text-xs" title="Rata-rata Nilai Monev">
+                                                <i class="fas fa-star text-amber-500 text-[10px]"></i>
+                                                <span>{{ $avgScore }}</span>
+                                            </div>
+                                        @endif
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold {{ $selesaiCount == 3 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : ($selesaiCount > 0 ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-gray-100 text-gray-500') }}">
+                                            <i class="fas fa-check-circle mr-1 text-[10px]"></i> {{ $selesaiCount }}/3 Selesai
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <!-- Title -->
-                                <h3 class="font-bold text-gray-900 text-lg group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2">
+                                <h3 class="font-bold text-gray-900 text-lg group-hover:text-indigo-600 transition-colors line-clamp-2 mb-3">
                                     {{ $title }}
                                 </h3>
 
-                                <!-- PIC & Location -->
-                                <div class="space-y-1.5 text-xs text-gray-600 mb-4 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100">
+                                <!-- PIC & Location Details -->
+                                <div class="space-y-1.5 text-xs text-gray-600 mb-4 bg-gray-50/90 p-3.5 rounded-2xl border border-gray-100">
                                     <div class="flex items-center gap-2">
                                         <i class="fas {{ $monev->monev_type === 'individu' ? 'fa-user-graduate' : 'fa-crown text-amber-600' }} w-4 text-gray-400"></i>
                                         <span><strong>{{ $monev->monev_type === 'individu' ? 'Mahasiswa' : 'Kelompok/Ketua' }}:</strong> {{ $picName }} @if($picNim !== '-') ({{ $picNim }}) @endif</span>
@@ -161,41 +170,54 @@
                                         <span class="truncate">{{ $lokasiName }}</span>
                                     </div>
                                     @endif
-                                    @if($monev->tanggal_monev)
-                                    <div class="flex items-center gap-2">
-                                        <i class="fas fa-calendar-check w-4 text-indigo-500"></i>
-                                        <span>Tgl Monev: <strong>{{ \Carbon\Carbon::parse($monev->tanggal_monev)->format('d M Y') }}</strong></span>
-                                    </div>
-                                    @endif
                                 </div>
 
-                                <!-- Status indicators -->
-                                <div class="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
-                                    @if ($hasNotes)
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                            <i class="fas fa-file-alt"></i> Catatan Ada
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 text-gray-500">
-                                            <i class="far fa-file"></i> Belum ada catatan
-                                        </span>
-                                    @endif
+                                <!-- 3-Stage Progress Timeline Cards -->
+                                <div class="grid grid-cols-3 gap-2 pt-1 pb-2">
+                                    <!-- Tahap 1 -->
+                                    <div class="p-2.5 rounded-xl border text-center transition-all {{ $t1->exists && $t1->is_filled ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900' : 'bg-gray-50 border-gray-200 text-gray-500' }}">
+                                        <div class="flex items-center justify-center gap-1 mb-1">
+                                            <i class="fas {{ $t1->exists && $t1->is_filled ? 'fa-check-circle text-emerald-600' : 'fa-circle-notch text-gray-300' }} text-xs"></i>
+                                            <span class="font-extrabold text-[11px]">Monev 1</span>
+                                        </div>
+                                        <p class="text-[10px] font-medium truncate">
+                                            @if($t1->exists && $t1->is_filled)
+                                                {{ !is_null($t1->nilai) ? 'Nilai: ' . $t1->nilai : 'Selesai' }}
+                                            @else
+                                                Belum
+                                            @endif
+                                        </p>
+                                    </div>
 
-                                    @if ($monev->link_monev)
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                            <i class="fab fa-google-drive"></i> Link Drive Ada
-                                        </span>
-                                    @endif
+                                    <!-- Tahap 2 -->
+                                    <div class="p-2.5 rounded-xl border text-center transition-all {{ $t2->exists && $t2->is_filled ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900' : 'bg-gray-50 border-gray-200 text-gray-500' }}">
+                                        <div class="flex items-center justify-center gap-1 mb-1">
+                                            <i class="fas {{ $t2->exists && $t2->is_filled ? 'fa-check-circle text-emerald-600' : 'fa-circle-notch text-gray-300' }} text-xs"></i>
+                                            <span class="font-extrabold text-[11px]">Monev 2</span>
+                                        </div>
+                                        <p class="text-[10px] font-medium truncate">
+                                            @if($t2->exists && $t2->is_filled)
+                                                {{ !is_null($t2->nilai) ? 'Nilai: ' . $t2->nilai : 'Selesai' }}
+                                            @else
+                                                Belum
+                                            @endif
+                                        </p>
+                                    </div>
 
-                                    @if ($hasPhotos)
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
-                                            <i class="fas fa-camera"></i> {{ count($monev->foto_urls) }} Foto
-                                        </span>
-                                    @elseif (!$monev->link_monev)
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 text-gray-500">
-                                            <i class="far fa-image"></i> Belum ada foto
-                                        </span>
-                                    @endif
+                                    <!-- Tahap 3 -->
+                                    <div class="p-2.5 rounded-xl border text-center transition-all {{ $t3->exists && $t3->is_filled ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900' : 'bg-gray-50 border-gray-200 text-gray-500' }}">
+                                        <div class="flex items-center justify-center gap-1 mb-1">
+                                            <i class="fas {{ $t3->exists && $t3->is_filled ? 'fa-check-circle text-emerald-600' : 'fa-circle-notch text-gray-300' }} text-xs"></i>
+                                            <span class="font-extrabold text-[11px]">Monev 3</span>
+                                        </div>
+                                        <p class="text-[10px] font-medium truncate">
+                                            @if($t3->exists && $t3->is_filled)
+                                                {{ !is_null($t3->nilai) ? 'Nilai: ' . $t3->nilai : 'Selesai' }}
+                                            @else
+                                                Belum
+                                            @endif
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -205,7 +227,7 @@
                                     {{ $monev->updated_at ? 'Diperbarui ' . $monev->updated_at->diffForHumans() : 'Belum diupdate' }}
                                 </span>
                                 <a href="{{ route('dosen.program-kerja.monev-detail-id', $monev->id) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition">
-                                    <span>Detail & Monev</span>
+                                    <span>Input Monev (3 Tahap)</span>
                                     <i class="fas fa-arrow-right text-[10px]"></i>
                                 </a>
                             </div>

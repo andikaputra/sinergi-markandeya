@@ -106,24 +106,14 @@
                     <div>
                         <div class="flex items-center gap-2">
                             <h4 class="font-bold text-sm text-white">Dosen Pemonev: {{ $dosenMonevIndividu->dosen->nama }}</h4>
-                            @if ($dosenMonevIndividu->catatan || $dosenMonevIndividu->link_monev || !empty($dosenMonevIndividu->foto_monev) || !is_null($dosenMonevIndividu->nilai))
-                                <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold rounded-full flex items-center gap-1">
-                                    <i class="fas fa-check-circle"></i> Sudah Dievaluasi
-                                </span>
-                            @else
-                                <span class="px-2.5 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold rounded-full flex items-center gap-1">
-                                    <i class="fas fa-clock"></i> Menunggu Evaluasi
-                                </span>
-                            @endif
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $dosenMonevIndividu->monev_selesai_count == 3 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : ($dosenMonevIndividu->monev_selesai_count > 0 ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-400/30' : 'bg-amber-500/20 text-amber-300 border border-amber-400/30') }}">
+                                <i class="fas {{ $dosenMonevIndividu->monev_selesai_count > 0 ? 'fa-check-circle' : 'fa-clock' }}"></i> {{ $dosenMonevIndividu->monev_selesai_count }}/3 Monev Selesai
+                            </span>
                         </div>
                         <p class="text-xs text-blue-200 mt-1">
-                            @if ($dosenMonevIndividu->tanggal_monev)
-                                Pelaksanaan Monev: <strong>{{ \Carbon\Carbon::parse($dosenMonevIndividu->tanggal_monev)->format('d M Y') }}</strong>
-                            @else
-                                Dosen ditugaskan untuk mengevaluasi program kerja mandiri Anda.
-                            @endif
-                            @if (!is_null($dosenMonevIndividu->nilai))
-                                • Nilai Monev: <strong class="text-white bg-white/10 px-2 py-0.5 rounded">{{ $dosenMonevIndividu->nilai }}</strong>
+                            Evaluasi lapangan program kerja mandiri (Monev 1, Monev 2, Monev 3).
+                            @if (!is_null($dosenMonevIndividu->rata_rata_nilai))
+                                • Rata-rata Nilai: <strong class="text-white bg-white/10 px-2 py-0.5 rounded">{{ $dosenMonevIndividu->rata_rata_nilai }}</strong>
                             @endif
                         </p>
                     </div>
@@ -132,14 +122,14 @@
                     @if ($dosenMonevIndividu->link_monev)
                         <a href="{{ $dosenMonevIndividu->link_monev }}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 whitespace-nowrap">
                             <i class="fab fa-google-drive"></i>
-                            <span>Foto Google Drive</span>
+                            <span>Foto Drive</span>
                             <i class="fas fa-external-link-alt text-[10px]"></i>
                         </a>
                     @endif
                     @if ($individuPrograms->isNotEmpty())
                         <a href="{{ route('program-kerja.show-individu', $individuPrograms->first()) }}" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 whitespace-nowrap">
                             <i class="fas fa-eye"></i>
-                            <span>Lihat Detail Evaluasi</span>
+                            <span>Lihat Detail Evaluasi (3 Tahap)</span>
                         </a>
                     @endif
                 </div>
@@ -335,24 +325,14 @@
                     <div>
                         <div class="flex items-center gap-2">
                             <h4 class="font-bold text-sm text-white">Dosen Pemonev Kelompok: {{ $dosenMonevKelompok->dosen->nama }}</h4>
-                            @if ($dosenMonevKelompok->catatan || $dosenMonevKelompok->link_monev || !empty($dosenMonevKelompok->foto_monev) || !is_null($dosenMonevKelompok->nilai))
-                                <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold rounded-full flex items-center gap-1">
-                                    <i class="fas fa-check-circle"></i> Sudah Dievaluasi
-                                </span>
-                            @else
-                                <span class="px-2.5 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold rounded-full flex items-center gap-1">
-                                    <i class="fas fa-clock"></i> Menunggu Evaluasi
-                                </span>
-                            @endif
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $dosenMonevKelompok->monev_selesai_count == 3 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : ($dosenMonevKelompok->monev_selesai_count > 0 ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-400/30' : 'bg-amber-500/20 text-amber-300 border border-amber-400/30') }}">
+                                <i class="fas {{ $dosenMonevKelompok->monev_selesai_count > 0 ? 'fa-check-circle' : 'fa-clock' }}"></i> {{ $dosenMonevKelompok->monev_selesai_count }}/3 Monev Selesai
+                            </span>
                         </div>
                         <p class="text-xs text-purple-200 mt-1">
-                            @if ($dosenMonevKelompok->tanggal_monev)
-                                Pelaksanaan Monev: <strong>{{ \Carbon\Carbon::parse($dosenMonevKelompok->tanggal_monev)->format('d M Y') }}</strong>
-                            @else
-                                Dosen ditugaskan untuk monitoring & evaluasi lapangan lokasi kelompok Anda.
-                            @endif
-                            @if (!is_null($dosenMonevKelompok->nilai))
-                                • Nilai Monev: <strong class="text-white bg-white/10 px-2 py-0.5 rounded">{{ $dosenMonevKelompok->nilai }}</strong>
+                            Monitoring & evaluasi lapangan program kerja kelompok (Monev 1, Monev 2, Monev 3).
+                            @if (!is_null($dosenMonevKelompok->rata_rata_nilai))
+                                • Rata-rata Nilai: <strong class="text-white bg-white/10 px-2 py-0.5 rounded">{{ $dosenMonevKelompok->rata_rata_nilai }}</strong>
                             @endif
                         </p>
                     </div>
@@ -361,14 +341,14 @@
                     @if ($dosenMonevKelompok->link_monev)
                         <a href="{{ $dosenMonevKelompok->link_monev }}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 whitespace-nowrap">
                             <i class="fab fa-google-drive"></i>
-                            <span>Foto Google Drive</span>
+                            <span>Foto Drive</span>
                             <i class="fas fa-external-link-alt text-[10px]"></i>
                         </a>
                     @endif
                     @if ($kelompokPrograms->isNotEmpty())
                         <a href="{{ route('program-kerja.show-kelompok', $kelompokPrograms->first()) }}" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 whitespace-nowrap">
                             <i class="fas fa-eye"></i>
-                            <span>Lihat Detail Evaluasi</span>
+                            <span>Lihat Detail Evaluasi (3 Tahap)</span>
                         </a>
                     @endif
                 </div>

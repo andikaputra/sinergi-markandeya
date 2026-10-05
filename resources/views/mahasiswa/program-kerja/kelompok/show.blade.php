@@ -326,113 +326,161 @@
                 </div>
             </div>
 
-            <!-- Dosen Monev Card -->
-            <div x-data="{ monevImage: null }" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-                <div class="flex items-center justify-between mb-4">
+            <!-- Dosen Monev Card (3 Tahap) -->
+            <div x-data="{ activeMonevTab: 1, monevImage: null }" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-4">
+                <div class="flex items-center justify-between">
                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
                         <i class="fas fa-search-location text-indigo-600"></i>
                         <span>Evaluasi & Monev Lapangan</span>
                     </h3>
-                    @if ($dosenMonev && ($dosenMonev->catatan || $dosenMonev->link_monev || !empty($dosenMonev->foto_monev) || !is_null($dosenMonev->nilai)))
-                        <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full flex items-center gap-1">
-                            <i class="fas fa-check-circle"></i> Dievaluasi
-                        </span>
-                    @elseif ($dosenMonev)
-                        <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded-full flex items-center gap-1">
-                            <i class="fas fa-clock"></i> Belum Evaluasi
+                    @if ($dosenMonev)
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold {{ $dosenMonev->monev_selesai_count == 3 ? 'bg-emerald-100 text-emerald-800' : ($dosenMonev->monev_selesai_count > 0 ? 'bg-indigo-100 text-indigo-800' : 'bg-amber-100 text-amber-800') }}">
+                            {{ $dosenMonev->monev_selesai_count }}/3 Monev Selesai
                         </span>
                     @endif
                 </div>
 
                 @if ($dosenMonev && $dosenMonev->dosen)
-                    <div class="space-y-4">
-                        <!-- Profil Dosen Monev -->
-                        <div class="p-4 bg-indigo-50/60 rounded-2xl border border-indigo-100">
-                            <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-base shadow-sm flex-shrink-0">
-                                    {{ substr($dosenMonev->dosen->nama, 0, 1) }}
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="font-bold text-gray-900 text-sm truncate">{{ $dosenMonev->dosen->nama }}</div>
-                                    <div class="text-[11px] text-gray-500 font-mono">NIDN: {{ $dosenMonev->dosen->nidn }}</div>
-                                </div>
+                    <!-- Profil Dosen Monev -->
+                    <div class="p-4 bg-indigo-50/60 rounded-2xl border border-indigo-100 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-base shadow-sm flex-shrink-0">
+                                {{ substr($dosenMonev->dosen->nama, 0, 1) }}
                             </div>
-
-                            <div class="mt-3 pt-3 border-t border-indigo-200/60 flex items-center justify-between text-xs">
-                                <span class="text-indigo-950 font-medium">Tgl Pelaksanaan:</span>
-                                <span class="font-bold text-indigo-900">
-                                    {{ $dosenMonev->tanggal_monev ? \Carbon\Carbon::parse($dosenMonev->tanggal_monev)->format('d M Y') : '-' }}
-                                </span>
+                            <div class="min-w-0 flex-1">
+                                <div class="font-bold text-gray-900 text-sm truncate">{{ $dosenMonev->dosen->nama }}</div>
+                                <div class="text-[11px] text-gray-500 font-mono">Dosen Pemonev Kelompok • NIDN: {{ $dosenMonev->dosen->nidn }}</div>
                             </div>
-
-                            @if (!is_null($dosenMonev->nilai))
-                                <div class="mt-2 pt-2 border-t border-indigo-200/40 flex items-center justify-between">
-                                    <span class="text-xs text-indigo-950 font-medium">Nilai Monev:</span>
-                                    <span class="px-2.5 py-0.5 bg-indigo-600 text-white font-black text-sm rounded-lg shadow-sm">
-                                        {{ $dosenMonev->nilai }}
-                                    </span>
-                                </div>
-                            @endif
                         </div>
-
-                        <!-- Catatan & Arahan Monev -->
-                        @if ($dosenMonev->catatan)
-                            <div class="p-4 bg-amber-50/80 border border-amber-200/80 rounded-2xl space-y-1.5">
-                                <p class="text-xs font-bold text-amber-900 flex items-center gap-1.5">
-                                    <i class="fas fa-comment-dots text-amber-600"></i>
-                                    <span>Catatan & Masukan Dosen Monev:</span>
-                                </p>
-                                <div class="text-xs text-amber-950 leading-relaxed whitespace-pre-wrap font-normal">
-                                    {{ $dosenMonev->catatan }}
-                                </div>
-                            </div>
-                        @else
-                            <div class="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 text-center">
-                                <p class="text-xs text-gray-400">Belum ada catatan evaluasi dari Dosen Monev.</p>
-                            </div>
-                        @endif
-
-                        <!-- Google Drive Link Dokumentasi Foto -->
-                        @if ($dosenMonev->link_monev)
-                            <div class="p-4 bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-emerald-500/10 border border-emerald-200 rounded-2xl space-y-2.5">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs shadow-sm">
-                                        <i class="fab fa-google-drive"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-emerald-950">Foto Dokumentasi Lapangan</h4>
-                                        <p class="text-[10px] text-emerald-700">Tersedia di Google Drive</p>
-                                    </div>
-                                </div>
-                                <a href="{{ $dosenMonev->link_monev }}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition">
-                                    <i class="fab fa-google-drive"></i>
-                                    <span>Buka Foto di Google Drive</span>
-                                    <i class="fas fa-external-link-alt text-[10px] ml-0.5"></i>
-                                </a>
-                            </div>
-                        @endif
-
-                        <!-- Foto Dokumentasi Hasil Monev (Uploaded directly) -->
-                        @if (!empty($dosenMonev->foto_monev) && count($dosenMonev->foto_monev) > 0)
-                            <div class="space-y-2">
-                                <p class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                                    <i class="fas fa-camera text-indigo-600"></i>
-                                    <span>Galeri Foto Monev ({{ count($dosenMonev->foto_monev) }} foto):</span>
-                                </p>
-                                <div class="grid grid-cols-2 gap-2">
-                                    @foreach ($dosenMonev->foto_monev as $fIndex => $photo)
-                                        @php $url = asset('storage/' . ltrim($photo, '/')); @endphp
-                                        <div class="group relative rounded-xl overflow-hidden border border-gray-200 bg-slate-900 aspect-video cursor-pointer shadow-sm" @click="monevImage = '{{ $url }}'">
-                                            <img src="{{ $url }}" alt="Dokumentasi Monev" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
-                                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1">
-                                                <i class="fas fa-search-plus"></i> Lihat
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
+                        @if (!is_null($dosenMonev->rata_rata_nilai))
+                            <div class="text-right flex-shrink-0">
+                                <span class="text-[10px] text-indigo-900 font-medium block">Rata-rata Nilai:</span>
+                                <span class="px-2.5 py-0.5 bg-indigo-600 text-white font-black text-xs rounded-lg shadow-sm">
+                                    {{ $dosenMonev->rata_rata_nilai }}
+                                </span>
                             </div>
                         @endif
                     </div>
+
+                    <!-- 3 Stage Tabs for Mahasiswa -->
+                    @php
+                        $mTahap1 = $dosenMonev->getTahap(1);
+                        $mTahap2 = $dosenMonev->getTahap(2);
+                        $mTahap3 = $dosenMonev->getTahap(3);
+                        $mTahapList = [
+                            1 => ['title' => 'Monev 1', 'sub' => 'Tahap Awal', 'data' => $mTahap1],
+                            2 => ['title' => 'Monev 2', 'sub' => 'Tahap Progres', 'data' => $mTahap2],
+                            3 => ['title' => 'Monev 3', 'sub' => 'Tahap Akhir', 'data' => $mTahap3],
+                        ];
+                    @endphp
+
+                    <div class="flex gap-1.5 p-1 bg-gray-100 rounded-2xl">
+                        @foreach ($mTahapList as $ke => $mInfo)
+                            @php $isDone = $mInfo['data']->exists && $mInfo['data']->is_filled; @endphp
+                            <button type="button" 
+                                @click="activeMonevTab = {{ $ke }}"
+                                :class="activeMonevTab === {{ $ke }} ? 'bg-white text-indigo-700 shadow-sm font-black' : 'text-gray-600 hover:text-gray-900 font-semibold'"
+                                class="flex-1 py-2 px-2 rounded-xl text-xs text-center transition flex items-center justify-center gap-1.5">
+                                <i class="fas {{ $isDone ? 'fa-check-circle text-emerald-500' : 'fa-clock text-gray-400' }} text-[10px]"></i>
+                                <span>{{ $mInfo['title'] }}</span>
+                            </button>
+                        @endforeach
+                    </div>
+
+                    <!-- Tahap Contents -->
+                    @foreach ($mTahapList as $ke => $mInfo)
+                        @php 
+                            $t = $mInfo['data']; 
+                            $isDone = $t->exists && $t->is_filled;
+                        @endphp
+                        <div x-show="activeMonevTab === {{ $ke }}" class="space-y-4 pt-1">
+                            <div class="flex items-center justify-between text-xs pb-2 border-b border-gray-100">
+                                <span class="font-bold text-gray-800">{{ $mInfo['title'] }} - {{ $mInfo['sub'] }}</span>
+                                @if ($isDone)
+                                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full flex items-center gap-1">
+                                        <i class="fas fa-check-circle"></i> Sudah Dievaluasi
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded-full flex items-center gap-1">
+                                        <i class="fas fa-clock"></i> Belum Dilaksanakan
+                                    </span>
+                                @endif
+                            </div>
+
+                            @if ($isDone)
+                                <!-- Execution date & Grade -->
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                        <span class="text-gray-400 block text-[11px]">Tgl Pelaksanaan</span>
+                                        <span class="font-bold text-gray-900">{{ $t->tanggal_monev ? \Carbon\Carbon::parse($t->tanggal_monev)->format('d M Y') : '-' }}</span>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                        <span class="text-gray-400 block text-[11px]">Nilai {{ $mInfo['title'] }}</span>
+                                        <span class="font-black text-indigo-700">{{ !is_null($t->nilai) ? $t->nilai . ' / 100' : 'Belum dinilai' }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Notes -->
+                                @if ($t->catatan)
+                                    <div class="p-4 bg-amber-50/80 border border-amber-200/80 rounded-2xl space-y-1.5">
+                                        <p class="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                                            <i class="fas fa-comment-dots text-amber-600"></i>
+                                            <span>Catatan & Masukan Dosen Monev ({{ $mInfo['title'] }}):</span>
+                                        </p>
+                                        <div class="text-xs text-amber-950 leading-relaxed whitespace-pre-wrap font-normal">
+                                            {{ $t->catatan }}
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <!-- Google Drive Link -->
+                                @if ($t->link_monev)
+                                    <div class="p-4 bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-emerald-500/10 border border-emerald-200 rounded-2xl space-y-2.5">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs shadow-sm">
+                                                <i class="fab fa-google-drive"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-xs font-bold text-emerald-950">Foto Dokumentasi {{ $mInfo['title'] }}</h4>
+                                                <p class="text-[10px] text-emerald-700">Tersedia di Google Drive</p>
+                                            </div>
+                                        </div>
+                                        <a href="{{ $t->link_monev }}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition">
+                                            <i class="fab fa-google-drive"></i>
+                                            <span>Buka Foto di Google Drive</span>
+                                            <i class="fas fa-external-link-alt text-[10px] ml-0.5"></i>
+                                        </a>
+                                    </div>
+                                @endif
+
+                                <!-- Photo Gallery -->
+                                @if (!empty($t->foto_urls) && count($t->foto_urls) > 0)
+                                    <div class="space-y-2">
+                                        <p class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+                                            <i class="fas fa-camera text-indigo-600"></i>
+                                            <span>Galeri Foto {{ $mInfo['title'] }} ({{ count($t->foto_urls) }} foto):</span>
+                                        </p>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            @foreach ($t->foto_urls as $photoUrl)
+                                                <div class="group relative rounded-xl overflow-hidden border border-gray-200 bg-slate-900 aspect-video cursor-pointer shadow-sm" @click="monevImage = '{{ $photoUrl }}'">
+                                                    <img src="{{ $photoUrl }}" alt="Dokumentasi {{ $mInfo['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+                                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1">
+                                                        <i class="fas fa-search-plus"></i> Lihat
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            @else
+                                <div class="p-5 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-center space-y-1">
+                                    <i class="fas fa-hourglass-half text-gray-300 text-xl block mb-1"></i>
+                                    <p class="text-xs font-bold text-gray-600">{{ $mInfo['title'] }} belum dilaksanakan</p>
+                                    <p class="text-[11px] text-gray-400">Dosen Pemonev belum mengisi evaluasi dan dokumentasi untuk tahap ini.</p>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
                 @else
                     <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-center">
                         <i class="fas fa-user-clock text-gray-300 text-2xl mb-2 block"></i>

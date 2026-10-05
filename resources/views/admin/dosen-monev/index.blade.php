@@ -332,32 +332,34 @@
                             @endphp
                             <div class="p-3.5 bg-gray-50 border border-gray-100 rounded-2xl flex items-start justify-between gap-3 text-xs">
                                 <div class="min-w-0 flex-1 space-y-1">
-                                    <p class="font-bold text-gray-900 truncate">{{ $targetName }}</p>
+                                    <div class="flex items-center justify-between gap-2">
+                                        <p class="font-bold text-gray-900 truncate">{{ $targetName }}</p>
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold flex-shrink-0 {{ $assignment->monev_selesai_count == 3 ? 'bg-emerald-100 text-emerald-800' : ($assignment->monev_selesai_count > 0 ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-200 text-gray-600') }}">
+                                            {{ $assignment->monev_selesai_count }}/3 Monev
+                                        </span>
+                                    </div>
                                     <p class="text-[11px] text-gray-400 truncate">{{ $targetSub }}</p>
                                     <p class="text-gray-600 pt-0.5">
                                         Dosen: <strong class="text-indigo-700">{{ $assignment->dosen?->nama ?? '-' }}</strong>
                                     </p>
-                                    <div class="flex flex-wrap items-center gap-2 pt-1">
-                                        @if (!is_null($assignment->nilai))
-                                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-md text-[10px]">
-                                                Nilai: {{ $assignment->nilai }}
-                                            </span>
-                                        @else
-                                            <span class="px-2 py-0.5 bg-gray-200 text-gray-600 font-semibold rounded-md text-[10px]">
-                                                Belum dinilai
+                                    <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                                        @if (!is_null($assignment->rata_rata_nilai))
+                                            <span class="px-2 py-0.5 bg-amber-100 text-amber-800 font-black rounded-md text-[10px]">
+                                                Rata-rata: {{ $assignment->rata_rata_nilai }}
                                             </span>
                                         @endif
+
+                                        @foreach ([1 => 'M1', 2 => 'M2', 3 => 'M3'] as $mKe => $mShort)
+                                            @php $tObj = $assignment->getTahap($mKe); @endphp
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold {{ $tObj->exists && $tObj->is_filled ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-gray-100 text-gray-400' }}" title="{{ $tObj->tahap_label }}">
+                                                {{ $mShort }}: {{ $tObj->exists && $tObj->is_filled ? (!is_null($tObj->nilai) ? $tObj->nilai : '✓') : '-' }}
+                                            </span>
+                                        @endforeach
 
                                         @if ($assignment->link_monev)
                                             <a href="{{ $assignment->link_monev }}" target="_blank" rel="noopener noreferrer" class="px-2 py-0.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-md text-[10px] inline-flex items-center gap-1 transition">
-                                                <i class="fab fa-google-drive"></i> Drive Link
+                                                <i class="fab fa-google-drive"></i> Drive
                                             </a>
-                                        @endif
-
-                                        @if ($fotoCount > 0)
-                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-800 font-bold rounded-md text-[10px]">
-                                                <i class="fas fa-camera"></i> {{ $fotoCount }} Foto
-                                            </span>
                                         @endif
                                     </div>
                                 </div>
