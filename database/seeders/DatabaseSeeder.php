@@ -24,6 +24,7 @@ use App\Models\PenempatanPkl;
 use App\Models\PenempatanMagang;
 use App\Models\PengajuanLokasiPKL;
 use App\Models\PengajuanLokasiMagang;
+use App\Models\DosenMonev;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -106,6 +107,11 @@ class DatabaseSeeder extends Seeder
             ['nama' => 'Ni Luh Putu Sari, S.T., M.Cs.', 'password' => Hash::make('password')]
         );
 
+        $dosen5 = Dosen::updateOrCreate(
+            ['nidn' => '0020097807'],
+            ['nama' => 'Nurul Isnaini Fitriyana, S.TP., MP.', 'password' => Hash::make('password')]
+        );
+
         // ==========================================
         // 4. PEMBIMBING LUAR
         // ==========================================
@@ -155,6 +161,8 @@ class DatabaseSeeder extends Seeder
         // PPL
         $lokasiPpl1 = LokasiPpl::updateOrCreate(['Sekolah' => 'SMA Negeri 1 Bangli']);
         $lokasiPpl2 = LokasiPpl::updateOrCreate(['Sekolah' => 'SMP Negeri 2 Gianyar']);
+        $lokasiPpl3 = LokasiPpl::updateOrCreate(['Sekolah' => 'SDN 3 Banjarangkan'], ['alamat' => 'Banjarangkan, Klungkung']);
+        $lokasiPpl4 = LokasiPpl::updateOrCreate(['Sekolah' => 'SMAN 1 Rendang'], ['alamat' => 'Rendang, Karangasem']);
 
         // PKL
         $lokasiPkl1 = LokasiPkl::updateOrCreate(
@@ -550,5 +558,17 @@ class DatabaseSeeder extends Seeder
         // ==========================================
         $mhsKkn1->update(['laporan_link' => 'https://drive.google.com/file/d/laporan-kkn-budi']);
         $mhsPkl1->update(['laporan_link' => 'https://drive.google.com/file/d/laporan-pkl-andi']);
+
+        // ==========================================
+        // 16. DOSEN MONEV
+        // ==========================================
+        DosenMonev::updateOrCreate(
+            ['monev_type' => 'kelompok', 'kegiatan' => 'ppl', 'lokasi_id' => $lokasiPpl3->id],
+            ['nidn' => '0020097807']
+        );
+        DosenMonev::updateOrCreate(
+            ['monev_type' => 'kelompok', 'kegiatan' => 'ppl', 'lokasi_id' => $lokasiPpl4->id],
+            ['nidn' => '0020097807']
+        );
     }
 }
