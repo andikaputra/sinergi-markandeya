@@ -124,11 +124,15 @@ class AisService
     public function syncDosen(array $data, string $plainPassword): Dosen
     {
         $nidn     = $data['NIDN'] ?? $data['Username'] ?? null;
+        $username = $data['Username'] ?? null;
         $existing = Dosen::where('nidn', $nidn)->first();
+        if (!$existing && $username) {
+            $existing = Dosen::where('nip', $username)->first();
+        }
 
         $fields = [
             'nama'      => $data['Nama']                          ?? null,
-            'nip'       => $data['NIP']                           ?? ($existing->nip  ?? null),
+            'nip'       => $data['NIP'] ?? $username              ?? ($existing->nip  ?? null),
             'foto'      => $this->sanitizeFotoUrl($data['urlFoto'] ?? $data['Foto'] ?? null) ?? ($existing->foto ?? null),
             'ais_token' => $data['_token'],
             'password'  => $plainPassword,

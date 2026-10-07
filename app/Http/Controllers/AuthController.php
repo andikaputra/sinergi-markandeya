@@ -116,8 +116,9 @@ class AuthController extends Controller
                 return redirect()->route('dashboard')->with('success', 'Login berhasil!');
             }
 
-            // --- Dosen ---
-            if (Auth::guard('dosen')->attempt(['nidn' => $loginValue, 'password' => $password])) {
+            // --- Dosen (support NIDN or NIP) ---
+            if (Auth::guard('dosen')->attempt(['nidn' => $loginValue, 'password' => $password])
+                || (Schema::hasColumn('dosens', 'nip') && Auth::guard('dosen')->attempt(['nip' => $loginValue, 'password' => $password]))) {
                 $request->session()->regenerate();
                 return redirect()->route('dosen.dashboard')->with('success', 'Login Dosen berhasil!');
             }
