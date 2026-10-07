@@ -246,7 +246,8 @@
                     <!-- Monev Review Form for Stage {{ $ke }} -->
                     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
                         <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-                                                      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-black uppercase mb-1">
+                            <div>
+                                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-black uppercase mb-1">
                                     <i class="fas fa-layer-group"></i> {{ $tInfo['title'] }} - {{ $tInfo['sub'] }}
                                 </div>
                                 <h2 class="text-xl font-black text-gray-900">Form Evaluasi {{ $tInfo['title'] }}</h2>
