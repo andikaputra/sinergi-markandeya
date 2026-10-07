@@ -322,11 +322,11 @@
                                 </div>
 
                                 @if ($tData->link_monev)
-                                    <div class="pt-1 flex items-center justify-between">
-                                        <span class="text-xs text-emerald-800 font-medium truncate max-w-md">
+                                    <div class="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-indigo-100/60">
+                                        <span class="text-xs text-emerald-800 font-medium truncate min-w-0 flex-1">
                                             <i class="fas fa-check-circle text-emerald-600 mr-1"></i> Tautan aktif tersimpan
                                         </span>
-                                        <a href="{{ $tData->link_monev }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition">
+                                        <a href="{{ $tData->link_monev }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex-shrink-0">
                                             <i class="fab fa-google-drive"></i>
                                             <span>Buka Drive {{ $tInfo['title'] }}</span>
                                             <i class="fas fa-external-link-alt text-[10px] ml-1"></i>
@@ -349,7 +349,7 @@
                     </div>
 
                     <!-- Saved Photos & Drive Gallery for Stage {{ $ke }} -->
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-6">
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-6 overflow-hidden">
                         <div class="flex items-center justify-between pb-4 border-b border-gray-100">
                             <div>
                                 <h2 class="text-lg font-black text-gray-900 flex items-center gap-2">
@@ -364,20 +364,20 @@
 
                         <!-- Google Drive Link Preview if available -->
                         @if ($tData->link_monev)
-                            <div class="p-5 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-200 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                <div class="flex items-center gap-3.5">
-                                    <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow-md shadow-emerald-500/20 flex-shrink-0">
+                            <div class="p-4 sm:p-5 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-200 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 overflow-hidden w-full">
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                                    <div class="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-md shadow-emerald-500/20 flex-shrink-0">
                                         <i class="fab fa-google-drive"></i>
                                     </div>
-                                    <div class="min-w-0">
+                                    <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2">
-                                            <h4 class="font-black text-gray-900 text-sm">Folder Drive {{ $tInfo['title'] }}</h4>
-                                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-md">Tersambung</span>
+                                            <h4 class="font-black text-gray-900 text-sm truncate">Folder Drive {{ $tInfo['title'] }}</h4>
+                                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-md flex-shrink-0">Tersambung</span>
                                         </div>
-                                        <p class="text-xs text-gray-500 truncate max-w-md mt-0.5 font-mono">{{ $tData->link_monev }}</p>
+                                        <p class="text-xs text-gray-500 truncate block mt-0.5 font-mono" title="{{ $tData->link_monev }}">{{ $tData->link_monev }}</p>
                                     </div>
                                 </div>
-                                <a href="{{ $tData->link_monev }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition whitespace-nowrap">
+                                <a href="{{ $tData->link_monev }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition whitespace-nowrap flex-shrink-0 self-stretch sm:self-auto">
                                     <i class="fab fa-google-drive"></i>
                                     <span>Buka di Google Drive</span>
                                     <i class="fas fa-external-link-alt text-[10px]"></i>
