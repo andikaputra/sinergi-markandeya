@@ -19,6 +19,19 @@
     @endif
 </td>
 <td class="px-4 py-5">
+    @php
+        $monev = $mahasiswa->dosen_monev_model;
+    @endphp
+    @if($monev?->dosen)
+        <div class="flex items-center space-x-1.5 mb-1">
+            <i class="fas fa-clipboard-check text-[8px] text-teal-500"></i>
+            <span class="text-[11px] font-bold text-gray-700">{{ $monev->dosen->nama }}</span>
+        </div>
+    @else
+        <span class="text-[10px] text-gray-300 italic">- Belum ada -</span>
+    @endif
+</td>
+<td class="px-4 py-5">
     @if($mahasiswa->pembimbingLuarMahasiswa?->pembimbingLuar)
         <div class="flex items-center space-x-1.5 mb-1">
             <i class="fas fa-user-friends text-[8px] text-emerald-400"></i>

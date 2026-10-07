@@ -61,6 +61,7 @@
                 <th style="width: 40px;">Nilai (DP)</th>
                 <th>Dosen Penguji</th>
                 <th style="width: 40px;">Nilai (DU)</th>
+                <th>Dosen Monev</th>
                 <th style="width: 40px;">Nilai Akhir</th>
             </tr>
         </thead>
@@ -86,6 +87,7 @@
                 <td class="text-center font-bold">{{ $mhs->dosenPembimbing?->nilai ?? '-' }}</td>
                 <td>{{ $mhs->dosenPenguji?->dosen?->nama ?? '-' }}</td>
                 <td class="text-center font-bold">{{ $mhs->dosenPenguji?->nilai ?? '-' }}</td>
+                <td>{{ $mhs->dosen_monev_model?->dosen?->nama ?? '-' }}</td>
                 <td class="text-center font-bold" style="background: #fdf2f2;">{{ $mhs->nilai_akhir }}</td>
             </tr>
             @endforeach

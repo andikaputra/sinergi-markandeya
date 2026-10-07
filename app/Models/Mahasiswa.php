@@ -257,4 +257,33 @@ class Mahasiswa extends Authenticatable
     {
         return $this->hasOne(DosenPenilaiPublikasi::class, 'nim', 'nim');
     }
+
+    public function dosenMonev()
+    {
+        return $this->hasOne(DosenMonev::class, 'nim', 'nim');
+    }
+
+    public function getDosenMonevModelAttribute(): ?DosenMonev
+    {
+        if ($this->relationLoaded('dosenMonev') && $this->dosenMonev) {
+            return $this->dosenMonev;
+        }
+
+        $penempatan = $this->penempatankkn ?? $this->penempatanppl ?? $this->penempatanpkl ?? $this->penempatanmagang;
+        $lokasi = $penempatan?->lokasikkn ?? $penempatan?->lokasippl ?? $penempatan?->lokasipkl ?? $penempatan?->lokasimagang;
+        if ($lokasi && $lokasi->relationLoaded('dosenMonev') && $lokasi->dosenMonev) {
+            return $lokasi->dosenMonev;
+        }
+
+        if ($this->nim) {
+            $ind = DosenMonev::where('nim', $this->nim)->with('dosen')->first();
+            if ($ind) return $ind;
+        }
+
+        if ($lokasi) {
+            return DosenMonev::where('monev_type', 'kelompok')->where('lokasi_id', $lokasi->id)->with('dosen')->first();
+        }
+
+        return null;
+    }
 }

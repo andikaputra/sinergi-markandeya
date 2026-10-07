@@ -26,4 +26,9 @@ class LokasiPkl extends Model
     {
         return $this->hasMany(PenempatanPkl::class, 'lokasi_pkl_id');
     }
+
+    public function dosenMonev()
+    {
+        return $this->hasOne(DosenMonev::class, 'lokasi_id', 'id')->where('monev_type', 'kelompok');
+    }
 }

@@ -61,7 +61,16 @@ class AdminController extends Controller
 
     public function pesertaKKN(Request $request)
     {
-        $query = Mahasiswa::withKegiatan('KKN')->with(['penempatankkn.lokasikkn', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen', 'activeKegiatan']);
+        $query = Mahasiswa::withKegiatan('KKN')->with([
+            'penempatankkn.lokasikkn.dosenMonev.dosen',
+            'publikasis',
+            'dosenPembimbing.dosen',
+            'dosenPenguji.dosen',
+            'pembimbingLuarMahasiswa.pembimbingLuar',
+            'dosenPenilaiPublikasi.dosen',
+            'dosenMonev.dosen',
+            'activeKegiatan'
+        ]);
 
         if ($request->has('ta') && $request->ta != '') {
             $query->withKegiatanAndTA('KKN', $request->ta);
@@ -75,7 +84,16 @@ class AdminController extends Controller
 
     public function pesertaPPL(Request $request)
     {
-        $query = Mahasiswa::withKegiatan('PPL')->with(['penempatanppl.lokasippl', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen', 'activeKegiatan']);
+        $query = Mahasiswa::withKegiatan('PPL')->with([
+            'penempatanppl.lokasippl.dosenMonev.dosen',
+            'publikasis',
+            'dosenPembimbing.dosen',
+            'dosenPenguji.dosen',
+            'pembimbingLuarMahasiswa.pembimbingLuar',
+            'dosenPenilaiPublikasi.dosen',
+            'dosenMonev.dosen',
+            'activeKegiatan'
+        ]);
 
         if ($request->has('ta') && $request->ta != '') {
             $query->withKegiatanAndTA('PPL', $request->ta);
@@ -89,7 +107,16 @@ class AdminController extends Controller
 
     public function pesertaPKL(Request $request)
     {
-        $query = Mahasiswa::withKegiatan('PKL')->with(['penempatanpkl.lokasipkl', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen', 'activeKegiatan']);
+        $query = Mahasiswa::withKegiatan('PKL')->with([
+            'penempatanpkl.lokasipkl.dosenMonev.dosen',
+            'publikasis',
+            'dosenPembimbing.dosen',
+            'dosenPenguji.dosen',
+            'pembimbingLuarMahasiswa.pembimbingLuar',
+            'dosenPenilaiPublikasi.dosen',
+            'dosenMonev.dosen',
+            'activeKegiatan'
+        ]);
 
         if ($request->has('ta') && $request->ta != '') {
             $query->withKegiatanAndTA('PKL', $request->ta);
@@ -103,7 +130,16 @@ class AdminController extends Controller
 
     public function pesertaMagang(Request $request)
     {
-        $query = Mahasiswa::withKegiatan('Magang')->with(['penempatanmagang.lokasimagang', 'publikasis', 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa.pembimbingLuar', 'dosenPenilaiPublikasi.dosen', 'activeKegiatan']);
+        $query = Mahasiswa::withKegiatan('Magang')->with([
+            'penempatanmagang.lokasimagang.dosenMonev.dosen',
+            'publikasis',
+            'dosenPembimbing.dosen',
+            'dosenPenguji.dosen',
+            'pembimbingLuarMahasiswa.pembimbingLuar',
+            'dosenPenilaiPublikasi.dosen',
+            'dosenMonev.dosen',
+            'activeKegiatan'
+        ]);
 
         if ($request->has('ta') && $request->ta != '') {
             $query->withKegiatanAndTA('Magang', $request->ta);
@@ -440,14 +476,14 @@ class AdminController extends Controller
         $fileName = 'rekap_peserta_' . strtolower($kegiatan) . '_' . date('Y-m-d') . '.csv';
 
         $placementRelation = match ($kegiatan) {
-            'KKN' => 'penempatankkn.lokasikkn',
-            'PPL' => 'penempatanppl.lokasippl',
-            'PKL' => 'penempatanpkl.lokasipkl',
-            'Magang' => 'penempatanmagang.lokasimagang',
+            'KKN' => 'penempatankkn.lokasikkn.dosenMonev.dosen',
+            'PPL' => 'penempatanppl.lokasippl.dosenMonev.dosen',
+            'PKL' => 'penempatanpkl.lokasipkl.dosenMonev.dosen',
+            'Magang' => 'penempatanmagang.lokasimagang.dosenMonev.dosen',
         };
 
         $query = Mahasiswa::withKegiatan($kegiatan)
-            ->with([$placementRelation, 'dosenPembimbing.dosen', 'dosenPenguji.dosen']);
+            ->with([$placementRelation, 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'dosenMonev.dosen']);
 
         if ($request->has('ta') && $request->ta != '') {
             $query->withKegiatanAndTA($kegiatan, $request->ta);
@@ -462,7 +498,7 @@ class AdminController extends Controller
             "Expires"             => "0"
         );
 
-        $columns = array('NIM', 'Nama Mahasiswa', 'Prodi', 'Lokasi', 'Dosen Pembimbing', 'Nilai DP', 'Dosen Penguji', 'Nilai DU', 'Nilai Akhir');
+        $columns = array('NIM', 'Nama Mahasiswa', 'Prodi', 'Lokasi', 'Dosen Pembimbing', 'Nilai DP', 'Dosen Penguji', 'Nilai DU', 'Dosen Monev', 'Nilai Akhir');
 
         $callback = function() use($tasks, $columns, $kegiatan) {
             $file = fopen('php://output', 'w');
@@ -484,6 +520,7 @@ class AdminController extends Controller
                     $task->dosenPembimbing?->nilai ?? '-',
                     $task->dosenPenguji?->dosen?->nama ?? '-',
                     $task->dosenPenguji?->nilai ?? '-',
+                    $task->dosen_monev_model?->dosen?->nama ?? '-',
                     $task->nilai_akhir,
                 ));
             }
@@ -501,7 +538,14 @@ class AdminController extends Controller
 
     private function viewPrint(Request $request, $kegiatan)
     {
-        $query = Mahasiswa::withKegiatan($kegiatan)->with(['dosenPembimbing.dosen', 'dosenPenguji.dosen']);
+        $placementRelation = match ($kegiatan) {
+            'KKN' => 'penempatankkn.lokasikkn.dosenMonev.dosen',
+            'PPL' => 'penempatanppl.lokasippl.dosenMonev.dosen',
+            'PKL' => 'penempatanpkl.lokasipkl.dosenMonev.dosen',
+            'Magang' => 'penempatanmagang.lokasimagang.dosenMonev.dosen',
+        };
+
+        $query = Mahasiswa::withKegiatan($kegiatan)->with([$placementRelation, 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'dosenMonev.dosen']);
         if ($request->has('ta') && $request->ta != '') {
             $query->withKegiatanAndTA($kegiatan, $request->ta);
         }
