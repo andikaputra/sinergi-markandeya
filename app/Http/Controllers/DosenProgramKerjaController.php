@@ -363,7 +363,8 @@ class DosenProgramKerjaController extends Controller
                 })
                 ->orWhereNotNull('catatan')
                 ->orWhereNotNull('nilai')
-                ->orWhereNotNull('foto_monev');
+                ->orWhereNotNull('foto_monev')
+                ->orWhereNotNull('link_monev');
             })->count();
         $totalBelum = max(0, $totalTugas - $totalSelesai);
 
@@ -442,16 +443,12 @@ class DosenProgramKerjaController extends Controller
             'catatan' => 'nullable|string|max:5000',
             'tanggal_monev' => 'nullable|date',
             'link_monev' => 'nullable|url|max:1000',
-            'foto_monev' => 'nullable|array',
-            'foto_monev.*' => 'nullable|file|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
         ], [
             'tahap_ke.in' => 'Tahap monev hanya tersedia untuk Monev 1, Monev 2, dan Monev 3',
             'nilai.numeric' => 'Nilai harus berupa angka',
             'nilai.min' => 'Nilai minimal adalah 0',
             'nilai.max' => 'Nilai maksimal adalah 100',
             'link_monev.url' => 'Format tautan Google Drive / dokumentasi harus berupa URL yang valid (diawali https://)',
-            'foto_monev.*.image' => 'Berkas harus berupa gambar (JPG, PNG, WEBP)',
-            'foto_monev.*.max' => 'Ukuran setiap foto maksimal 10MB',
         ]);
 
         $tahap = DosenMonevTahap::firstOrNew([
@@ -459,24 +456,10 @@ class DosenProgramKerjaController extends Controller
             'tahap_ke' => $tahapKe,
         ]);
 
-        $currentPhotos = is_array($tahap->foto_monev) ? $tahap->foto_monev : [];
-
-        // Upload new photos if present
-        if ($request->hasFile('foto_monev')) {
-            foreach ($request->file('foto_monev') as $file) {
-                if ($file->isValid()) {
-                    $filename = 'monev_' . $type . '_' . $monev->id . '_tahap' . $tahapKe . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                    $path = $file->storeAs('monev', $filename, 'public');
-                    $currentPhotos[] = $path;
-                }
-            }
-        }
-
         $tahap->nilai = $request->filled('nilai') ? $request->input('nilai') : $tahap->nilai;
         $tahap->catatan = $request->input('catatan');
         $tahap->tanggal_monev = $request->filled('tanggal_monev') ? $request->input('tanggal_monev') : ($tahap->tanggal_monev ?: now()->toDateString());
         $tahap->link_monev = $request->input('link_monev');
-        $tahap->foto_monev = $currentPhotos;
         $tahap->save();
 
         // Also sync to main dosen_monev row for backward compatibility
@@ -484,9 +467,6 @@ class DosenProgramKerjaController extends Controller
             $monev->catatan = $tahap->catatan;
             $monev->tanggal_monev = $tahap->tanggal_monev;
             $monev->link_monev = $tahap->link_monev;
-            if (!empty($currentPhotos)) {
-                $monev->foto_monev = $currentPhotos;
-            }
         }
         $monev->nilai = $monev->rata_rata_nilai;
         $monev->touch();

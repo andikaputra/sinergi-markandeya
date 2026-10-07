@@ -13,29 +13,7 @@
 
 @section('content')
 <div x-data="{ 
-    activeTahap: {{ $activeTahap ?? 1 }}, 
-    selectedImage: null, 
-    previewImages: {},
-    handleFileSelect(event, tahap) {
-        if (!this.previewImages[tahap]) {
-            this.previewImages[tahap] = [];
-        }
-        this.previewImages[tahap] = [];
-        const files = event.target.files;
-        if (files) {
-            for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.previewImages[tahap].push({
-                        name: files[i].name,
-                        size: (files[i].size / (1024 * 1024)).toFixed(2) + ' MB',
-                        url: e.target.result
-                    });
-                };
-                reader.readAsDataURL(files[i]);
-            }
-        }
-    }
+    activeTahap: {{ $activeTahap ?? 1 }}
 }" class="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
 
     <!-- Header Banner -->
@@ -268,19 +246,18 @@
                     <!-- Monev Review Form for Stage {{ $ke }} -->
                     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
                         <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-                            <div>
-                                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-black uppercase mb-1">
+                                                      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-black uppercase mb-1">
                                     <i class="fas fa-layer-group"></i> {{ $tInfo['title'] }} - {{ $tInfo['sub'] }}
                                 </div>
                                 <h2 class="text-xl font-black text-gray-900">Form Evaluasi {{ $tInfo['title'] }}</h2>
-                                <p class="text-xs text-gray-500 mt-0.5">Masukkan catatan evaluasi lapangan, nilai monev, tautan Google Drive, atau unggah foto untuk {{ $tInfo['title'] }}.</p>
+                                <p class="text-xs text-gray-500 mt-0.5">Masukkan catatan evaluasi lapangan, nilai monev, dan tautan Google Drive dokumentasi untuk {{ $tInfo['title'] }}.</p>
                             </div>
                             <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">
                                 <i class="fas fa-clipboard-check"></i>
                             </div>
                         </div>
 
-                        <form action="{{ route('dosen.program-kerja.monev-nilai-id', $monev->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                        <form action="{{ route('dosen.program-kerja.monev-nilai-id', $monev->id) }}" method="POST" class="space-y-6">
                             @csrf
                             <input type="hidden" name="tahap_ke" value="{{ $ke }}">
 
@@ -327,14 +304,14 @@
                                 <div class="flex items-center justify-between">
                                     <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
                                         <i class="fab fa-google-drive text-emerald-600 text-base"></i>
-                                        <span>Tautan Google Drive Dokumentasi {{ $tInfo['title'] }}</span>
+                                        <span>Tautan Google Drive Dokumentasi Foto {{ $tInfo['title'] }}</span>
                                     </label>
                                     <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase tracking-wider">
-                                        Direkomendasikan
+                                        Google Drive
                                     </span>
                                 </div>
                                 <p class="text-xs text-gray-600 leading-relaxed">
-                                    Masukkan tautan folder <strong>Google Drive</strong> khusus dokumentasi {{ $tInfo['title'] }}. Mahasiswa dapat langsung membuka tautan tersebut.
+                                    Masukkan tautan folder atau file <strong>Google Drive</strong> khusus dokumentasi foto/kegiatan {{ $tInfo['title'] }}. Mahasiswa dan admin dapat langsung membuka tautan tersebut.
                                 </p>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-600">
@@ -357,43 +334,6 @@
                                 @endif
                             </div>
 
-                            <!-- Upload Foto Hasil Monev (Multiple) - Opsional -->
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                        Unggah Foto Langsung ke Server untuk {{ $tInfo['title'] }} (Opsional)
-                                    </label>
-                                    <span class="text-[10px] text-gray-400 font-semibold">Format: JPG, PNG, WEBP</span>
-                                </div>
-                                <p class="text-xs text-gray-400 mb-3">Jika tidak menggunakan link Google Drive, Anda dapat mengunggah file foto dokumentasi {{ $tInfo['title'] }} langsung (Maks 10MB per foto).</p>
-
-                                <div class="border-2 border-dashed border-gray-200 hover:border-indigo-500 rounded-2xl p-6 text-center bg-gray-50/50 transition-colors cursor-pointer relative">
-                                    <input type="file" name="foto_monev[]" multiple accept="image/*" @change="handleFileSelect($event, {{ $ke }})" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                                    <div class="space-y-2">
-                                        <div class="w-12 h-12 mx-auto rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
-                                            <i class="fas fa-camera"></i>
-                                        </div>
-                                        <p class="text-xs font-bold text-gray-700">Pilih file foto untuk {{ $tInfo['title'] }}</p>
-                                        <p class="text-[11px] text-gray-400">Bisa memilih lebih dari satu foto secara bersamaan</p>
-                                    </div>
-                                </div>
-
-                                <!-- Live Preview Before Upload -->
-                                <div x-show="previewImages[{{ $ke }}] && previewImages[{{ $ke }}].length > 0" class="mt-4 space-y-2" style="display: none;">
-                                    <p class="text-xs font-bold text-indigo-700">Foto yang akan diunggah (<span x-text="previewImages[{{ $ke }}] ? previewImages[{{ $ke }}].length : 0"></span> foto):</p>
-                                    <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                                        <template x-for="(img, idx) in previewImages[{{ $ke }}]" :key="idx">
-                                            <div class="relative group rounded-xl overflow-hidden border border-indigo-200 bg-black aspect-square shadow-sm">
-                                                <img :src="img.url" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition">
-                                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-2">
-                                                    <span class="text-[10px] text-white font-mono truncate" x-text="img.name"></span>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Submit Button -->
                             <div class="pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
                                 <span class="text-xs text-gray-400 font-medium">
@@ -412,11 +352,11 @@
                         <div class="flex items-center justify-between pb-4 border-b border-gray-100">
                             <div>
                                 <h2 class="text-lg font-black text-gray-900 flex items-center gap-2">
-                                    <i class="fas fa-images text-indigo-600"></i>
-                                    <span>Dokumentasi Tersimpan ({{ $tInfo['title'] }})</span>
+                                    <i class="fab fa-google-drive text-emerald-600"></i>
+                                    <span>Dokumentasi Google Drive ({{ $tInfo['title'] }})</span>
                                 </h2>
                                 <p class="text-xs text-gray-500 mt-0.5">
-                                    Dokumentasi foto dan Google Drive untuk {{ $tInfo['title'] }}
+                                    Dokumentasi foto monitoring dan evaluasi untuk {{ $tInfo['title'] }}
                                 </p>
                             </div>
                         </div>
@@ -442,42 +382,13 @@
                                     <i class="fas fa-external-link-alt text-[10px]"></i>
                                 </a>
                             </div>
-                        @endif
-
-                        @if (!empty($tData->foto_urls) && count($tData->foto_urls) > 0)
-                            <div class="space-y-3">
-                                <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Foto Diunggah ke Server untuk {{ $tInfo['title'] }} ({{ count($tData->foto_urls) }})</h4>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                    @foreach ($tData->foto_urls as $index => $photoUrl)
-                                        <div class="group relative rounded-2xl overflow-hidden border border-gray-200 bg-slate-950 aspect-square shadow-sm flex flex-col justify-between">
-                                            <img src="{{ $photoUrl }}" alt="Dokumentasi {{ $tInfo['title'] }} {{ $index + 1 }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer" @click="selectedImage = '{{ $photoUrl }}'">
-
-                                            <!-- Hover Overlay Actions -->
-                                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-between pointer-events-none">
-                                                <div class="flex justify-end pointer-events-auto">
-                                                    <form action="{{ route('dosen.program-kerja.monev-delete-foto-tahap-id', ['id' => $monev->id, 'tahap' => $ke, 'index' => $index]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto ini dari {{ $tInfo['title'] }}?');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="w-8 h-8 rounded-full bg-rose-600/90 hover:bg-rose-700 text-white flex items-center justify-center text-xs shadow-md transition" title="Hapus foto ini">
-                                                            <i class="fas fa-trash-alt"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                                <div class="pointer-events-auto">
-                                                    <button type="button" @click="selectedImage = '{{ $photoUrl }}'" class="text-white text-xs font-bold hover:underline flex items-center gap-1">
-                                                        <i class="fas fa-search-plus"></i> Lihat Penuh
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @elseif (!$tData->link_monev)
+                        @else
                             <div class="text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                                <i class="far fa-images text-gray-300 text-4xl mb-3 block"></i>
-                                <p class="text-xs font-bold text-gray-500">Belum ada tautan Google Drive atau foto dokumentasi untuk {{ $tInfo['title'] }}.</p>
-                                <p class="text-[11px] text-gray-400 mt-1">Gunakan formulir di atas untuk memasukkan tautan Google Drive atau mengunggah foto.</p>
+                                <div class="w-12 h-12 mx-auto rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-3">
+                                    <i class="fab fa-google-drive"></i>
+                                </div>
+                                <p class="text-xs font-bold text-gray-700">Belum ada tautan Google Drive untuk {{ $tInfo['title'] }}.</p>
+                                <p class="text-[11px] text-gray-400 mt-1">Masukkan tautan folder Google Drive pada formulir di atas untuk membagikan dokumentasi foto monev.</p>
                             </div>
                         @endif
                     </div>
@@ -486,15 +397,6 @@
         </div>
     </div>
 
-    <!-- Image Lightbox Modal -->
-    <div x-show="selectedImage" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" style="display: none;" @keydown.escape.window="selectedImage = null">
-        <div class="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center" @click.away="selectedImage = null">
-            <button type="button" @click="selectedImage = null" class="absolute -top-12 right-0 text-white hover:text-gray-300 text-2xl font-bold p-2 transition">
-                <i class="fas fa-times"></i> Tutup
-            </button>
-            <img :src="selectedImage" class="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl border border-white/20">
-        </div>
-    </div>
-
 </div>
 @endsection
+

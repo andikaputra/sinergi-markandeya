@@ -441,7 +441,7 @@
                                                 <i class="fab fa-google-drive"></i>
                                             </div>
                                             <div>
-                                                <h4 class="text-xs font-bold text-emerald-950">Foto Dokumentasi {{ $mInfo['title'] }}</h4>
+                                                <h4 class="text-xs font-bold text-emerald-950">Dokumentasi Foto {{ $mInfo['title'] }}</h4>
                                                 <p class="text-[10px] text-emerald-700">Tersedia di Google Drive</p>
                                             </div>
                                         </div>
@@ -450,26 +450,6 @@
                                             <span>Buka Foto di Google Drive</span>
                                             <i class="fas fa-external-link-alt text-[10px] ml-0.5"></i>
                                         </a>
-                                    </div>
-                                @endif
-
-                                <!-- Photo Gallery -->
-                                @if (!empty($t->foto_urls) && count($t->foto_urls) > 0)
-                                    <div class="space-y-2">
-                                        <p class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                                            <i class="fas fa-camera text-indigo-600"></i>
-                                            <span>Galeri Foto {{ $mInfo['title'] }} ({{ count($t->foto_urls) }} foto):</span>
-                                        </p>
-                                        <div class="grid grid-cols-2 gap-2">
-                                            @foreach ($t->foto_urls as $photoUrl)
-                                                <div class="group relative rounded-xl overflow-hidden border border-gray-200 bg-slate-900 aspect-video cursor-pointer shadow-sm" @click="monevImage = '{{ $photoUrl }}'">
-                                                    <img src="{{ $photoUrl }}" alt="Dokumentasi {{ $mInfo['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
-                                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1">
-                                                        <i class="fas fa-search-plus"></i> Lihat
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
                                     </div>
                                 @endif
                             @else
@@ -487,16 +467,6 @@
                         <p class="text-xs text-gray-500 font-medium">Belum ada dosen monev yang ditugaskan untuk program kelompok ini.</p>
                     </div>
                 @endif
-
-                <!-- Lightbox Modal for Mahasiswa -->
-                <div x-show="monevImage" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" style="display: none;" @keydown.escape.window="monevImage = null">
-                    <div class="relative max-w-3xl w-full max-h-[85vh] flex flex-col items-center" @click.away="monevImage = null">
-                        <button type="button" @click="monevImage = null" class="absolute -top-10 right-0 text-white hover:text-gray-300 text-xl font-bold transition">
-                            <i class="fas fa-times"></i> Tutup
-                        </button>
-                        <img :src="monevImage" class="max-w-full max-h-[80vh] rounded-2xl object-contain shadow-2xl border border-white/20">
-                    </div>
-                </div>
             </div>
         </div>
     </div>

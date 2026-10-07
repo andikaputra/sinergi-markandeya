@@ -328,7 +328,6 @@
                                         $targetSub = $lok?->kecamatan ? ('Kec. ' . $lok->kecamatan . ($lok?->kabupaten ? ', ' . $lok->kabupaten : '')) : ($lok?->alamat ?? '');
                                     }
                                 }
-                                $fotoCount = !empty($assignment->foto_monev) && is_array($assignment->foto_monev) ? count($assignment->foto_monev) : 0;
                             @endphp
                             <div class="p-3.5 bg-gray-50 border border-gray-100 rounded-2xl flex items-start justify-between gap-3 text-xs">
                                 <div class="min-w-0 flex-1 space-y-1">

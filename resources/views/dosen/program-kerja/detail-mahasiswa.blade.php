@@ -184,7 +184,7 @@
                         @php
                             $monev = $program->monev;
                         @endphp
-                        @if ($monev && ($monev->catatan || $monev->nilai !== null || $monev->link_monev || !empty($monev->foto_monev)))
+                        @if ($monev && ($monev->catatan || $monev->nilai !== null || $monev->link_monev))
                             <div class="mt-4 p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-3">
                                 <div class="flex items-center justify-between flex-wrap gap-2">
                                     <div class="flex items-center gap-2">
@@ -220,16 +220,6 @@
                                             <span>Buka Dokumentasi di Google Drive</span>
                                             <i class="fas fa-external-link-alt text-[10px] ml-1"></i>
                                         </a>
-                                    </div>
-                                @endif
-
-                                @if($monev && !empty($monev->foto_urls))
-                                    <div class="flex items-center gap-2 overflow-x-auto py-1">
-                                        @foreach($monev->foto_urls as $fotoUrl)
-                                            <a href="{{ $fotoUrl }}" target="_blank" class="block w-16 h-16 rounded-xl overflow-hidden border border-indigo-200 bg-black flex-shrink-0 hover:opacity-80 transition">
-                                                <img src="{{ $fotoUrl }}" class="w-full h-full object-cover">
-                                            </a>
-                                        @endforeach
                                     </div>
                                 @endif
                             </div>
@@ -395,7 +385,7 @@
                         @php
                             $monevKel = $program->monev;
                         @endphp
-                        @if ($monevKel && ($monevKel->catatan || $monevKel->nilai !== null || $monevKel->link_monev || !empty($monevKel->foto_monev)))
+                        @if ($monevKel && ($monevKel->catatan || $monevKel->nilai !== null || $monevKel->link_monev))
                             <div class="mt-4 p-4 rounded-2xl bg-purple-50/50 border border-purple-100 space-y-3">
                                 <div class="flex items-center justify-between flex-wrap gap-2">
                                     <div class="flex items-center gap-2">
@@ -433,40 +423,8 @@
                                         </a>
                                     </div>
                                 @endif
-
-                                @if($monevKel && !empty($monevKel->foto_urls))
-                                    <div class="flex items-center gap-2 overflow-x-auto py-1">
-                                        @foreach($monevKel->foto_urls as $fotoUrl)
-                                            <a href="{{ $fotoUrl }}" target="_blank" class="block w-16 h-16 rounded-xl overflow-hidden border border-purple-200 bg-black flex-shrink-0 hover:opacity-80 transition">
-                                                <img src="{{ $fotoUrl }}" class="w-full h-full object-cover">
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                @endif
                             </div>
                         @endif
-
-                            <!-- Catatan Monev (Evaluator Luar) jika ada -->
-                            @if ($program->monev && ($program->monev->catatan || $program->monev->nilai || $program->monev->link_monev))
-                                <div class="mt-4 p-4 bg-purple-50/60 rounded-2xl border border-purple-100 text-xs space-y-1">
-                                    <div class="flex items-center justify-between text-purple-900 font-bold">
-                                        <span><i class="fas fa-clipboard-check mr-1"></i> Evaluasi Dosen Pemonev: {{ $program->monev->dosen?->nama ?? '-' }}</span>
-                                        @if(!is_null($program->monev->nilai))
-                                            <span class="px-2 py-0.5 bg-purple-200 text-purple-900 rounded font-mono font-black">Nilai: {{ $program->monev->nilai }}</span>
-                                        @endif
-                                    </div>
-                                    @if ($program->monev->catatan)
-                                        <p class="text-purple-800 italic mt-1 leading-relaxed">"{{ $program->monev->catatan }}"</p>
-                                    @endif
-                                    @if ($program->monev->link_monev)
-                                        <div class="mt-1">
-                                            <a href="{{ $program->monev->link_monev }}" target="_blank" class="text-purple-700 hover:underline font-bold inline-flex items-center gap-1">
-                                                <i class="fab fa-google-drive"></i> Link Dokumentasi / Foto Monev
-                                            </a>
-                                        </div>
-                                    @endif
-                                </div>
-                            @endif
                         </div>
                     @endforeach
                 </div>

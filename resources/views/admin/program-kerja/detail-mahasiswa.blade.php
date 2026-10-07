@@ -114,15 +114,6 @@
                                         </a>
                                     </div>
                                 @endif
-                                @if(!empty($monev->foto_monev) && count($monev->foto_monev) > 0)
-                                    <div class="flex items-center gap-2 overflow-x-auto py-1">
-                                        @foreach($monev->foto_monev as $f)
-                                            <a href="{{ asset('storage/' . ltrim($f, '/')) }}" target="_blank" class="block w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-black flex-shrink-0">
-                                                <img src="{{ asset('storage/' . ltrim($f, '/')) }}" class="w-full h-full object-cover hover:opacity-80 transition">
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                @endif
                             </div>
                         @endif
 
