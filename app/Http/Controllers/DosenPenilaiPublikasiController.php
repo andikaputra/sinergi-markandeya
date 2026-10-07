@@ -107,7 +107,8 @@ class DosenPenilaiPublikasiController extends Controller
         $selectedTA = $request->input('tahun_akademik', $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null);
         $selectedKegiatan = $request->input('kegiatan');
 
-        $query = DosenPenilaiPublikasi::where('nidn', $dosen->nidn)
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+        $query = DosenPenilaiPublikasi::whereIn('nidn', $nidns)
             ->with(['mahasiswa.publikasis', 'mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang', 'mahasiswa.activeKegiatan'])
             ->whereHas('mahasiswa', function ($q) use ($selectedTA, $selectedKegiatan) {
                 if ($selectedTA) {
@@ -127,7 +128,8 @@ class DosenPenilaiPublikasiController extends Controller
     {
         $dosen = Auth::guard('dosen')->user();
 
-        $isPenilai = DosenPenilaiPublikasi::where('nidn', $dosen->nidn)
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+        $isPenilai = DosenPenilaiPublikasi::whereIn('nidn', $nidns)
             ->where('nim', $nim)
             ->firstOrFail();
 
@@ -154,7 +156,8 @@ class DosenPenilaiPublikasiController extends Controller
             'nilai_mempertahankan' => 'required|numeric|min:0|max:100',
         ]);
 
-        $penilai = DosenPenilaiPublikasi::where('nidn', $dosen->nidn)
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+        $penilai = DosenPenilaiPublikasi::whereIn('nidn', $nidns)
             ->where('nim', $nim)
             ->firstOrFail();
 

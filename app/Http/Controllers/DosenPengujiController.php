@@ -316,7 +316,8 @@ class DosenPengujiController extends Controller
         $selectedTA = $request->input('tahun_akademik', $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null);
         $selectedKegiatan = $request->input('kegiatan');
 
-        $query = DosenPenguji::where('nidn', $dosen->nidn)
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+        $query = DosenPenguji::whereIn('nidn', $nidns)
             ->with(['mahasiswa.publikasis', 'mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang', 'mahasiswa.activeKegiatan'])
             ->whereHas('mahasiswa', function ($q) use ($selectedTA, $selectedKegiatan) {
                 if ($selectedTA) {
@@ -336,7 +337,8 @@ class DosenPengujiController extends Controller
     {
         $dosen = Auth::guard('dosen')->user();
 
-        $isUjian = DosenPenguji::where('nidn', $dosen->nidn)
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+        $isUjian = DosenPenguji::whereIn('nidn', $nidns)
             ->where('nim', $nim)
             ->firstOrFail();
 
@@ -356,7 +358,8 @@ class DosenPengujiController extends Controller
     {
         $dosen = Auth::guard('dosen')->user();
 
-        $ujian = DosenPenguji::where('nidn', $dosen->nidn)
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+        $ujian = DosenPenguji::whereIn('nidn', $nidns)
             ->where('nim', $nim)
             ->firstOrFail();
 

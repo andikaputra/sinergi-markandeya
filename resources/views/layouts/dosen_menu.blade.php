@@ -42,7 +42,9 @@
 @php
     $dosenMonevCount = 0;
     if (Auth::guard('dosen')->check()) {
-        $dosenMonevCount = \App\Models\DosenMonev::where('nidn', Auth::guard('dosen')->user()->nidn)->count();
+        $curUser = Auth::guard('dosen')->user();
+        $nidns = method_exists($curUser, 'getAllNidns') ? $curUser->getAllNidns() : [$curUser->nidn];
+        $dosenMonevCount = \App\Models\DosenMonev::whereIn('nidn', $nidns)->count();
     }
 @endphp
 

@@ -45,6 +45,21 @@ class Dosen extends Authenticatable
         return $this->hasMany(DosenPenilaiPublikasi::class, 'nidn', 'nidn');
     }
 
+    public function getAllNidns(): array
+    {
+        $nidns = [$this->nidn];
+        if (!empty($this->nip)) {
+            $nidns[] = $this->nip;
+        }
+
+        if (in_array($this->nidn, ['0020097807', '11112304']) || in_array($this->nip, ['0020097807', '11112304'])) {
+            $nidns[] = '0020097807';
+            $nidns[] = '11112304';
+        }
+
+        return array_values(array_unique(array_filter($nidns)));
+    }
+
     public function monevPrograms()
     {
         return $this->hasMany(DosenMonev::class, 'nidn', 'nidn');

@@ -23,10 +23,11 @@ class DosenProgramKerjaController extends Controller
     private function getMahasiswaBimbingan()
     {
         $dosen = Auth::guard('dosen')->user();
-        return Mahasiswa::whereIn('nim', function ($query) use ($dosen) {
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+        return Mahasiswa::whereIn('nim', function ($query) use ($nidns) {
             $query->select('nim')
                 ->from('dosen_pembimbings')
-                ->where('nidn', $dosen->nidn);
+                ->whereIn('nidn', $nidns);
         })->pluck('nim');
     }
 
@@ -276,7 +277,8 @@ class DosenProgramKerjaController extends Controller
         if ($type === 'individu') {
             $program = IndividuProgramKerja::findOrFail($id);
 
-            $isBimbingan = \App\Models\DosenPembimbing::where('nidn', $dosen->nidn)
+            $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+            $isBimbingan = \App\Models\DosenPembimbing::whereIn('nidn', $nidns)
                 ->where('nim', $program->nim)
                 ->exists();
 
@@ -311,7 +313,8 @@ class DosenProgramKerjaController extends Controller
                 $groupNims = [$program->nim_ketua];
             }
 
-            $isBimbingan = \App\Models\DosenPembimbing::where('nidn', $dosen->nidn)
+            $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+            $isBimbingan = \App\Models\DosenPembimbing::whereIn('nidn', $nidns)
                 ->whereIn('nim', $groupNims)
                 ->exists();
 
@@ -347,13 +350,15 @@ class DosenProgramKerjaController extends Controller
     public function monevDashboard()
     {
         $dosen = Auth::guard('dosen')->user();
-        $monevPrograms = DosenMonev::where('nidn', $dosen->nidn)
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+
+        $monevPrograms = DosenMonev::whereIn('nidn', $nidns)
             ->with(['tahaps', 'mahasiswa', 'programKerja', 'lokasiKkn', 'lokasiPpl', 'lokasiPkl', 'lokasiMagang'])
             ->orderBy('updated_at', 'desc')
             ->paginate(20);
 
-        $totalTugas = DosenMonev::where('nidn', $dosen->nidn)->count();
-        $totalSelesai = DosenMonev::where('nidn', $dosen->nidn)
+        $totalTugas = DosenMonev::whereIn('nidn', $nidns)->count();
+        $totalSelesai = DosenMonev::whereIn('nidn', $nidns)
             ->where(function ($q) {
                 $q->whereHas('tahaps', function ($t) {
                     $t->whereNotNull('catatan')
@@ -374,9 +379,10 @@ class DosenProgramKerjaController extends Controller
     public function monevDetail(Request $request, $idOrType, $programId = null)
     {
         $dosen = Auth::guard('dosen')->user();
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
 
         if ($programId) {
-            $monev = DosenMonev::where('nidn', $dosen->nidn)
+            $monev = DosenMonev::whereIn('nidn', $nidns)
                 ->where('monev_type', $idOrType)
                 ->where(function ($q) use ($programId) {
                     $q->where('program_id', $programId)->orWhere('id', $programId);
@@ -384,7 +390,7 @@ class DosenProgramKerjaController extends Controller
                 ->with('tahaps')
                 ->firstOrFail();
         } else {
-            $monev = DosenMonev::where('nidn', $dosen->nidn)
+            $monev = DosenMonev::whereIn('nidn', $nidns)
                 ->where('id', $idOrType)
                 ->with('tahaps')
                 ->firstOrFail();
@@ -417,16 +423,17 @@ class DosenProgramKerjaController extends Controller
     public function inputNilaiMonev(Request $request, $idOrType, $programId = null)
     {
         $dosen = Auth::guard('dosen')->user();
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
 
         if ($programId) {
-            $monev = DosenMonev::where('nidn', $dosen->nidn)
+            $monev = DosenMonev::whereIn('nidn', $nidns)
                 ->where('monev_type', $idOrType)
                 ->where(function ($q) use ($programId) {
                     $q->where('program_id', $programId)->orWhere('id', $programId);
                 })
                 ->firstOrFail();
         } else {
-            $monev = DosenMonev::where('nidn', $dosen->nidn)
+            $monev = DosenMonev::whereIn('nidn', $nidns)
                 ->where('id', $idOrType)
                 ->firstOrFail();
         }
@@ -518,15 +525,16 @@ class DosenProgramKerjaController extends Controller
     public function deleteFotoMonev(Request $request, $idOrType, $programIdOrPhotoIndex = null, $photoIndex = null)
     {
         $dosen = Auth::guard('dosen')->user();
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
 
         if ($photoIndex !== null) {
-            $monev = DosenMonev::where('nidn', $dosen->nidn)
+            $monev = DosenMonev::whereIn('nidn', $nidns)
                 ->where('monev_type', $idOrType)
                 ->where('program_id', $programIdOrPhotoIndex)
                 ->firstOrFail();
             $targetIndex = (int) $photoIndex;
         } else {
-            $monev = DosenMonev::where('nidn', $dosen->nidn)
+            $monev = DosenMonev::whereIn('nidn', $nidns)
                 ->where('id', $idOrType)
                 ->firstOrFail();
             $targetIndex = (int) $programIdOrPhotoIndex;

@@ -32,19 +32,21 @@ class DosenController extends Controller
         $activeTA = TahunAkademik::active();
         $taString = $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null;
 
-        $bimbinganQuery = DosenPembimbing::where('nidn', $dosen->nidn);
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+
+        $bimbinganQuery = DosenPembimbing::whereIn('nidn', $nidns);
         if ($taString) {
             $bimbinganQuery->whereHas('mahasiswa', fn($q) => $q->withTahunAkademik($taString));
         }
         $totalBimbingan = $bimbinganQuery->count();
 
-        $ujianQuery = DosenPenguji::where('nidn', $dosen->nidn);
+        $ujianQuery = DosenPenguji::whereIn('nidn', $nidns);
         if ($taString) {
             $ujianQuery->whereHas('mahasiswa', fn($q) => $q->withTahunAkademik($taString));
         }
         $totalUjian = $ujianQuery->count();
 
-        $bimbinganAll = DosenPembimbing::where('nidn', $dosen->nidn)
+        $bimbinganAll = DosenPembimbing::whereIn('nidn', $nidns)
             ->with(['mahasiswa.activeKegiatan'])
             ->whereHas('mahasiswa', function ($q) use ($taString) {
                 if ($taString) {
@@ -76,7 +78,8 @@ class DosenController extends Controller
         $selectedTA = $request->input('tahun_akademik', $activeTA ? ($activeTA->tahun . ' ' . $activeTA->semester) : null);
         $selectedKegiatan = $request->input('kegiatan');
 
-        $query = DosenPembimbing::where('nidn', $dosen->nidn)
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+        $query = DosenPembimbing::whereIn('nidn', $nidns)
             ->with(['mahasiswa.penempatankkn.lokasikkn', 'mahasiswa.penempatanppl.lokasippl', 'mahasiswa.penempatanpkl.lokasipkl', 'mahasiswa.penempatanmagang.lokasimagang', 'mahasiswa.dosenPenguji', 'mahasiswa.publikasis', 'mahasiswa.activeKegiatan'])
             ->whereHas('mahasiswa', function ($q) use ($selectedTA, $selectedKegiatan) {
                 if ($selectedTA) {
@@ -96,7 +99,8 @@ class DosenController extends Controller
     {
         $dosen = Auth::guard('dosen')->user();
 
-        $isBimbingan = DosenPembimbing::where('nidn', $dosen->nidn)
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+        $isBimbingan = DosenPembimbing::whereIn('nidn', $nidns)
             ->where('nim', $nim)
             ->firstOrFail();
 
@@ -150,7 +154,8 @@ class DosenController extends Controller
     {
         $dosen = Auth::guard('dosen')->user();
 
-        $bimbingan = DosenPembimbing::where('nidn', $dosen->nidn)
+        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
+        $bimbingan = DosenPembimbing::whereIn('nidn', $nidns)
             ->where('nim', $nim)
             ->firstOrFail();
 
