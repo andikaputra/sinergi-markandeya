@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Performa Dosen Pembimbing')
 
 @section('content')
-<div style="background-color: #f5f3f0; min-height: 100vh; padding: 40px 20px;">
+<div style="background-color: #f5f3f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1200px; margin: 0 auto;">
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">

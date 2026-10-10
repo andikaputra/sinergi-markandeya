@@ -113,11 +113,11 @@ class LoginActivityController extends Controller
     {
         $mahasiswas = Mahasiswa::whereNotNull('last_login')
             ->orderBy('last_login', 'desc')
-            ->paginate(20);
+            ->paginate(20, ['*'], 'mahasiswa_page')->withQueryString();
 
         $dosens = Dosen::whereNotNull('last_login')
             ->orderBy('last_login', 'desc')
-            ->paginate(20);
+            ->paginate(20, ['*'], 'dosen_page')->withQueryString();
 
         return view('admin.login-activity.aktivitas-login', compact('mahasiswas', 'dosens'));
     }

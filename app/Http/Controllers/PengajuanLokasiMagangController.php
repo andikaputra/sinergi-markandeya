@@ -7,6 +7,9 @@ use App\Models\PengajuanLokasiMagang;
 use App\Models\LokasiMagang;
 use App\Models\PenempatanMagang;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use App\Models\Mahasiswa;
 
 class PengajuanLokasiMagangController extends Controller
 {
@@ -30,13 +33,17 @@ class PengajuanLokasiMagangController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_instansi' => 'required',
-            'alamat' => 'required',
-            'kontak' => 'nullable|string',
+            'nama_instansi' => 'required|string|max:255',
+            'alamat' => 'required|string|max:255',
+            'kontak' => 'nullable|string|max:255',
         ]);
 
+        $mahasiswa = Auth::guard('mahasiswa')->user();
+        abort_unless($mahasiswa->activeKegiatan?->kegiatan === 'Magang' && $mahasiswa->activeKegiatan?->status_kegiatan === 'aktif', 403, 'Anda tidak sedang mengikuti kegiatan Magang.');
+
         PengajuanLokasiMagang::create([
-            'nim' => Auth::user()->nim,
+            'nim' => $mahasiswa->nim,
+            'tahun_akademik' => $mahasiswa->tahun_akademik ?? '',
             'nama_instansi' => $request->nama_instansi,
             'alamat' => $request->alamat,
             'kontak' => $request->kontak,
@@ -48,28 +55,55 @@ class PengajuanLokasiMagangController extends Controller
 
     public function approve($id)
     {
-        $pengajuan = PengajuanLokasiMagang::findOrFail($id);
-        $pengajuan->update(['status' => 'approved']);
+        DB::transaction(function () use ($id) {
+            $pengajuan = PengajuanLokasiMagang::lockForUpdate()->findOrFail($id);
+            if ($pengajuan->status !== 'pending') {
+                throw ValidationException::withMessages(['pengajuan' => 'Pengajuan ini sudah diproses.']);
+            }
 
-        // Auto-add instansi to master lokasi magang
-        $lokasi = LokasiMagang::firstOrCreate(
-            ['nama_instansi' => $pengajuan->nama_instansi],
-            ['alamat' => $pengajuan->alamat, 'kontak' => $pengajuan->kontak]
-        );
+            $mahasiswa = Mahasiswa::where('nim', $pengajuan->nim)->lockForUpdate()->firstOrFail();
+            $period = $pengajuan->tahun_akademik;
+            $registration = $mahasiswa->mahasiswaKegiatan()->where('kegiatan', 'Magang')
+                ->where('tahun_akademik', $period === '' ? null : $period)
+                ->where('status_kegiatan', 'aktif')->exists();
+            if (!$registration) {
+                throw ValidationException::withMessages(['pengajuan' => 'Pendaftaran kegiatan untuk pengajuan ini tidak aktif.']);
+            }
 
-        // Auto-place student at the location
-        PenempatanMagang::firstOrCreate(
-            ['nim' => $pengajuan->nim],
-            ['lokasi_magang_id' => $lokasi->id]
-        );
+            $lokasi = LokasiMagang::firstOrCreate(
+                ['nama_instansi' => $pengajuan->nama_instansi, 'alamat' => $pengajuan->alamat],
+                ['kontak' => $pengajuan->kontak]
+            );
+            $lokasi = LokasiMagang::lockForUpdate()->findOrFail($lokasi->id);
+            $placements = PenempatanMagang::withoutGlobalScope('periode_aktif')
+                ->where('tahun_akademik', $period);
+            $alreadyPlaced = (clone $placements)->where('nim', $pengajuan->nim)
+                ->where('lokasi_magang_id', $lokasi->id)->exists();
+            if (!$alreadyPlaced && $lokasi->maks_peserta !== null
+                && (clone $placements)->where('lokasi_magang_id', $lokasi->id)->count() >= $lokasi->maks_peserta) {
+                throw ValidationException::withMessages(['pengajuan' => 'Kapasitas lokasi sudah penuh.']);
+            }
 
-        return redirect()->back()->with('success', 'Pengajuan Magang disetujui dan mahasiswa otomatis ditempatkan.');
+            PenempatanMagang::withoutGlobalScope('periode_aktif')->updateOrCreate(
+                ['nim' => $pengajuan->nim, 'tahun_akademik' => $period],
+                ['lokasi_magang_id' => $lokasi->id]
+            );
+            $pengajuan->update(['status' => 'approved']);
+        });
+
+        return back()->with('success', 'Pengajuan Magang disetujui dan penempatan mahasiswa diperbarui.');
     }
 
     public function reject($id)
     {
-        $pengajuan = PengajuanLokasiMagang::findOrFail($id);
-        $pengajuan->update(['status' => 'rejected']);
-        return redirect()->back()->with('error', 'Pengajuan Magang ditolak.');
+        DB::transaction(function () use ($id) {
+            $pengajuan = PengajuanLokasiMagang::lockForUpdate()->findOrFail($id);
+            if ($pengajuan->status !== 'pending') {
+                throw ValidationException::withMessages(['pengajuan' => 'Pengajuan ini sudah diproses.']);
+            }
+            $pengajuan->update(['status' => 'rejected']);
+        });
+
+        return back()->with('success', 'Pengajuan Magang ditolak.');
     }
 }

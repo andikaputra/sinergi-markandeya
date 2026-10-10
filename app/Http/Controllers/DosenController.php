@@ -119,7 +119,7 @@ class DosenController extends Controller
         $dosen = Auth::guard('dosen')->user();
         $bimbingan = Bimbingan::with('dosenPembimbing')->findOrFail($id);
 
-        if ($bimbingan->dosenPembimbing?->nidn !== $dosen->nidn) {
+        if (!in_array($bimbingan->dosenPembimbing?->nidn, $dosen->getAllNidns(), true)) {
             abort(403, 'Anda tidak memiliki akses untuk me-review bimbingan ini.');
         }
 

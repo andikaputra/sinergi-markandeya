@@ -9,7 +9,7 @@ class PengajuanLokasiPKL extends Model
     use HasFactory;
     
     protected $table = 'pengajuan_lokasi_pkl';
-    protected $fillable = ['nim', 'nama_instansi', 'alamat', 'kontak', 'status'];
+    protected $fillable = ['nim', 'tahun_akademik', 'nama_instansi', 'alamat', 'kontak', 'status'];
 
     public function mahasiswa()
     {

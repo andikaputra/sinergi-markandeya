@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Mahasiswa Tidak Aktif')
 
 @section('content')
-<div style="background-color: #f5f3f0; min-height: 100vh; padding: 40px 20px;">
+<div style="background-color: #f5f3f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1200px; margin: 0 auto;">
         <a href="{{ route('admin.login-activity.dashboard') }}" style="color: #d4a574; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px;">
             ← Kembali
@@ -51,7 +51,7 @@
                             <td style="padding: 12px; text-align: center;">
                                 @if($m->last_login)
                                     <span style="background-color: #fff3e0; color: #e65100; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
-                                        {{ now()->diffInDays($m->last_login) }} hari
+                                        {{ (int) $m->last_login->diffInDays(now()) }} hari
                                     </span>
                                 @else
                                     <span style="background-color: #ffcdd2; color: #b71c1c; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">

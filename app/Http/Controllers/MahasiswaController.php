@@ -149,7 +149,12 @@ class MahasiswaController extends Controller
         $request->validate([
             'kegiatan'              => 'required|in:KKN,PPL,PKL,Magang',
             'tahun_akademik_id'     => 'required|exists:tahun_akademiks,id',
-            'preferensi_lokasi_id'  => 'nullable|integer',
+            'preferensi_lokasi_id'  => ['nullable', 'integer', \Illuminate\Validation\Rule::exists(match ($request->kegiatan) {
+                'KKN' => 'lokasi_kkn',
+                'PPL' => 'lokasi_ppl',
+                'PKL' => 'lokasi_pkls',
+                default => 'lokasi_magangs',
+            }, 'id')],
             'nama_instansi_pilihan' => 'nullable|string|max:255',
             'alamat_instansi'       => 'nullable|string|max:500',
             'bidang_minat'          => 'nullable|string|max:255',
@@ -160,87 +165,90 @@ class MahasiswaController extends Controller
             'link_dokumen_3'        => in_array($request->kegiatan, ['PKL', 'Magang']) ? 'required|url|max:500' : 'nullable|url|max:500',
         ]);
 
-        $ta = TahunAkademik::findOrFail($request->tahun_akademik_id);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $ta = TahunAkademik::findOrFail($request->tahun_akademik_id);
 
-        if (!$ta->isPendaftaranOpen()) {
-            return redirect()->back()->with('error', 'Periode pendaftaran untuk tahun akademik ini sudah ditutup.');
-        }
+            if (!$ta->isPendaftaranOpen()) {
+                return redirect()->back()->with('error', 'Periode pendaftaran untuk tahun akademik ini sudah ditutup.');
+            }
 
-        // Cek kapasitas lokasi untuk KKN dan PPL
-        if ($request->filled('preferensi_lokasi_id')) {
-            if ($request->kegiatan === 'KKN') {
-                $lokasi = \App\Models\LokasiKkn::find($request->preferensi_lokasi_id);
-                if ($lokasi && $lokasi->isFull()) {
-                    return redirect()->back()->with('error', 'Kuota lokasi Desa ' . $lokasi->desa . ' sudah penuh (' . $lokasi->maks_peserta . ' orang). Silakan pilih lokasi lain.');
-                }
-            } elseif ($request->kegiatan === 'PPL') {
-                $lokasi = \App\Models\LokasiPpl::find($request->preferensi_lokasi_id);
-                if ($lokasi && $lokasi->isFull()) {
-                    return redirect()->back()->with('error', 'Kuota lokasi ' . $lokasi->Sekolah . ' sudah penuh (' . $lokasi->maks_peserta . ' orang). Silakan pilih lokasi lain.');
+            $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->lockForUpdate()->firstOrFail();
+            $taString = $ta->tahun . ' ' . $ta->semester;
+
+            // Cek kapasitas lokasi untuk KKN dan PPL
+            if ($request->filled('preferensi_lokasi_id')) {
+                if ($request->kegiatan === 'KKN') {
+                    $lokasi = \App\Models\LokasiKkn::lockForUpdate()->find($request->preferensi_lokasi_id);
+                    if ($lokasi && $lokasi->isFull($taString)) {
+                        return redirect()->back()->with('error', 'Kuota lokasi Desa ' . $lokasi->desa . ' sudah penuh (' . $lokasi->maks_peserta . ' orang). Silakan pilih lokasi lain.');
+                    }
+                } elseif ($request->kegiatan === 'PPL') {
+                    $lokasi = \App\Models\LokasiPpl::lockForUpdate()->find($request->preferensi_lokasi_id);
+                    if ($lokasi && $lokasi->isFull($taString)) {
+                        return redirect()->back()->with('error', 'Kuota lokasi ' . $lokasi->Sekolah . ' sudah penuh (' . $lokasi->maks_peserta . ' orang). Silakan pilih lokasi lain.');
+                    }
                 }
             }
-        }
 
-        $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->firstOrFail();
-        $taString = $ta->tahun . ' ' . $ta->semester;
 
-        // Cegah duplikat kegiatan yang sama di TA yang sama
-        $exists = MahasiswaKegiatan::where('nim', $mahasiswa->nim)
-            ->where('kegiatan', $request->kegiatan)
-            ->where('tahun_akademik', $taString)
-            ->exists();
-
-        if ($exists) {
-            return redirect()->back()->with('error', 'Anda sudah terdaftar di kegiatan ' . $request->kegiatan . ' untuk tahun akademik ' . $taString . '.');
-        }
-
-        // KKN, PPL, PKL: hanya 1 per tahun akademik
-        if (in_array($request->kegiatan, ['KKN', 'PPL', 'PKL'])) {
-            $sudahAdaKkn = MahasiswaKegiatan::where('nim', $mahasiswa->nim)
-                ->whereIn('kegiatan', ['KKN', 'PPL', 'PKL'])
+            // Cegah duplikat kegiatan yang sama di TA yang sama
+            $exists = MahasiswaKegiatan::where('nim', $mahasiswa->nim)
+                ->where('kegiatan', $request->kegiatan)
                 ->where('tahun_akademik', $taString)
-                ->first();
+                ->exists();
 
-            if ($sudahAdaKkn) {
-                return redirect()->back()->with('error',
-                    'Anda sudah terdaftar di ' . $sudahAdaKkn->kegiatan . ' untuk tahun akademik ' . $taString . '. KKN, PPL, dan PKL hanya boleh 1 per tahun akademik.');
+            if ($exists) {
+                return redirect()->back()->with('error', 'Anda sudah terdaftar di kegiatan ' . $request->kegiatan . ' untuk tahun akademik ' . $taString . '.');
             }
-        }
 
-        $mk = $mahasiswa->addKegiatan($request->kegiatan, $taString);
+            // KKN, PPL, PKL: hanya 1 per tahun akademik
+            if (in_array($request->kegiatan, ['KKN', 'PPL', 'PKL'])) {
+                $sudahAdaKkn = MahasiswaKegiatan::where('nim', $mahasiswa->nim)
+                    ->whereIn('kegiatan', ['KKN', 'PPL', 'PKL'])
+                    ->where('tahun_akademik', $taString)
+                    ->first();
 
-        $mk->update([
-            'preferensi_lokasi_id'  => $request->preferensi_lokasi_id,
-            'nama_instansi_pilihan' => $request->nama_instansi_pilihan,
-            'alamat_instansi'       => $request->alamat_instansi,
-            'bidang_minat'          => $request->bidang_minat,
-            'skill'                 => $request->skill,
-            'motivasi'              => $request->motivasi,
-            'link_dokumen_1'        => $request->link_dokumen_1,
-            'link_dokumen_2'        => $request->link_dokumen_2,
-            'link_dokumen_3'        => $request->link_dokumen_3,
-        ]);
+                if ($sudahAdaKkn) {
+                    return redirect()->back()->with('error',
+                        'Anda sudah terdaftar di ' . $sudahAdaKkn->kegiatan . ' untuk tahun akademik ' . $taString . '. KKN, PPL, dan PKL hanya boleh 1 per tahun akademik.');
+                }
+            }
 
-        $mahasiswa->update([
-            'kegiatan'      => $request->kegiatan,
-            'tahun_akademik'=> $taString,
-        ]);
+            $mk = $mahasiswa->addKegiatan($request->kegiatan, $taString);
 
-        // Auto-assign penempatan jika ada pilihan lokasi
-        if ($request->kegiatan === 'KKN' && $request->filled('preferensi_lokasi_id')) {
-            \App\Models\PenempatanKkn::updateOrCreate(
-                ['nim' => $mahasiswa->nim],
-                ['lokasi_kkn_id' => $request->preferensi_lokasi_id]
-            );
-        } elseif ($request->kegiatan === 'PPL' && $request->filled('preferensi_lokasi_id')) {
-            \App\Models\PenempatanPpl::updateOrCreate(
-                ['nim' => $mahasiswa->nim],
-                ['sekolah_id' => $request->preferensi_lokasi_id]
-            );
-        }
+            $mk->update([
+                'preferensi_lokasi_id'  => $request->preferensi_lokasi_id,
+                'nama_instansi_pilihan' => $request->nama_instansi_pilihan,
+                'alamat_instansi'       => $request->alamat_instansi,
+                'bidang_minat'          => $request->bidang_minat,
+                'skill'                 => $request->skill,
+                'motivasi'              => $request->motivasi,
+                'link_dokumen_1'        => $request->link_dokumen_1,
+                'link_dokumen_2'        => $request->link_dokumen_2,
+                'link_dokumen_3'        => $request->link_dokumen_3,
+            ]);
 
-        return redirect()->route('mahasiswa.daftar-kegiatan.page')
-            ->with('success', 'Berhasil mendaftar ' . $request->kegiatan . ' untuk tahun akademik ' . $taString . '!');
+            $mahasiswa->update([
+                'kegiatan'      => $request->kegiatan,
+                'tahun_akademik'=> $taString,
+            ]);
+
+            // Auto-assign penempatan jika ada pilihan lokasi
+            if ($request->kegiatan === 'KKN' && $request->filled('preferensi_lokasi_id')) {
+                \App\Models\PenempatanKkn::updateOrCreate(
+                    ['nim' => $mahasiswa->nim],
+                    ['lokasi_kkn_id' => $request->preferensi_lokasi_id]
+                );
+            } elseif ($request->kegiatan === 'PPL' && $request->filled('preferensi_lokasi_id')) {
+                \App\Models\PenempatanPpl::updateOrCreate(
+                    ['nim' => $mahasiswa->nim],
+                    ['sekolah_id' => $request->preferensi_lokasi_id]
+                );
+            }
+
+            return redirect()->route('mahasiswa.daftar-kegiatan.page')
+                ->with('success', 'Berhasil mendaftar ' . $request->kegiatan . ' untuk tahun akademik ' . $taString . '!');
+        });
     }
 
     /**
@@ -252,24 +260,30 @@ class MahasiswaController extends Controller
             'kegiatan_id' => 'required|exists:mahasiswa_kegiatan,id',
         ]);
 
-        $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->firstOrFail();
+        $selected = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->lockForUpdate()->firstOrFail();
+            $kegiatan = $mahasiswa->mahasiswaKegiatan()->where('id', $request->kegiatan_id)
+                ->lockForUpdate()->firstOrFail();
 
-        // Pastikan kegiatan ini milik mahasiswa yang login
-        $kegiatan = MahasiswaKegiatan::where('id', $request->kegiatan_id)
-            ->where('nim', $mahasiswa->nim)
-            ->firstOrFail();
+            if ($kegiatan->status_kegiatan === 'dibatalkan') {
+                return null;
+            }
 
-        // Nonaktifkan semua, aktifkan yang dipilih
-        $mahasiswa->mahasiswaKegiatan()->update(['is_active' => false]);
-        $kegiatan->update(['is_active' => true]);
+            $mahasiswa->mahasiswaKegiatan()->update(['is_active' => false]);
+            $kegiatan->update(['is_active' => true]);
+            $mahasiswa->update([
+                'kegiatan' => $kegiatan->kegiatan,
+                'tahun_akademik' => $kegiatan->tahun_akademik,
+            ]);
 
-        // Dual-write
-        $mahasiswa->update([
-            'kegiatan' => $kegiatan->kegiatan,
-            'tahun_akademik' => $kegiatan->tahun_akademik,
-        ]);
+            return $kegiatan;
+        });
 
-        return redirect()->route('dashboard')->with('success', 'Berhasil beralih ke kegiatan ' . $kegiatan->kegiatan . '.');
+        if (!$selected) {
+            return back()->with('error', 'Kegiatan yang dibatalkan tidak dapat diaktifkan kembali.');
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Berhasil beralih ke kegiatan ' . $selected->kegiatan . '.');
     }
 
     public function temanSeLokasi()
@@ -342,41 +356,44 @@ class MahasiswaController extends Controller
 
     public function batalkanKegiatan(Request $request, $id)
     {
-        $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->firstOrFail();
-        $mk = MahasiswaKegiatan::where('id', $id)->where('nim', $mahasiswa->nim)->firstOrFail();
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($id) {
+            $mahasiswa = Mahasiswa::where('nim', Auth::user()->nim)->lockForUpdate()->firstOrFail();
+            $mk = MahasiswaKegiatan::where('id', $id)->where('nim', $mahasiswa->nim)->lockForUpdate()->firstOrFail();
 
-        // Cek apakah sudah dapat penempatan
-        $sudahPenempatan = match($mk->kegiatan) {
-            'KKN'    => PenempatanKkn::where('nim', $mahasiswa->nim)->exists(),
-            'PPL'    => PenempatanPpl::where('nim', $mahasiswa->nim)->exists(),
-            'PKL'    => PenempatanPkl::where('nim', $mahasiswa->nim)->exists(),
-            'Magang' => PenempatanMagang::where('nim', $mahasiswa->nim)->exists(),
-            default  => false,
-        };
+            // Cek apakah sudah dapat penempatan
+            $sudahPenempatan = match($mk->kegiatan) {
+                'KKN'    => PenempatanKkn::withoutGlobalScope('periode_aktif')->where('nim', $mahasiswa->nim)->where('tahun_akademik', $mk->tahun_akademik ?? '')->exists(),
+                'PPL'    => PenempatanPpl::withoutGlobalScope('periode_aktif')->where('nim', $mahasiswa->nim)->where('tahun_akademik', $mk->tahun_akademik ?? '')->exists(),
+                'PKL'    => PenempatanPkl::withoutGlobalScope('periode_aktif')->where('nim', $mahasiswa->nim)->where('tahun_akademik', $mk->tahun_akademik ?? '')->exists(),
+                'Magang' => PenempatanMagang::withoutGlobalScope('periode_aktif')->where('nim', $mahasiswa->nim)->where('tahun_akademik', $mk->tahun_akademik ?? '')->exists(),
+                default  => false,
+            };
 
-        if ($sudahPenempatan) {
-            return redirect()->back()->with('error', 'Pendaftaran ' . $mk->kegiatan . ' tidak bisa dibatalkan karena sudah mendapat penempatan lokasi.');
-        }
+            if ($sudahPenempatan) {
+                return redirect()->back()->with('error', 'Pendaftaran ' . $mk->kegiatan . ' tidak bisa dibatalkan karena sudah mendapat penempatan lokasi.');
+            }
 
-        $mk->update(['status_kegiatan' => 'dibatalkan', 'is_active' => false]);
+            $wasActive = $mk->is_active;
+            $mk->update(['status_kegiatan' => 'dibatalkan', 'is_active' => false]);
 
-        // Jika ini kegiatan aktif, cari kegiatan lain untuk diaktifkan
-        if ($mahasiswa->kegiatan === $mk->kegiatan) {
-            $gantiAktif = MahasiswaKegiatan::where('nim', $mahasiswa->nim)
-                ->where('id', '!=', $mk->id)
-                ->where('status_kegiatan', 'aktif')
-                ->latest()->first();
+            // Jika ini kegiatan aktif, cari kegiatan lain untuk diaktifkan
+            if ($wasActive) {
+                $gantiAktif = MahasiswaKegiatan::where('nim', $mahasiswa->nim)
+                    ->where('id', '!=', $mk->id)
+                    ->where('status_kegiatan', 'aktif')
+                    ->latest()->first();
 
-            $mahasiswa->update([
-                'kegiatan'       => $gantiAktif?->kegiatan,
-                'tahun_akademik' => $gantiAktif?->tahun_akademik,
-            ]);
+                $mahasiswa->update([
+                    'kegiatan'       => $gantiAktif?->kegiatan,
+                    'tahun_akademik' => $gantiAktif?->tahun_akademik,
+                ]);
 
-            if ($gantiAktif) $gantiAktif->update(['is_active' => true]);
-        }
+                if ($gantiAktif) $gantiAktif->update(['is_active' => true]);
+            }
 
-        return redirect()->route('mahasiswa.daftar-kegiatan.page')
-            ->with('success', 'Pendaftaran ' . $mk->kegiatan . ' berhasil dibatalkan.');
+            return redirect()->route('mahasiswa.daftar-kegiatan.page')
+                ->with('success', 'Pendaftaran ' . $mk->kegiatan . ' berhasil dibatalkan.');
+        });
     }
 
     public function editProfil()

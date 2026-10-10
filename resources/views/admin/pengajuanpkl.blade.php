@@ -4,6 +4,11 @@
 
 @section('content')
 <div class="space-y-8">
+    @if($errors->any())
+    <div class="p-5 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm font-bold">
+        {{ $errors->first() }}
+    </div>
+    @endif
     @if(session('success'))
     <div class="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-700 text-sm font-bold flex items-center">
         <i class="fas fa-check-circle mr-3 text-lg"></i>
@@ -51,6 +56,7 @@
                                 <div>
                                     <p class="text-sm font-bold text-gray-800">{{ $pengajuan->mahasiswa->nama }}</p>
                                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{{ $pengajuan->nim }}</p>
+                                    <p class="text-xs text-gray-500">{{ $pengajuan->tahun_akademik ?: 'Periode belum tercatat' }}</p>
                                 </div>
                             </div>
                         </td>

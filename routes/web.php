@@ -67,7 +67,7 @@ Route::middleware(['auth:web'])->group(function () {
         \Illuminate\Support\Facades\Artisan::call('config:clear');
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
         return back()->with('success', 'Semua cache (route, view, config, cache) berhasil dibersihkan!');
-    })->name('admin.clear-cache');
+    })->name('admin.clear-cache')->middleware('superadmin');
 
     Route::get('/admin/run-migrate', function () {
         try {
@@ -77,7 +77,7 @@ Route::middleware(['auth:web'])->group(function () {
         } catch (\Throwable $e) {
             return back()->with('error', 'Gagal migrasi: ' . $e->getMessage());
         }
-    })->name('admin.run-migrate');
+    })->name('admin.run-migrate')->middleware('superadmin');
 
 
     Route::get('/admin/peserta/kkn', [AdminController::class, 'pesertaKKN'])->name('admin.peserta.kkn')->middleware('kegiatan:KKN');
@@ -147,26 +147,26 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/admin/import-dosen', [AdminController::class, 'importDosen'])->name('admin.import.dosen');
 
     // Export Routes
-    Route::get('/admin/export/kkn', [AdminController::class, 'exportKKN'])->name('admin.export.kkn');
-    Route::get('/admin/export/ppl', [AdminController::class, 'exportPPL'])->name('admin.export.ppl');
-    Route::get('/admin/export/pkl', [AdminController::class, 'exportPKL'])->name('admin.export.pkl');
-    Route::get('/admin/export/magang', [AdminController::class, 'exportMagang'])->name('admin.export.magang');
+    Route::get('/admin/export/kkn', [AdminController::class, 'exportKKN'])->name('admin.export.kkn')->middleware('kegiatan:KKN');
+    Route::get('/admin/export/ppl', [AdminController::class, 'exportPPL'])->name('admin.export.ppl')->middleware('kegiatan:PPL');
+    Route::get('/admin/export/pkl', [AdminController::class, 'exportPKL'])->name('admin.export.pkl')->middleware('kegiatan:PKL');
+    Route::get('/admin/export/magang', [AdminController::class, 'exportMagang'])->name('admin.export.magang')->middleware('kegiatan:Magang');
 
     // Print PDF Routes
-    Route::get('/admin/print/kkn', [AdminController::class, 'printKKN'])->name('admin.print.kkn');
-    Route::get('/admin/print/ppl', [AdminController::class, 'printPPL'])->name('admin.print.ppl');
-    Route::get('/admin/print/pkl', [AdminController::class, 'printPKL'])->name('admin.print.pkl');
-    Route::get('/admin/print/magang', [AdminController::class, 'printMagang'])->name('admin.print.magang');
+    Route::get('/admin/print/kkn', [AdminController::class, 'printKKN'])->name('admin.print.kkn')->middleware('kegiatan:KKN');
+    Route::get('/admin/print/ppl', [AdminController::class, 'printPPL'])->name('admin.print.ppl')->middleware('kegiatan:PPL');
+    Route::get('/admin/print/pkl', [AdminController::class, 'printPKL'])->name('admin.print.pkl')->middleware('kegiatan:PKL');
+    Route::get('/admin/print/magang', [AdminController::class, 'printMagang'])->name('admin.print.magang')->middleware('kegiatan:Magang');
 
 
     Route::get('/dosen', [AdminController::class, 'indexdosen'])->name('dosen.index');
     Route::get('/dosen/create', [AdminController::class, 'createdosen'])->name('dosen.create');
     Route::post('/dosen/store', [AdminController::class, 'storedosen'])->name('dosen.store');
 
-    Route::get('/assign-dosenkkn', [DosenPembimbingController::class, 'index'])->name('assign.dosenkkn');
-    Route::get('/assign-dosenppl', [DosenPembimbingController::class, 'indexppl'])->name('assign.dosenppl');
-    Route::get('/assign-dosenpkl', [DosenPembimbingController::class, 'indexpkl'])->name('assign.dosenpkl');
-    Route::get('/assign-dosenmagang', [DosenPembimbingController::class, 'indexmagang'])->name('assign.dosenmagang');
+    Route::get('/assign-dosenkkn', [DosenPembimbingController::class, 'index'])->name('assign.dosenkkn')->middleware('kegiatan:KKN');
+    Route::get('/assign-dosenppl', [DosenPembimbingController::class, 'indexppl'])->name('assign.dosenppl')->middleware('kegiatan:PPL');
+    Route::get('/assign-dosenpkl', [DosenPembimbingController::class, 'indexpkl'])->name('assign.dosenpkl')->middleware('kegiatan:PKL');
+    Route::get('/assign-dosenmagang', [DosenPembimbingController::class, 'indexmagang'])->name('assign.dosenmagang')->middleware('kegiatan:Magang');
     Route::post('/assign-dosenikkn', [DosenPembimbingController::class, 'assign'])->name('assign.dosen.store');
     Route::post('/assign-dosen/import', [DosenPembimbingController::class, 'import'])->name('assign.dosen.import');
     Route::delete('/assign-dosen/{id}', [DosenPembimbingController::class, 'delete'])->name('assign.dosen.delete');
@@ -184,64 +184,64 @@ Route::middleware(['auth:web'])->group(function () {
     Route::delete('/assign-dosenpenilai/{id}', [DosenPenilaiPublikasiController::class, 'adminDelete'])->name('assign.dosenpenilai.delete');
 
     //KKN
-    Route::get('/lokasikkn', [LokasiKknController::class, 'indexlokasikkn'])->name('lokasikkn.index');
-    Route::get('/lokasikkn/create', [LokasiKknController::class, 'createlokasikkn'])->name('lokasikkn.create');
-    Route::post('/lokasikkn/store', [LokasiKknController::class, 'storelokasikkn'])->name('lokasikkn.store');
-    Route::put('/lokasikkn/{id}', [LokasiKknController::class, 'update'])->name('lokasikkn.update');
-    Route::put('/lokasikkn/{id}/kapasitas', [LokasiKknController::class, 'updateKapasitas'])->name('lokasikkn.kapasitas')->middleware('superadmin');
-    Route::delete('/lokasikkn/{id}', [LokasiKknController::class, 'destroylokasikkn'])->name('lokasikkn.delete');
+    Route::get('/lokasikkn', [LokasiKknController::class, 'indexlokasikkn'])->name('lokasikkn.index')->middleware('kegiatan:KKN');
+    Route::get('/lokasikkn/create', [LokasiKknController::class, 'createlokasikkn'])->name('lokasikkn.create')->middleware('kegiatan:KKN');
+    Route::post('/lokasikkn/store', [LokasiKknController::class, 'storelokasikkn'])->name('lokasikkn.store')->middleware('kegiatan:KKN');
+    Route::put('/lokasikkn/{id}', [LokasiKknController::class, 'update'])->name('lokasikkn.update')->middleware('kegiatan:KKN');
+    Route::put('/lokasikkn/{id}/kapasitas', [LokasiKknController::class, 'updateKapasitas'])->name('lokasikkn.kapasitas')->middleware('superadmin')->middleware('kegiatan:KKN');
+    Route::delete('/lokasikkn/{id}', [LokasiKknController::class, 'destroylokasikkn'])->name('lokasikkn.delete')->middleware('kegiatan:KKN');
 
 
-    Route::get('/assign-lokasikkn', [LokasiKknController::class, 'indexasignlokasikkn'])->name('assign.lokasikkn');
-    Route::post('/assign-lokasikkn', [LokasiKknController::class, 'assign'])->name('assign.lokasikkn.store');
-    Route::post('/assign-lokasikkn/{id}/set-ketua', [LokasiKknController::class, 'setKetua'])->name('assign.lokasikkn.set-ketua');
-    Route::delete('/assign-lokasikkn/{id}', [LokasiKknController::class, 'deletelokasikkn'])->name('assign.lokasikkn.delete');
+    Route::get('/assign-lokasikkn', [LokasiKknController::class, 'indexasignlokasikkn'])->name('assign.lokasikkn')->middleware('kegiatan:KKN');
+    Route::post('/assign-lokasikkn', [LokasiKknController::class, 'assign'])->name('assign.lokasikkn.store')->middleware('kegiatan:KKN');
+    Route::post('/assign-lokasikkn/{id}/set-ketua', [LokasiKknController::class, 'setKetua'])->name('assign.lokasikkn.set-ketua')->middleware('kegiatan:KKN');
+    Route::delete('/assign-lokasikkn/{id}', [LokasiKknController::class, 'deletelokasikkn'])->name('assign.lokasikkn.delete')->middleware('kegiatan:KKN');
 
 
     //PPL
-    Route::get('/lokasippl', [LokasiPplController::class, 'indexlokasippl'])->name('lokasippl.index');
-    Route::get('/lokasippl/create', [LokasiPplController::class, 'createlokasippl'])->name('lokasippl.create');
-    Route::post('/lokasippl/store', [LokasiPplController::class, 'storelokasippl'])->name('lokasippl.store');
-    Route::put('/lokasippl/{id}', [LokasiPplController::class, 'update'])->name('lokasippl.update');
-    Route::put('/lokasippl/{id}/kapasitas', [LokasiPplController::class, 'updateKapasitas'])->name('lokasippl.kapasitas')->middleware('superadmin');
-    Route::delete('/lokasippl/{id}', [LokasiPplController::class, 'destroylokasippl'])->name('lokasippl.delete');
+    Route::get('/lokasippl', [LokasiPplController::class, 'indexlokasippl'])->name('lokasippl.index')->middleware('kegiatan:PPL');
+    Route::get('/lokasippl/create', [LokasiPplController::class, 'createlokasippl'])->name('lokasippl.create')->middleware('kegiatan:PPL');
+    Route::post('/lokasippl/store', [LokasiPplController::class, 'storelokasippl'])->name('lokasippl.store')->middleware('kegiatan:PPL');
+    Route::put('/lokasippl/{id}', [LokasiPplController::class, 'update'])->name('lokasippl.update')->middleware('kegiatan:PPL');
+    Route::put('/lokasippl/{id}/kapasitas', [LokasiPplController::class, 'updateKapasitas'])->name('lokasippl.kapasitas')->middleware('superadmin')->middleware('kegiatan:PPL');
+    Route::delete('/lokasippl/{id}', [LokasiPplController::class, 'destroylokasippl'])->name('lokasippl.delete')->middleware('kegiatan:PPL');
 
     //PKL (Master Data)
-    Route::get('/lokasipkl', [LokasiPklController::class, 'index'])->name('lokasipkl.index');
-    Route::get('/lokasipkl/create', [LokasiPklController::class, 'create'])->name('lokasipkl.create');
-    Route::post('/lokasipkl/store', [LokasiPklController::class, 'store'])->name('lokasipkl.store');
-    Route::put('/lokasipkl/{id}', [LokasiPklController::class, 'update'])->name('lokasipkl.update');
-    Route::put('/lokasipkl/{id}/kapasitas', [LokasiPklController::class, 'updateKapasitas'])->name('lokasipkl.kapasitas')->middleware('superadmin');
-    Route::delete('/lokasipkl/{id}', [LokasiPklController::class, 'destroy'])->name('lokasipkl.delete');
+    Route::get('/lokasipkl', [LokasiPklController::class, 'index'])->name('lokasipkl.index')->middleware('kegiatan:PKL');
+    Route::get('/lokasipkl/create', [LokasiPklController::class, 'create'])->name('lokasipkl.create')->middleware('kegiatan:PKL');
+    Route::post('/lokasipkl/store', [LokasiPklController::class, 'store'])->name('lokasipkl.store')->middleware('kegiatan:PKL');
+    Route::put('/lokasipkl/{id}', [LokasiPklController::class, 'update'])->name('lokasipkl.update')->middleware('kegiatan:PKL');
+    Route::put('/lokasipkl/{id}/kapasitas', [LokasiPklController::class, 'updateKapasitas'])->name('lokasipkl.kapasitas')->middleware('superadmin')->middleware('kegiatan:PKL');
+    Route::delete('/lokasipkl/{id}', [LokasiPklController::class, 'destroy'])->name('lokasipkl.delete')->middleware('kegiatan:PKL');
 
-    Route::get('/assign-lokasipkl', [LokasiPklController::class, 'assignIndex'])->name('assign.lokasipkl');
-    Route::post('/assign-lokasipkl', [LokasiPklController::class, 'assignStore'])->name('assign.lokasipkl.store');
-    Route::delete('/assign-lokasipkl/{id}', [LokasiPklController::class, 'assignDelete'])->name('assign.lokasipkl.delete');
+    Route::get('/assign-lokasipkl', [LokasiPklController::class, 'assignIndex'])->name('assign.lokasipkl')->middleware('kegiatan:PKL');
+    Route::post('/assign-lokasipkl', [LokasiPklController::class, 'assignStore'])->name('assign.lokasipkl.store')->middleware('kegiatan:PKL');
+    Route::delete('/assign-lokasipkl/{id}', [LokasiPklController::class, 'assignDelete'])->name('assign.lokasipkl.delete')->middleware('kegiatan:PKL');
 
     //Magang (Master Data)
-    Route::get('/lokasimagang', [LokasiMagangController::class, 'index'])->name('lokasimagang.index');
-    Route::get('/lokasimagang/create', [LokasiMagangController::class, 'create'])->name('lokasimagang.create');
-    Route::post('/lokasimagang/store', [LokasiMagangController::class, 'store'])->name('lokasimagang.store');
-    Route::put('/lokasimagang/{id}', [LokasiMagangController::class, 'update'])->name('lokasimagang.update');
-    Route::put('/lokasimagang/{id}/kapasitas', [LokasiMagangController::class, 'updateKapasitas'])->name('lokasimagang.kapasitas')->middleware('superadmin');
-    Route::delete('/lokasimagang/{id}', [LokasiMagangController::class, 'destroy'])->name('lokasimagang.delete');
+    Route::get('/lokasimagang', [LokasiMagangController::class, 'index'])->name('lokasimagang.index')->middleware('kegiatan:Magang');
+    Route::get('/lokasimagang/create', [LokasiMagangController::class, 'create'])->name('lokasimagang.create')->middleware('kegiatan:Magang');
+    Route::post('/lokasimagang/store', [LokasiMagangController::class, 'store'])->name('lokasimagang.store')->middleware('kegiatan:Magang');
+    Route::put('/lokasimagang/{id}', [LokasiMagangController::class, 'update'])->name('lokasimagang.update')->middleware('kegiatan:Magang');
+    Route::put('/lokasimagang/{id}/kapasitas', [LokasiMagangController::class, 'updateKapasitas'])->name('lokasimagang.kapasitas')->middleware('superadmin')->middleware('kegiatan:Magang');
+    Route::delete('/lokasimagang/{id}', [LokasiMagangController::class, 'destroy'])->name('lokasimagang.delete')->middleware('kegiatan:Magang');
 
-    Route::get('/assign-lokasimagang', [AdminController::class, 'assignMagangIndex'])->name('assign.lokasimagang');
-    Route::post('/assign-lokasimagang', [AdminController::class, 'assignMagangStore'])->name('assign.lokasimagang.store');
-    Route::delete('/assign-lokasimagang/{id}', [AdminController::class, 'assignMagangDelete'])->name('assign.lokasimagang.delete');
+    Route::get('/assign-lokasimagang', [AdminController::class, 'assignMagangIndex'])->name('assign.lokasimagang')->middleware('kegiatan:Magang');
+    Route::post('/assign-lokasimagang', [AdminController::class, 'assignMagangStore'])->name('assign.lokasimagang.store')->middleware('kegiatan:Magang');
+    Route::delete('/assign-lokasimagang/{id}', [AdminController::class, 'assignMagangDelete'])->name('assign.lokasimagang.delete')->middleware('kegiatan:Magang');
 
-    Route::get('/assign-lokasippl', [LokasiPplController::class, 'indexasignlokasippl'])->name('assign.lokasippl');
-    Route::post('/assign-lokasippl', [LokasiPplController::class, 'assign'])->name('assign.lokasippl.store');
-    Route::post('/assign-lokasippl/{id}/set-ketua', [LokasiPplController::class, 'setKetua'])->name('assign.lokasippl.set-ketua');
-    Route::delete('/assign-lokasippl/{id}', [LokasiPplController::class, 'deletelokasippl'])->name('assign.lokasippl.delete');
+    Route::get('/assign-lokasippl', [LokasiPplController::class, 'indexasignlokasippl'])->name('assign.lokasippl')->middleware('kegiatan:PPL');
+    Route::post('/assign-lokasippl', [LokasiPplController::class, 'assign'])->name('assign.lokasippl.store')->middleware('kegiatan:PPL');
+    Route::post('/assign-lokasippl/{id}/set-ketua', [LokasiPplController::class, 'setKetua'])->name('assign.lokasippl.set-ketua')->middleware('kegiatan:PPL');
+    Route::delete('/assign-lokasippl/{id}', [LokasiPplController::class, 'deletelokasippl'])->name('assign.lokasippl.delete')->middleware('kegiatan:PPL');
 
-    Route::get('/pengajuan-pkladmin', [PengajuanLokasiPKLController::class, 'adminindex'])->name('pengajuanpkl.adminindex');
-    Route::post('/pengajuan-pkl/{id}/approve', [PengajuanLokasiPKLController::class, 'approve'])->name('pengajuanpkl.approve');
-    Route::post('/pengajuan-pkl/{id}/reject', [PengajuanLokasiPKLController::class, 'reject'])->name('pengajuanpkl.reject');
+    Route::get('/pengajuan-pkladmin', [PengajuanLokasiPKLController::class, 'adminindex'])->name('pengajuanpkl.adminindex')->middleware('kegiatan:PKL');
+    Route::post('/pengajuan-pkl/{id}/approve', [PengajuanLokasiPKLController::class, 'approve'])->name('pengajuanpkl.approve')->middleware('kegiatan:PKL');
+    Route::post('/pengajuan-pkl/{id}/reject', [PengajuanLokasiPKLController::class, 'reject'])->name('pengajuanpkl.reject')->middleware('kegiatan:PKL');
 
-    Route::get('/pengajuan-magangadmin', [PengajuanLokasiMagangController::class, 'adminindex'])->name('pengajuanmagang.adminindex');
-    Route::post('/pengajuan-magang/{id}/approve', [PengajuanLokasiMagangController::class, 'approve'])->name('pengajuanmagang.approve');
-    Route::post('/pengajuan-magang/{id}/reject', [PengajuanLokasiMagangController::class, 'reject'])->name('pengajuanmagang.reject');
+    Route::get('/pengajuan-magangadmin', [PengajuanLokasiMagangController::class, 'adminindex'])->name('pengajuanmagang.adminindex')->middleware('kegiatan:Magang');
+    Route::post('/pengajuan-magang/{id}/approve', [PengajuanLokasiMagangController::class, 'approve'])->name('pengajuanmagang.approve')->middleware('kegiatan:Magang');
+    Route::post('/pengajuan-magang/{id}/reject', [PengajuanLokasiMagangController::class, 'reject'])->name('pengajuanmagang.reject')->middleware('kegiatan:Magang');
 
     // Pembimbing Luar Management
     Route::get('/pembimbing-luar', [PembimbingLuarController::class, 'index'])->name('pembimbing_luar.index');

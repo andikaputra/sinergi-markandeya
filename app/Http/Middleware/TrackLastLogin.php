@@ -10,17 +10,10 @@ class TrackLastLogin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Track mahasiswa login
-        if (auth()->guard('mahasiswa')->check()) {
-            $mahasiswa = auth()->guard('mahasiswa')->user();
-            $mahasiswa->update(['last_login' => now()]);
-        }
-
-        // Track dosen login
-        if (auth()->guard('web')->check()) {
-            $user = auth()->guard('web')->user();
-            if ($user && method_exists($user, 'update')) {
-                $user->update(['last_login' => now()]);
+        // Aktivitas terakhir digunakan oleh dashboard monitoring mahasiswa dan dosen.
+        foreach (['mahasiswa', 'dosen'] as $guard) {
+            if ($user = auth()->guard($guard)->user()) {
+                $user->forceFill(['last_login' => now()])->save();
             }
         }
 

@@ -66,23 +66,20 @@ class BimbinganMonitoringController extends Controller
 
     public function dosenPembimbingPerforma()
     {
-        $dosenList = DosenPembimbing::with('dosen')
-            ->get()
-            ->map(function ($dosen) {
-                $totalMahasiswa = Mahasiswa::where('nim', $dosen->nim)->count();
-                $totalBimbingan = Bimbingan::where('dosen_pembimbing_id', $dosen->id)->count();
-                $disetujui = Bimbingan::where('dosen_pembimbing_id', $dosen->id)
-                    ->where('status', 'disetujui')
-                    ->count();
+        $dosenList = DosenPembimbing::with('dosen')->get()->groupBy('nidn')
+            ->map(function ($assignments) {
+                $reviews = Bimbingan::whereIn('dosen_pembimbing_id', $assignments->pluck('id'));
+                $totalBimbingan = (clone $reviews)->count();
+                $disetujui = (clone $reviews)->where('status', 'disetujui')->count();
 
                 return [
-                    'dosen' => $dosen,
-                    'total_mahasiswa' => $totalMahasiswa,
+                    'dosen' => $assignments->first(),
+                    'total_mahasiswa' => $assignments->pluck('nim')->unique()->count(),
                     'total_bimbingan' => $totalBimbingan,
                     'disetujui' => $disetujui,
                     'performa' => $totalBimbingan > 0 ? round(($disetujui / $totalBimbingan) * 100) : 0,
                 ];
-            });
+            })->values();
 
         return view('admin.bimbingan.dosen-performa', compact('dosenList'));
     }

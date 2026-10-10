@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Laporan Rekapitulasi Bimbingan')
 
 @section('content')
-<div style="background-color: #f5f3f0; min-height: 100vh; padding: 40px 20px;">
+<div style="background-color: #f5f3f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1400px; margin: 0 auto;">
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
@@ -44,7 +44,7 @@
                                 {{ $bimbingan->dosenPembimbing?->dosen?->nama ?? '-' }}
                             </td>
                             <td style="padding: 16px 12px; color: #444;">
-                                <div style="font-weight: 600;">Sesi #{{ $bimbingan->sesi_ke }}: {{ $bimbingan->topik_bimbingan ?? '-' }}</div>
+                                <div style="font-weight: 600;">{{ $bimbingan->topik ?? '-' }}</div>
                             </td>
                             <td style="padding: 16px 12px; text-align: center; color: #666; font-size: 0.9rem;">
                                 {{ $bimbingan->tanggal_bimbingan ? \Carbon\Carbon::parse($bimbingan->tanggal_bimbingan)->format('d M Y') : '-' }}

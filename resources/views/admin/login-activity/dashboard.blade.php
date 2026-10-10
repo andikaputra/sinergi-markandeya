@@ -1,9 +1,12 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Monitoring Login Activity')
 
 @section('content')
-<div style="background-color: #f5f3f0; min-height: 100vh; padding: 40px 20px;">
+<div class="mb-4 text-right">
+    <a href="{{ route('admin.login-activity.laporan') }}" class="text-primary-600 font-semibold">Laporan Aktivitas Login →</a>
+</div>
+<div style="background-color: #f5f3f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1400px; margin: 0 auto;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #1a5d4d 0%, #0f2d26 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">

@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Bimbingan Perlu Revisi')
 
 @section('content')
-<div style="background-color: #f5f3f0; min-height: 100vh; padding: 40px 20px;">
+<div style="background-color: #f5f3f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1200px; margin: 0 auto;">
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
@@ -43,7 +43,7 @@
                                 {{ $bimbingan->dosenPembimbing?->dosen?->nama ?? '-' }}
                             </td>
                             <td style="padding: 16px 12px; color: #444; max-width: 400px;">
-                                <div style="font-weight: 600; color: #c62828;">{{ $bimbingan->topik_bimbingan ?? 'Bimbingan #' . $bimbingan->sesi_ke }}</div>
+                                <div style="font-weight: 600; color: #c62828;">{{ $bimbingan->topik ?? '-' }}</div>
                                 <div style="color: #555; font-size: 0.85rem; margin-top: 4px; background: #fff8e1; padding: 6px 10px; border-radius: 6px; border-left: 3px solid #ffa000;">
                                     {{ $bimbingan->catatan_dosen ?: 'Belum ada catatan detail' }}
                                 </div>

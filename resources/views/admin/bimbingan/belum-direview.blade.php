@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Bimbingan Belum Direview')
 
 @section('content')
-<div style="background-color: #f5f3f0; min-height: 100vh; padding: 40px 20px;">
+<div style="background-color: #f5f3f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1200px; margin: 0 auto;">
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
@@ -44,7 +44,7 @@
                                 {{ $bimbingan->dosenPembimbing?->dosen?->nama ?? '-' }}
                             </td>
                             <td style="padding: 16px 12px; color: #444; max-width: 300px;">
-                                <div style="font-weight: 600;">{{ $bimbingan->topik_bimbingan ?? 'Bimbingan #' . $bimbingan->sesi_ke }}</div>
+                                <div style="font-weight: 600;">{{ $bimbingan->topik ?? '-' }}</div>
                                 <div style="color: #777; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Str::limit($bimbingan->catatan_mahasiswa, 60) }}</div>
                             </td>
                             <td style="padding: 16px 12px; text-align: center; color: #666; font-size: 0.9rem;">

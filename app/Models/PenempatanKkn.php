@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class PenempatanKkn extends Model
 {
+    use \App\Models\Concerns\HasPlacementPeriod;
+
     protected $table = 'pembagian_lokasi_kkn';
-    protected $fillable = ['nim', 'lokasi_kkn_id', 'is_ketua'];
+    protected $fillable = ['nim', 'tahun_akademik', 'lokasi_kkn_id', 'is_ketua'];
 
     protected $casts = [
         'is_ketua' => 'boolean',

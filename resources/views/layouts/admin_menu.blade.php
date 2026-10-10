@@ -1,4 +1,4 @@
-<a href="{{ route('admindashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('admindashboard') }}" @if(request()->routeIs('admindashboard')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl {{ request()->routeIs('admindashboard') ? 'bg-primary-50 text-primary-700 font-bold' : 'text-gray-600' }} hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-chart-line text-lg"></i>
     <span class="font-medium text-sm">Dashboard</span>
 </a>
@@ -176,17 +176,17 @@
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Monitoring</p>
 </div>
 
-<a href="{{ route('admin.bimbingan.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('admin.bimbingan.dashboard') }}" @if(request()->routeIs('admin.bimbingan.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl {{ request()->routeIs('admin.bimbingan.*') ? 'bg-primary-50 text-primary-700 font-bold' : 'text-gray-600' }} hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-chalkboard-user text-lg"></i>
     <span class="font-medium text-sm">Monitoring Bimbingan</span>
 </a>
 
-<a href="{{ route('admin.login-activity.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('admin.login-activity.dashboard') }}" @if(request()->routeIs('admin.login-activity.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl {{ request()->routeIs('admin.login-activity.*') ? 'bg-primary-50 text-primary-700 font-bold' : 'text-gray-600' }} hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-user-check text-lg"></i>
     <span class="font-medium text-sm">Aktivitas Login</span>
 </a>
 
-<a href="{{ route('admin.program-kerja.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('admin.program-kerja.dashboard') }}" @if(request()->routeIs('admin.program-kerja.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl {{ request()->routeIs('admin.program-kerja.*') ? 'bg-primary-50 text-primary-700 font-bold' : 'text-gray-600' }} hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-tasks text-lg"></i>
     <span class="font-medium text-sm">Program Kerja & Luaran</span>
 </a>

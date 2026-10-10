@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="760" viewBox="0 0 720 760" fill="none">
+  <title>Ilustrasi perjalanan belajar dari kampus ke masyarakat dan dunia kerja</title>
+  <defs>
+    <linearGradient id="sky" x1="360" y1="0" x2="360" y2="760" gradientUnits="userSpaceOnUse"><stop stop-color="#DAE9DF"/><stop offset=".7" stop-color="#F4E9CD"/><stop offset="1" stop-color="#D9DFC6"/></linearGradient>
+    <linearGradient id="hill" x1="330" y1="320" x2="550" y2="670" gradientUnits="userSpaceOnUse"><stop stop-color="#5D8E73"/><stop offset="1" stop-color="#294F40"/></linearGradient>
+    <linearGradient id="front" x1="230" y1="500" x2="410" y2="760" gradientUnits="userSpaceOnUse"><stop stop-color="#457460"/><stop offset="1" stop-color="#193F32"/></linearGradient>
+    <clipPath id="scene"><path d="M20 358C20 170 172 18 360 18C548 18 700 170 700 358V718H20V358Z"/></clipPath>
+    <pattern id="grain" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".65" fill="#163D2D" opacity=".08"/></pattern>
+  </defs>
+  <g clip-path="url(#scene)">
+    <path fill="url(#sky)" d="M0 0H720V760H0Z"/>
+    <circle cx="533" cy="155" r="59" fill="#F8F0D4"/>
+    <circle cx="533" cy="155" r="77" stroke="#F8F0D4" stroke-opacity=".35"/>
+    <path d="M85 181C111 162 151 162 184 181M94 185H175M394 89C414 77 448 77 471 89" stroke="#FFF9E7" stroke-width="7" stroke-linecap="round"/>
+    <path d="M-46 403L94 263L156 306L326 132L517 345L604 289L760 430V623H-46V403Z" fill="#B5CDBB"/>
+    <path d="M201 262L326 132L440 260L374 241L328 190L290 228L257 222L201 262Z" fill="#DCE8D9"/>
+    <path d="M-30 463C107 342 184 416 297 337C424 248 555 407 750 349V701H-30V463Z" fill="#8DAE88"/>
+    <path d="M-32 566C149 385 300 414 455 466C566 503 631 421 750 389V760H-32V566Z" fill="url(#hill)"/>
+    <path d="M-40 582C181 463 326 503 492 555C582 583 658 535 740 497" stroke="#B5C99C" stroke-width="3"/>
+    <path d="M-41 610C181 491 328 532 494 584C584 612 660 564 741 526" stroke="#A8BF91" stroke-width="3"/>
+    <path d="M-40 639C181 520 326 561 492 613C582 641 658 593 740 555" stroke="#A8BF91" stroke-width="3"/>
+    <path d="M-40 668C181 549 326 590 492 642C582 670 658 622 740 584" stroke="#A8BF91" stroke-width="3"/>
+    <path d="M-40 697C181 578 326 619 492 671C582 699 658 651 740 613" stroke="#A8BF91" stroke-width="3"/>
+    <!-- Kampus -->
+    <path d="M125 355H388V481H125V355Z" fill="#EAE4CC"/>
+    <path d="M125 355H388V369H125V355Z" fill="#B7BA9C"/>
+    <path d="M106 353L256 282L407 353H106Z" fill="#3D6452"/>
+    <path d="M145 334L256 282L367 334" stroke="#769780" stroke-width="3"/>
+    <path d="M164 375H182V468H164V375ZM220 375H238V468H220V375ZM276 375H294V468H276V375ZM332 375H350V468H332V375Z" fill="#FBF4DF"/>
+    <path d="M184 384H214V432H184V384ZM240 384H270V432H240V384ZM296 384H326V432H296V384Z" fill="#628172"/>
+    <path d="M188 389H210V427H188V389ZM244 389H266V427H244V389ZM300 389H322V427H300V389Z" fill="#426657"/>
+    <path d="M189 409H210M199 390V428M245 409H266M255 390V428M301 409H322M311 390V428" stroke="#A8BB9F" stroke-width="2"/>
+    <path d="M126 467H386V478H126V467Z" fill="#CDCBB1"/>
+    <path d="M116 478H397V488H116V478Z" fill="#E2D9BD"/>
+    <path d="M249 439H265V467H249V439Z" fill="#315343"/>
+    <circle cx="256" cy="330" r="12" fill="#DCC58C"/><path d="M250 330L254 334L263 325" stroke="#54735B" stroke-width="2"/>
+    <!-- Desa dan sekolah -->
+    <path d="M458 444H571V501H458V444Z" fill="#E3D3AE"/>
+    <path d="M445 446L514 400L585 446H445Z" fill="#B58163"/>
+    <path d="M466 437L514 405L564 437" stroke="#D9AA86" stroke-width="2"/>
+    <path d="M507 461H525V501H507V461Z" fill="#4B6650"/>
+    <path d="M475 462H489V480H475V462ZM542 462H556V480H542V462Z" fill="#6B8265"/>
+    <path d="M576 395H661V461H576V395Z" fill="#D0D3B4"/>
+    <path d="M570 395L619 365L667 395H570Z" fill="#647762"/>
+    <path d="M589 410H603V426H589V410ZM615 410H629V426H615V410ZM641 410H652V426H641V410Z" fill="#3E604C"/>
+    <path d="M607 444H630V461H607V444Z" fill="#526E57"/>
+    <!-- Jalan penghubung -->
+    <path d="M335 760C423 681 451 645 385 584C342 544 294 531 269 487" stroke="#D9CCA9" stroke-width="43"/>
+    <path d="M329 760C416 681 444 645 378 584C336 545 288 531 263 487" stroke="#EBDFC0" stroke-width="19"/>
+    <!-- Pepohonan -->
+    <g fill="#2F614A"><ellipse cx="100" cy="438" rx="38" ry="54"/><ellipse cx="411" cy="436" rx="29" ry="47"/><ellipse cx="657" cy="519" rx="45" ry="64"/></g>
+    <g stroke="#779471" stroke-width="3"><path d="M100 432V498M100 447L84 430M100 460L117 438M411 433V487M657 514V587M657 542L677 515"/></g>
+    <!-- Figur mahasiswa sebagai ilustrasi -->
+    <ellipse cx="285" cy="578" rx="25" ry="6" fill="#193F32" opacity=".2"/>
+    <circle cx="282" cy="513" r="9" fill="#BD896B"/>
+    <path d="M273 512C273 498 292 498 291 512L286 507L273 512Z" fill="#293F34"/>
+    <path d="M270 526C276 519 287 519 294 526L298 549L265 549L270 526Z" fill="#E9E3C6"/>
+    <path d="M273 548L272 574M288 548L292 574" stroke="#284838" stroke-width="9"/>
+    <path d="M270 574H276M288 574H296" stroke="#EADDC0" stroke-width="5" stroke-linecap="round"/>
+    <path d="M292 526L299 541" stroke="#BD896B" stroke-width="7" stroke-linecap="round"/>
+    <path d="M270 526L264 543" stroke="#BD896B" stroke-width="7" stroke-linecap="round"/>
+    <path d="M270 526H280V550H269L270 526Z" fill="#AF785B"/>
+    <ellipse cx="337" cy="616" rx="24" ry="6" fill="#193F32" opacity=".2"/>
+    <circle cx="334" cy="550" r="9" fill="#C89472"/>
+    <path d="M323 549C323 533 344 533 346 552L339 546L323 549Z" fill="#213C2D"/>
+    <path d="M323 562C329 556 340 556 345 562L349 587H320L323 562Z" fill="#C39A68"/>
+    <path d="M327 585L325 611M340 585L344 611" stroke="#E9E0C2" stroke-width="8"/>
+    <path d="M321 612H328M341 612H348" stroke="#254A38" stroke-width="5" stroke-linecap="round"/>
+    <path d="M346 564L353 579M322 564L316 581" stroke="#C89472" stroke-width="7" stroke-linecap="round"/>
+    <path d="M338 561H348V584H338V561Z" fill="#3C6A51"/>
+    <!-- Daun pada latar depan -->
+    <path d="M-20 760V658C86 582 151 650 257 760H-20Z" fill="url(#front)"/>
+    <path d="M469 760C578 653 646 611 734 630V760H469Z" fill="#244E3A"/>
+    <path d="M21 734C28 659 30 586 51 509M30 649C-9 626-19 600-10 579C17 589 31 613 30 649ZM37 603C75 593 96 569 96 545C65 548 44 572 37 603ZM45 554C18 532 15 508 25 489C49 501 51 526 45 554Z" stroke="#769775" stroke-width="3" fill="#457252"/>
+    <path d="M671 753C671 682 675 634 679 569M674 683C631 677 606 659 599 636C639 636 663 658 674 683ZM678 644C710 628 724 607 721 584C691 592 680 618 678 644Z" stroke="#6E906D" stroke-width="3" fill="#3A674A"/>
+    <path fill="url(#grain)" d="M0 0H720V760H0Z"/>
+    <!-- Burung -->
+    <path d="M398 210C405 203 411 203 418 210C425 203 432 203 439 210M454 250C459 245 463 245 467 250C472 245 477 245 481 250" stroke="#6B8D75" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+</svg>

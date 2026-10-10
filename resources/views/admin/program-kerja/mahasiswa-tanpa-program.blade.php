@@ -1,4 +1,4 @@
-@extends('layouts.adminmhs')
+@extends('layouts.admin')
 
 @section('title', 'Mahasiswa Tanpa Program Kerja')
 

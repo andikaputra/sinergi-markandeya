@@ -81,6 +81,8 @@ class DosenPembimbingController extends Controller
             'nidn' => 'required|exists:dosens,nidn',
         ]);
 
+        $this->authorizeManagedStudents($request->nims);
+
         foreach ($request->nims as $nim) {
             DosenPembimbing::create([
                 'nim' => $nim,
@@ -93,7 +95,9 @@ class DosenPembimbingController extends Controller
 
     public function delete($id)
     {
-        DosenPembimbing::findOrFail($id)->delete();
+        $assignment = DosenPembimbing::findOrFail($id);
+        $this->authorizeManagedStudents([$assignment->nim]);
+        $assignment->delete();
         return redirect()->back()->with('success', 'Dosen pembimbing berhasil dihapus!');
     }
 
@@ -121,6 +125,7 @@ class DosenPembimbingController extends Controller
                 if (!Mahasiswa::where('nim', $nim)->exists()) { $errors[] = "Baris $row: NIM $nim tidak ditemukan"; continue; }
                 if (!Dosen::where('nidn', $nidn)->exists()) { $errors[] = "Baris $row: NIDN $nidn tidak ditemukan"; continue; }
 
+                $this->authorizeManagedStudents([$nim]);
                 DosenPembimbing::updateOrCreate(['nim' => $nim], ['nidn' => $nidn]);
                 $count++;
             }
