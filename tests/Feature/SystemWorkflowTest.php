@@ -281,6 +281,105 @@ class SystemWorkflowTest extends WorkflowTestCase
         $this->actingAs($admin,'web')->get(route('admin.monev.monitoring'))->assertOk();
     }
 
+    public function test_bimbingan_audit_records_student_submission_and_dosen_review_before_and_after(): void
+    {
+        $student = $this->student();
+        $dosen = Dosen::create(['nidn'=>'987','nama'=>'Reviewer Audit','password'=>'password']);
+        DosenPembimbing::create(['nim'=>$student->nim,'nidn'=>'987']);
+        $this->actingAs($student,'mahasiswa')->post(route('bimbingan.store'),[
+            'topik'=>'Proposal Audit','deskripsi'=>'Pembahasan program kerja','tanggal_bimbingan'=>now()->toDateString(),
+            'password'=>'do-not-store-this-password','token'=>'do-not-store-this-token',
+        ])->assertSessionHas('success');
+        $review = Bimbingan::firstOrFail();
+        $created = \App\Models\ActivityLog::where('module','bimbingan')->where('action','created')->firstOrFail();
+        $this->assertSame('mahasiswa',$created->actor_type);
+        $this->assertSame((string)$review->id,$created->subject_id);
+        $this->assertSame('KKN',$created->activity);
+        auth('mahasiswa')->logout();
+        $this->actingAs($dosen,'dosen')->post(route('dosen.bimbingan.status',$review->id),[
+            'status'=>'disetujui','catatan_dosen'=>'Lanjutkan pelaksanaan',
+        ])->assertSessionHas('success');
+        $updated = \App\Models\ActivityLog::where('module','bimbingan')->where('action','updated')->firstOrFail();
+        $this->assertSame('dosen',$updated->actor_type);
+        $this->assertSame($dosen->id,$updated->actor_id);
+        $this->assertSame('belum_direview',$updated->changes['status']['sebelum']);
+        $this->assertSame('disetujui',$updated->changes['status']['sesudah']);
+        $this->assertStringNotContainsString('do-not-store-this', \App\Models\ActivityLog::all()->toJson());
+    }
+
+    public function test_audit_and_domain_changes_roll_back_when_operation_reports_error(): void
+    {
+        $student=$this->student();
+        $dosen=Dosen::create(['nidn'=>'987','password'=>'password']);
+        $assignment=DosenPembimbing::create(['nim'=>$student->nim,'nidn'=>'987']);
+        $review=Bimbingan::create(['nim'=>$student->nim,'dosen_pembimbing_id'=>$assignment->id,'topik'=>'Rollback','status'=>'belum_direview']);
+        \Illuminate\Support\Facades\Route::middleware(['web','auth:dosen'])->post('/audit-rollback-test',function () use ($review) {
+            $review->update(['status'=>'disetujui']);
+            return back()->with('error','Simulated failure');
+        })->name('dosen.bimbingan.rollback-test');
+        $this->actingAs($dosen,'dosen')->post('/audit-rollback-test')->assertSessionHas('error');
+        $this->assertSame('belum_direview',$review->fresh()->status);
+        $this->assertSame(0,\App\Models\ActivityLog::count());
+    }
+
+    public function test_login_audit_is_not_duplicated_by_api_and_does_not_store_credentials(): void
+    {
+        $dosen=Dosen::create(['nidn'=>'987','nama'=>'Audit API','password'=>'audit-secret-password']);
+        $response=$this->postJson('/api/v1/login/dosen',['username'=>'987','password'=>'audit-secret-password'])->assertOk();
+        $token=$response->json('access_token');
+        $this->assertSame(1,\App\Models\ActivityLog::where('action','login')->count());
+        $dump=\App\Models\ActivityLog::all()->toJson();
+        $this->assertStringNotContainsString('audit-secret-password',$dump);
+        $this->assertStringNotContainsString($dosen->password,$dump);
+        $this->assertStringNotContainsString($token,$dump);
+        $this->actingAs($this->admin(),'web')->withHeader('Authorization','Bearer '.$token)->postJson('/api/v1/logout')->assertOk();
+        $logout=\App\Models\ActivityLog::where('action','logout')->firstOrFail();
+        $this->assertSame('dosen',$logout->actor_type);
+        $this->assertSame($dosen->id,$logout->actor_id);
+    }
+
+    public function test_monev_audit_records_stage_and_grade_changes(): void
+    {
+        $student=$this->student();
+        $dosen=Dosen::create(['nidn'=>'987','password'=>'password']);
+        $monev=\App\Models\DosenMonev::create(['nidn'=>'987','nim'=>$student->nim,'monev_type'=>'individu','kegiatan'=>'kkn']);
+        $this->actingAs($dosen,'dosen')->post(route('dosen.program-kerja.monev-nilai-id',$monev->id),[
+            'tahap_ke'=>2,'nilai'=>88,'catatan'=>'Evaluasi lapangan','tanggal_monev'=>now()->toDateString(),
+        ])->assertSessionHas('success');
+        $log=\App\Models\ActivityLog::where('subject_type','DosenMonevTahap')->where('action','created')->firstOrFail();
+        $this->assertSame('dosen',$log->actor_type);
+        $this->assertEquals(2,$log->changes['tahap_ke']['sesudah']);
+        $this->assertEquals(88,$log->changes['nilai']['sesudah']);
+        $this->assertStringContainsString($student->nim,$log->subject_label);
+    }
+
+    public function test_deleted_data_remains_in_audit_and_rejected_requests_are_not_logged_as_success(): void
+    {
+        $student=$this->student();
+        $journal=\App\Models\Jurnal::create(['nim'=>$student->nim,'tanggal'=>now()->toDateString(),'kegiatan'=>'Catatan yang dihapus']);
+        $this->actingAs($student,'mahasiswa')->delete(route('jurnal.destroy',$journal->id))->assertSessionHas('success');
+        $this->assertDatabaseMissing('jurnals',['id'=>$journal->id]);
+        $log=\App\Models\ActivityLog::where('subject_type','Jurnal')->where('action','deleted')->firstOrFail();
+        $this->assertSame('Catatan yang dihapus',$log->changes['kegiatan']['sebelum']);
+        $count=\App\Models\ActivityLog::count();
+        $this->post(route('bimbingan.store'),['topik'=>''])->assertSessionHasErrors();
+        $this->assertSame($count,\App\Models\ActivityLog::count());
+    }
+
+    public function test_activity_log_view_and_full_print_are_scoped_and_filtered(): void
+    {
+        for ($i=1;$i<=35;$i++) \App\Models\ActivityLog::create([
+            'request_id'=>(string)\Illuminate\Support\Str::uuid(),'actor_type'=>'dosen','actor_id'=>99,'actor_name'=>'Pemonev Audit',
+            'module'=>'monev','action'=>'updated','subject_label'=>'Monev '.$i,'subject_type'=>'DosenMonevTahap','subject_id'=>(string)$i,
+            'activity'=>$i===35?'PKL':'KKN','occurred_at'=>now(),
+        ]);
+        $admin=User::create(['name'=>'KKN','email'=>'audit-scope@example.test','password'=>'password','role'=>'admin','kegiatan'=>['KKN']]);
+        $this->actingAs($admin,'web')->get(route('admin.activity.index',['module'=>'monev']))->assertOk()
+            ->assertViewHas('logs',fn($rows)=>$rows->total()===34)->assertDontSee('Monev 35');
+        $this->get(route('admin.activity.index',['module'=>'monev','cetak'=>1]))->assertOk()
+            ->assertViewHas('logs',fn($rows)=>$rows->count()===34)->assertSee('Monev 34')->assertDontSee('Monev 35');
+    }
+
     public function test_monitoring_requires_admin_authentication(): void
     {
         foreach (['admin.bimbingan.dashboard', 'admin.login-activity.dashboard', 'admin.program-kerja.dashboard'] as $name) {

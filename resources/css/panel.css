@@ -367,3 +367,4 @@
 .panel-shell .dash-monitoring-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .panel-shell .dash-monitoring-grid > a:nth-child(even) { border-right: 0; }
 @media (max-width: 760px) { .panel-shell .dash-monitoring-grid { grid-template-columns: 1fr; } }
+.panel-shell .audit-changes { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 460px; max-height: 280px; overflow: auto; padding: 12px; border: 1px solid #e5e9e1; background: #f5f8ef; font-size: 11px; border-radius: 6px; }

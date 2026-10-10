@@ -74,6 +74,7 @@ abstract class WorkflowTestCase extends TestCase
             Schema::table($name, fn (Blueprint $table) => $table->unique('nim', $index));
         }
         $this->periodMigration()->up();
+        (require database_path('migrations/2026_10_10_000002_create_activity_logs_table.php'))->up();
     }
 
     protected function periodMigration()

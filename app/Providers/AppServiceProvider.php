@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        foreach (array_keys(\App\Services\ActivityAudit::MODELS) as $name) {
+            $class = 'App\\Models\\'.$name;
+            $class::observe(\App\Observers\ActivityAuditObserver::class);
+        }
         \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
             app(\App\Services\LoginActivityRecorder::class)->record($event->user, true);
         });

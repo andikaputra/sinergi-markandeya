@@ -117,6 +117,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/pengumuman/{id}/unpublish', [PengumumanController::class, 'unpublish'])->name('pengumuman.unpublish');
     Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
 
+    Route::get('/admin/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
+
     // Monitoring Bimbingan
     Route::get('/admin/bimbingan', [\App\Http\Controllers\Admin\BimbinganMonitoringController::class, 'dashboard'])->name('admin.bimbingan.dashboard');
     Route::get('/admin/bimbingan/belum-bimbingan', [\App\Http\Controllers\Admin\BimbinganMonitoringController::class, 'mahasiswaBelumBimbingan'])->name('admin.bimbingan.belum-bimbingan');

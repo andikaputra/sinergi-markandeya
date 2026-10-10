@@ -194,6 +194,8 @@
 <a href="{{ route('admin.monev.monitoring') }}" @if(request()->routeIs('admin.monev.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600"><i class="fas fa-clipboard-check" aria-hidden="true"></i><span class="font-medium text-sm">Pelaksanaan Monev</span></a>
 <a href="{{ route('admin.login-activity.dosen-belum-login') }}" @if(request()->routeIs('admin.login-activity.dosen-belum-login')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600"><i class="fas fa-user-clock" aria-hidden="true"></i><span class="font-medium text-sm">Dosen Tanpa Login</span></a>
 
+<a href="{{ route('admin.activity.index') }}" @if(request()->routeIs('admin.activity.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600"><i class="fas fa-history" aria-hidden="true"></i><span class="font-medium text-sm">Log Aktivitas Sistem</span></a>
+
 @if(Auth::guard('web')->user()?->isSuperAdmin())
 <div class="pt-4 pb-2">
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Super Admin & Sistem</p>
