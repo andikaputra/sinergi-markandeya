@@ -90,6 +90,45 @@ class SystemWorkflowTest extends WorkflowTestCase
             ->assertViewHas('dosenList', fn ($rows) => $rows->count() === 1 && $rows[0]['total_mahasiswa'] === 2);
     }
 
+    public function test_admin_dashboard_matches_account_status_and_activity_permissions(): void
+    {
+        $this->student('PKL');
+        $inactive = Mahasiswa::create(['nim' => '88888', 'nama' => 'Akun Nonaktif',
+            'email' => 'inactive@example.test', 'password' => 'password', 'status' => 'nonaktif']);
+        Mahasiswa::create(['nim' => '99999', 'nama' => 'Akun Pending',
+            'email' => 'pending@example.test', 'password' => 'password', 'status' => 'pending']);
+        $admin = User::create(['name' => 'Admin KKN', 'email' => 'kkn@example.test', 'password' => 'password',
+            'role' => 'admin', 'kegiatan' => ['KKN']]);
+        $response = $this->actingAs($admin, 'web')->get(route('admindashboard'));
+        $response->assertOk()->assertSee('Dashboard Admin')->assertSee('Akun Nonaktif')
+            ->assertDontSee('Peserta PKL')->assertViewHas('jumlahPending', 1)
+            ->assertViewHas('pendingTerbaru', fn ($rows) => $rows->count() === 1 && $rows->first()->id === $inactive->id)
+            ->assertViewHas('pendaftaranTerbaru', fn ($rows) => $rows->isEmpty());
+    }
+
+    public function test_dosen_dashboard_keeps_current_period_assignments_and_reviews(): void
+    {
+        $student = $this->student();
+        \App\Models\TahunAkademik::create(['tahun' => '2025/2026', 'semester' => 'Ganjil', 'is_active' => true]);
+        $other = Mahasiswa::create(['nim' => '88888', 'nama' => 'Periode Lain',
+            'email' => 'other@example.test', 'password' => 'password', 'status' => 'aktif',
+            'kegiatan' => 'KKN', 'tahun_akademik' => '2024/2025 Ganjil']);
+        MahasiswaKegiatan::create(['nim' => $other->nim, 'kegiatan' => 'KKN',
+            'tahun_akademik' => '2024/2025 Ganjil', 'is_active' => true, 'status_kegiatan' => 'aktif']);
+        $dosen = Dosen::create(['nidn' => '987', 'nip' => '654', 'nama' => 'Dosen Test', 'password' => 'password']);
+        $assignment = DosenPembimbing::create(['nim' => $student->nim, 'nidn' => '654', 'nilai' => 0]);
+        $otherAssignment = DosenPembimbing::create(['nim' => $other->nim, 'nidn' => '987']);
+        foreach ([$assignment, $otherAssignment] as $item) {
+            Bimbingan::create(['nim' => $item->nim, 'dosen_pembimbing_id' => $item->id,
+                'topik' => 'Review Dashboard', 'status' => 'belum_direview', 'tanggal_bimbingan' => now()]);
+        }
+        $this->actingAs($dosen, 'dosen')->get(route('dosen.dashboard'))->assertOk()
+            ->assertSee('Dashboard Dosen')->assertSee('Review Dashboard')->assertDontSee('Periode Lain')
+            ->assertViewHas('totalBimbingan', 1)->assertViewHas('sudahDinilai', 1)
+            ->assertViewHas('belumDinilai', 0)->assertViewHas('bimbinganBelumDireview', 1)
+            ->assertViewHas('mahasiswaTerbaru', fn ($rows) => $rows->count() === 1 && $rows->first()->nim === $student->nim);
+    }
+
     public function test_monitoring_requires_admin_authentication(): void
     {
         foreach (['admin.bimbingan.dashboard', 'admin.login-activity.dashboard', 'admin.program-kerja.dashboard'] as $name) {

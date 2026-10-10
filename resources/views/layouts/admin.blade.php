@@ -1,4 +1,6 @@
-@extends('layouts.main')
+@extends('layouts.panel')
+
+@section('panel_guard', 'web')
 
 @section('user_type', 'Admin')
 

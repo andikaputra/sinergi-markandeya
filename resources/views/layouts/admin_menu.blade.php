@@ -67,15 +67,15 @@
     <span class="font-medium text-sm">Pembimbing Luar</span>
 </a>
 
-<div x-data="{ open: false }" class="space-y-1">
-    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<details class="panel-nav-group" @if(request()->routeIs('lokasikkn.*', 'lokasippl.*', 'lokasipkl.*', 'lokasimagang.*')) open @endif>
+    <summary class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
         <div class="flex items-center space-x-3">
             <i class="fas fa-database text-lg"></i>
             <span class="font-medium text-sm">Master Lokasi</span>
         </div>
-        <i class="fas fa-chevron-down text-[10px] transform transition-transform" :class="open ? 'rotate-180' : ''"></i>
-    </button>
-    <div x-show="open" class="pl-12 space-y-1 border-l-2 border-gray-50 ml-6">
+        <i class="fas fa-chevron-down text-[10px] transform transition-transform"></i>
+    </summary>
+    <div class="pl-12 space-y-1 border-l-2 border-gray-50 ml-6">
         @if(Auth::guard('web')->user()?->canManage('KKN'))
         <a href="{{ route('lokasikkn.index') }}" class="block py-2 text-sm text-gray-500 hover:text-primary-600">Lokasi KKN</a>
         @endif
@@ -89,17 +89,17 @@
         <a href="{{ route('lokasimagang.index') }}" class="block py-2 text-sm text-gray-500 hover:text-primary-600">Instansi Magang</a>
         @endif
     </div>
-</div>
+</details>
 
-<div x-data="{ open: false }" class="space-y-1">
-    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<details class="panel-nav-group" @if(request()->routeIs('assign.lokasi*', 'pengajuanpkl.*', 'pengajuanmagang.*')) open @endif>
+    <summary class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
         <div class="flex items-center space-x-3">
             <i class="fas fa-map-marked-alt text-lg"></i>
             <span class="font-medium text-sm">Penempatan Lokasi</span>
         </div>
-        <i class="fas fa-chevron-down text-[10px] transform transition-transform" :class="open ? 'rotate-180' : ''"></i>
-    </button>
-    <div x-show="open" class="pl-12 space-y-1 border-l-2 border-gray-50 ml-6">
+        <i class="fas fa-chevron-down text-[10px] transform transition-transform"></i>
+    </summary>
+    <div class="pl-12 space-y-1 border-l-2 border-gray-50 ml-6">
         @if(Auth::guard('web')->user()?->canManage('KKN'))
         <a href="{{ route('assign.lokasikkn') }}" class="block py-2 text-sm text-gray-500 hover:text-primary-600">Penempatan KKN</a>
         @endif
@@ -119,17 +119,17 @@
         <a href="{{ route('pengajuanmagang.adminindex') }}" class="block py-2 text-sm text-gray-500 hover:text-primary-600">Persetujuan Magang</a>
         @endif
     </div>
-</div>
+</details>
 
-<div x-data="{ open: false }" class="space-y-1">
-    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<details class="panel-nav-group" @if(request()->routeIs('assign.dosen*', 'admin.dosen-monev.*')) open @endif>
+    <summary class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
         <div class="flex items-center space-x-3">
             <i class="fas fa-user-tie text-lg"></i>
             <span class="font-medium text-sm">Plotting Dosen</span>
         </div>
-        <i class="fas fa-chevron-down text-[10px] transform transition-transform" :class="open ? 'rotate-180' : ''"></i>
-    </button>
-    <div x-show="open" class="pl-12 space-y-1 border-l-2 border-gray-50 ml-6">
+        <i class="fas fa-chevron-down text-[10px] transform transition-transform"></i>
+    </summary>
+    <div class="pl-12 space-y-1 border-l-2 border-gray-50 ml-6">
         @if(Auth::guard('web')->user()?->canManage('KKN'))
         <a href="{{ route('assign.dosenkkn') }}" class="block py-2 text-sm text-gray-500 hover:text-primary-600">Plot Dosen KKN</a>
         @endif
@@ -146,17 +146,17 @@
         <a href="{{ route('assign.dosenpenilai') }}" class="block py-2 text-sm text-gray-500 hover:text-primary-600">Plot Penilai Publikasi</a>
         <a href="{{ route('admin.dosen-monev.index') }}" class="block py-2 text-sm text-gray-500 hover:text-primary-600 font-semibold text-indigo-600">Plot Dosen Monev</a>
     </div>
-</div>
+</details>
 
-<div x-data="{ open: false }" class="space-y-1">
-    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gold-50 hover:text-gold-600 transition-all duration-200">
+<details class="panel-nav-group" @if(request()->routeIs('assign.pembimbingluar.*')) open @endif>
+    <summary class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gold-50 hover:text-gold-600 transition-all duration-200">
         <div class="flex items-center space-x-3">
             <i class="fas fa-user-friends text-lg"></i>
             <span class="font-medium text-sm">Plotting Pemb. Luar</span>
         </div>
-        <i class="fas fa-chevron-down text-[10px] transform transition-transform" :class="open ? 'rotate-180' : ''"></i>
-    </button>
-    <div x-show="open" class="pl-12 space-y-1 border-l-2 border-gray-50 ml-6">
+        <i class="fas fa-chevron-down text-[10px] transform transition-transform"></i>
+    </summary>
+    <div class="pl-12 space-y-1 border-l-2 border-gray-50 ml-6">
         @if(Auth::guard('web')->user()?->canManage('KKN'))
         <a href="{{ route('assign.pembimbingluar.kkn') }}" class="block py-2 text-sm text-gray-500 hover:text-gold-600">Plot Pemb. Luar KKN</a>
         @endif
@@ -170,14 +170,14 @@
         <a href="{{ route('assign.pembimbingluar.magang') }}" class="block py-2 text-sm text-gray-500 hover:text-gold-600">Plot Pemb. Luar Magang</a>
         @endif
     </div>
-</div>
+</details>
 
 <div class="pt-4 pb-2">
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Monitoring</p>
 </div>
 
 <a href="{{ route('admin.bimbingan.dashboard') }}" @if(request()->routeIs('admin.bimbingan.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl {{ request()->routeIs('admin.bimbingan.*') ? 'bg-primary-50 text-primary-700 font-bold' : 'text-gray-600' }} hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
-    <i class="fas fa-chalkboard-user text-lg"></i>
+    <i class="fas fa-chalkboard-teacher text-lg"></i>
     <span class="font-medium text-sm">Monitoring Bimbingan</span>
 </a>
 

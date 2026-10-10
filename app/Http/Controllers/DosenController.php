@@ -62,10 +62,17 @@ class DosenController extends Controller
         $sudahDinilai = $bimbinganAll->filter(fn($i) => $i->nilai !== null)->count();
         $belumDinilai = $totalBimbingan - $sudahDinilai;
 
+        $mahasiswaTerbaru = $bimbinganAll->sortByDesc('created_at')->take(5)->values();
+        $reviewQuery = Bimbingan::whereIn('dosen_pembimbing_id', $bimbinganAll->pluck('id'))
+            ->where('status', 'belum_direview');
+        $bimbinganBelumDireview = (clone $reviewQuery)->count();
+        $bimbinganTerbaru = $reviewQuery->with('mahasiswa')->oldest()->limit(3)->get();
+
         return view('dosen.beranda', compact(
             'dosen', 'activeTA', 'totalBimbingan', 'totalUjian',
             'countKKN', 'countPPL', 'countPKL', 'countMagang',
-            'sudahDinilai', 'belumDinilai'
+            'sudahDinilai', 'belumDinilai', 'mahasiswaTerbaru',
+            'bimbinganBelumDireview', 'bimbinganTerbaru'
         ));
     }
 

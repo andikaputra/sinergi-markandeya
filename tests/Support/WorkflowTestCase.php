@@ -30,7 +30,9 @@ abstract class WorkflowTestCase extends TestCase
             'penempatan_magangs' => ['nim', 'lokasi_magang_id'],
             'pengajuan_lokasi_pkl' => ['nim', 'nama_instansi', 'alamat', 'kontak', 'status'],
             'pengajuan_lokasi_magang' => ['nim', 'nama_instansi', 'alamat', 'kontak', 'status'],
-            'dosen_pembimbings' => ['nim', 'nidn'],
+            'dosen_pembimbings' => ['nim', 'nidn', 'nilai'],
+            'dosen_pengujis' => ['nim', 'nidn'],
+            'pengumuman' => ['judul', 'isi'],
             'bimbingans' => ['nim', 'dosen_pembimbing_id', 'topik', 'catatan_dosen', 'status', 'tanggal_bimbingan'],
             'individu_program_kerjas' => ['nim', 'status', 'judul', 'kategori', 'tanggal_mulai', 'tanggal_selesai'],
             'dosen_monevs' => ['monev_type', 'kegiatan', 'nidn', 'nim', 'program_id', 'lokasi_id'],
@@ -48,6 +50,9 @@ abstract class WorkflowTestCase extends TestCase
                 }
                 if (str_starts_with($name, 'lokasi_')) {
                     $table->unsignedInteger('maks_peserta')->nullable();
+                }
+                if ($name === 'pengumuman') {
+                    $table->boolean('is_published')->default(false);
                 }
                 if ($name === 'notifikasis') {
                     $table->boolean('is_read')->default(false);

@@ -1,152 +1,52 @@
 @extends('layouts.dosen')
-
-@section('title', 'Beranda Dosen')
-
+@section('title', 'Dashboard Dosen')
 @section('content')
-<div class="space-y-8">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Profil Dosen -->
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden relative">
-                <div class="h-32 bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                </div>
-                <div class="px-8 pb-8 text-center relative">
-                    <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto -mt-12 mb-4 shadow-lg">
-                        <x-avatar :foto="$dosen->foto" :nama="$dosen->nama" />
-                    </div>
-
-                    <h4 class="text-xl font-black text-gray-800 tracking-tight mb-1">{{ $dosen->nama }}</h4>
-                    <p class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">NIDN: {{ $dosen->nidn }}</p>
-
-                    <div class="bg-gray-50 rounded-2xl p-6 text-left space-y-4 border border-gray-100">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm border border-gray-100">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Tahun Akademik Aktif</p>
-                                <p class="text-sm font-bold text-gray-700">{{ $activeTA ? $activeTA->tahun.' '.$activeTA->semester : 'Belum diatur' }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stat & Quick Actions -->
-        <div class="lg:col-span-2 space-y-8">
-            <!-- Stat Cards Row 1 -->
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
-                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 flex-shrink-0">
-                        <i class="fas fa-users text-2xl"></i>
-                    </div>
-                    <div>
-                        <h5 class="text-3xl font-black text-gray-800">{{ $totalBimbingan }}</h5>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Mahasiswa Bimbingan</p>
-                    </div>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
-                    <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 flex-shrink-0">
-                        <i class="fas fa-gavel text-2xl"></i>
-                    </div>
-                    <div>
-                        <h5 class="text-3xl font-black text-gray-800">{{ $totalUjian }}</h5>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Mahasiswa Ujian</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stat Cards Row 2 - Per Kegiatan -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 text-center">
-                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mx-auto mb-3">
-                        <i class="fas fa-hands-helping"></i>
-                    </div>
-                    <h5 class="text-2xl font-black text-gray-800">{{ $countKKN }}</h5>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">KKN</p>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 text-center">
-                    <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mx-auto mb-3">
-                        <i class="fas fa-school"></i>
-                    </div>
-                    <h5 class="text-2xl font-black text-gray-800">{{ $countPPL }}</h5>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">PPL</p>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 text-center">
-                    <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 mx-auto mb-3">
-                        <i class="fas fa-building"></i>
-                    </div>
-                    <h5 class="text-2xl font-black text-gray-800">{{ $countPKL }}</h5>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">PKL</p>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 text-center">
-                    <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 mx-auto mb-3">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <h5 class="text-2xl font-black text-gray-800">{{ $countMagang }}</h5>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Magang</p>
-                </div>
-            </div>
-
-            <!-- Progress Penilaian -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-                <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
-                    <i class="fas fa-chart-pie text-blue-500 mr-3"></i>
-                    Progress Penilaian Bimbingan
-                </h4>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="p-6 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
-                        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2">Sudah Dinilai</p>
-                        <h5 class="text-3xl font-black text-emerald-700">{{ $sudahDinilai }}</h5>
-                    </div>
-                    <div class="p-6 bg-amber-50 rounded-2xl border border-amber-100 text-center">
-                        <p class="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-2">Belum Dinilai</p>
-                        <h5 class="text-3xl font-black text-amber-700">{{ $belumDinilai }}</h5>
-                    </div>
-                </div>
-                @if($totalBimbingan > 0)
-                <div class="mt-4">
-                    <div class="flex justify-between text-xs font-bold text-gray-400 mb-2">
-                        <span>Progress</span>
-                        <span>{{ $totalBimbingan > 0 ? round(($sudahDinilai / $totalBimbingan) * 100) : 0 }}%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-3">
-                        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 h-3 rounded-full transition-all" style="width: {{ $totalBimbingan > 0 ? round(($sudahDinilai / $totalBimbingan) * 100) : 0 }}%"></div>
-                    </div>
-                </div>
-                @endif
-            </div>
-        </div>
+@php
+    $assessmentProgress = $totalBimbingan > 0 ? round($sudahDinilai / $totalBimbingan * 100) : 0;
+    $distribution = [
+        ['name' => 'KKN', 'count' => $countKKN, 'color' => '#688c64'],
+        ['name' => 'PPL', 'count' => $countPPL, 'color' => '#b2975f'],
+        ['name' => 'PKL', 'count' => $countPKL, 'color' => '#467c70'],
+        ['name' => 'Magang', 'count' => $countMagang, 'color' => '#8b84a0'],
+    ];
+@endphp
+<div class="dashboard-page">
+    @if(session('success'))<div class="dash-message"><i class="fas fa-check-circle" aria-hidden="true"></i>{{ session('success') }}</div>@endif
+    <section class="dash-welcome"><div><p class="dash-eyebrow">RUANG PENDAMPINGAN MAHASISWA</p><h2>Selamat datang, {{ $dosen->nama }}</h2><p>Dampingi proses belajar, tinjau kegiatan, dan pantau perkembangan mahasiswa.</p><div class="dash-welcome-meta"><i class="far fa-calendar-alt" aria-hidden="true"></i>{{ $activeTA ? $activeTA->tahun.' · '.$activeTA->semester : 'Tahun akademik belum diatur' }}<span class="dash-meta-divider"></span>NIDN {{ $dosen->nidn }}</div></div><a href="{{ route('dosen.bimbingan') }}" class="dash-button dash-button-cream">Kelola Bimbingan <i class="fas fa-arrow-right" aria-hidden="true"></i></a></section>
+    <section aria-labelledby="dosen-summary-title"><div class="dash-section-heading"><div><h2 id="dosen-summary-title">Ringkasan pendampingan</h2><p>{{ $activeTA ? 'Penugasan Anda pada tahun akademik aktif.' : 'Seluruh penugasan Anda. Tahun akademik aktif belum diatur.' }}</p></div><span class="dash-subtle-chip">{{ $activeTA ? 'Periode aktif' : 'Semua periode' }}</span></div><div class="dash-stats">
+        @foreach([
+            [$totalBimbingan, 'Mahasiswa bimbingan', 'fa-users', 'sage', route('dosen.bimbingan'), 'Lihat daftar mahasiswa'],
+            [$totalUjian, 'Mahasiswa ujian', 'fa-gavel', 'lavender', route('dosen.ujian.index'), 'Kelola penilaian ujian'],
+            [$sudahDinilai, 'Sudah dinilai', 'fa-check-circle', 'green', route('dosen.bimbingan'), 'Nilai bimbingan tersimpan'],
+            [$belumDinilai, 'Belum dinilai', 'fa-pen', 'gold', route('dosen.bimbingan'), 'Lanjutkan penilaian'],
+        ] as [$count, $title, $icon, $tone, $href, $caption])
+        <a href="{{ $href }}" class="dash-stat dash-tone-{{ $tone }}"><div class="dash-stat-top"><span class="dash-stat-icon"><i class="fas {{ $icon }}" aria-hidden="true"></i></span><i class="fas fa-arrow-right dash-stat-arrow" aria-hidden="true"></i></div><div class="dash-stat-value">{{ number_format($count, 0, ',', '.') }}</div><p>{{ $title }}</p><div class="dash-stat-footer"><span>{{ $caption }}</span></div></a>
+        @endforeach
+    </div></section>
+    <div class="dash-grid-main">
+        <section class="dash-card"><div class="dash-card-heading"><div><p class="dash-eyebrow">SEBARAN BIMBINGAN</p><h2>Mahasiswa per kegiatan</h2></div><span class="dash-subtle-chip">{{ $totalBimbingan }} mahasiswa</span></div><x-dashboard-distribution :items="$distribution" /></section>
+        <section class="dash-card dash-assessment"><div class="dash-card-heading"><div><p class="dash-eyebrow">PERKEMBANGAN PENILAIAN</p><h2>Progres bimbingan</h2></div><span class="dash-small-icon"><i class="fas fa-chart-line" aria-hidden="true"></i></span></div><div class="dash-progress-summary"><strong>{{ $assessmentProgress }}<span>%</span></strong><p>{{ $totalBimbingan > 0 ? 'Nilai bimbingan telah diselesaikan' : 'Belum ada mahasiswa bimbingan' }}</p></div><div class="dash-progress-track" role="progressbar" aria-label="Progres penilaian bimbingan" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ $assessmentProgress }}"><span style="width: {{ $assessmentProgress }}%"></span></div><div class="dash-assessment-counts"><div><span class="dash-legend-dot" style="background: #688c64"></span><span>Sudah dinilai</span><strong>{{ $sudahDinilai }}</strong></div><div><span class="dash-legend-dot" style="background: #b2975f"></span><span>Belum dinilai</span><strong>{{ $belumDinilai }}</strong></div></div><a href="{{ route('dosen.bimbingan') }}" class="dash-assessment-link">{{ $belumDinilai > 0 ? 'Lanjutkan penilaian mahasiswa' : 'Lihat mahasiswa bimbingan' }}<i class="fas fa-arrow-right" aria-hidden="true"></i></a></section>
     </div>
-
-    <!-- Quick Actions -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <a href="{{ route('dosen.bimbingan') }}" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 hover:border-blue-200 hover:shadow-md transition-all group">
-            <div class="flex items-center space-x-6">
-                <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors flex-shrink-0">
-                    <i class="fas fa-users text-2xl"></i>
-                </div>
-                <div>
-                    <h4 class="text-lg font-bold text-gray-800 group-hover:text-blue-600 transition-colors">Mahasiswa Bimbingan</h4>
-                    <p class="text-sm text-gray-500">Lihat daftar, filter, dan kelola nilai mahasiswa bimbingan Anda.</p>
-                </div>
-                <i class="fas fa-arrow-right text-gray-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all ml-auto"></i>
-            </div>
-        </a>
-        <a href="{{ route('dosen.ujian.index') }}" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 hover:border-indigo-200 hover:shadow-md transition-all group">
-            <div class="flex items-center space-x-6">
-                <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors flex-shrink-0">
-                    <i class="fas fa-gavel text-2xl"></i>
-                </div>
-                <div>
-                    <h4 class="text-lg font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">Mahasiswa Ujian</h4>
-                    <p class="text-sm text-gray-500">Lihat daftar dan input nilai ujian mahasiswa yang Anda uji.</p>
-                </div>
-                <i class="fas fa-arrow-right text-gray-300 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all ml-auto"></i>
-            </div>
-        </a>
+    <section class="dash-card dash-student-card"><div class="dash-card-heading"><div><h2>Mahasiswa bimbingan</h2><p>Penugasan terbaru dalam periode yang ditampilkan.</p></div><a href="{{ route('dosen.bimbingan') }}" class="dash-link">Lihat semua <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+        @if($mahasiswaTerbaru->isNotEmpty())
+        <div class="dash-table-wrap"><table class="dash-table"><thead><tr><th>Mahasiswa</th><th>Kegiatan</th><th>Nilai bimbingan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>
+            @foreach($mahasiswaTerbaru as $assignment)
+            <tr><td><div class="dash-table-person"><span class="dash-initial">{{ mb_strtoupper(mb_substr($assignment->mahasiswa?->nama ?? $assignment->nim, 0, 1)) }}</span><div><strong>{{ $assignment->mahasiswa?->nama ?? $assignment->nim }}</strong><span>{{ $assignment->nim }}</span></div></div></td><td><span class="dash-badge">{{ $assignment->mahasiswa?->kegiatan ?? 'Belum diatur' }}</span></td><td class="dash-grade">{{ $assignment->nilai !== null ? $assignment->nilai : '—' }}</td><td><span class="dash-badge {{ $assignment->nilai !== null ? 'dash-badge-green' : 'dash-badge-gold' }}">{{ $assignment->nilai !== null ? 'Sudah dinilai' : 'Belum dinilai' }}</span></td><td><a href="{{ route('dosen.mahasiswa.detail', $assignment->nim) }}" class="dash-table-link" aria-label="Lihat detail {{ $assignment->mahasiswa?->nama ?? $assignment->nim }}">Detail <i class="fas fa-arrow-right" aria-hidden="true"></i></a></td></tr>
+            @endforeach
+        </tbody></table></div>
+        @else<div class="dash-empty"><i class="fas fa-user-graduate" aria-hidden="true"></i><h3>Belum ada mahasiswa bimbingan</h3><p>Mahasiswa akan tampil setelah penugasan dosen pembimbing diatur oleh admin.</p></div>@endif
+    </section>
+    <div class="dash-grid-equal">
+        <section class="dash-card"><div class="dash-card-heading"><div><h2>Permohonan bimbingan</h2><p>Ajukan tindak lanjut untuk permohonan yang masuk.</p></div><span class="dash-subtle-chip">{{ $bimbinganBelumDireview }} belum direview</span></div>
+            @forelse($bimbinganTerbaru as $review)
+            <a href="{{ route('dosen.mahasiswa.detail', $review->nim) }}" class="dash-activity"><span class="dash-initial dash-initial-gold"><i class="far fa-comment-dots" aria-hidden="true"></i></span><div><strong>{{ $review->topik }}</strong><span>{{ $review->mahasiswa?->nama ?? $review->nim }} · {{ $review->tanggal_bimbingan?->translatedFormat('d M Y') }}</span></div><i class="fas fa-chevron-right dash-muted" aria-hidden="true"></i></a>
+            @empty<div class="dash-empty"><i class="far fa-check-circle" aria-hidden="true"></i><h3>{{ $totalBimbingan > 0 ? 'Tidak ada permohonan menunggu' : 'Belum ada permohonan bimbingan' }}</h3><p>Permohonan yang belum direview akan tampil di sini.</p></div>@endforelse
+        </section>
+        <section class="dash-card"><div class="dash-card-heading"><div><h2>Akses cepat</h2><p>Semua peran pendampingan dalam satu tempat.</p></div></div><div class="dash-shortcut-list">
+            @foreach([[route('dosen.ujian.index'), 'fa-gavel', 'Mahasiswa Ujian', 'Tinjau laporan dan kelola nilai ujian.'], [route('dosen.publikasi.index'), 'fa-book-reader', 'Penilaian Publikasi', 'Tinjau publikasi dan diseminasi mahasiswa.'], [route('dosen.program-kerja.dashboard'), 'fa-tasks', 'Program Kerja Bimbingan', 'Pantau program kerja dan luaran kegiatan.'], [route('dosen.program-kerja.monev-dashboard'), 'fa-clipboard-check', 'Monitoring & Evaluasi', 'Buka penugasan monev program kerja.']] as [$href, $icon, $title, $description])
+            <a href="{{ $href }}" class="dash-attention"><span class="dash-action-icon dash-tone-sage"><i class="fas {{ $icon }}" aria-hidden="true"></i></span><div><strong>{{ $title }}</strong><span>{{ $description }}</span></div><i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            @endforeach
+        </div></section>
     </div>
 </div>
 @endsection

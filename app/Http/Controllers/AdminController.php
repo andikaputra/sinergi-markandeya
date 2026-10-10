@@ -39,10 +39,11 @@ class AdminController extends Controller
         $belumPenempatanMagang = Mahasiswa::withKegiatan('Magang')->whereDoesntHave('penempatanmagang')->count();
 
         // Mahasiswa pending terbaru (5)
-        $pendingTerbaru = Mahasiswa::where('status', 'pending')->latest()->limit(5)->get();
+        $pendingTerbaru = Mahasiswa::where('status', 'nonaktif')->latest()->limit(5)->get();
 
         // Pendaftaran kegiatan terbaru (10)
         $pendaftaranTerbaru = \App\Models\MahasiswaKegiatan::with('mahasiswa')
+            ->whereIn('kegiatan', Auth::guard('web')->user()->getAllowedKegiatan())
             ->latest()->limit(10)->get();
 
         // Pengumuman aktif
