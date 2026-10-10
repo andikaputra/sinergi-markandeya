@@ -53,7 +53,7 @@ class AuditActivity
                     $action = 'report_opened';
                 } elseif (str_contains($name, 'export')) {
                     $action = 'export_prepared';
-                } elseif ($name === 'bimbingan.berkas') {
+                } elseif (in_array($name, ['bimbingan.berkas', 'luaran.berkas'], true)) {
                     $action = 'download_prepared';
                 } elseif (in_array($request->method(), ['GET', 'HEAD'], true) && $module && ! str_starts_with($name, 'admin.activity')) {
                     $action = 'viewed';

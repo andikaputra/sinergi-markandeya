@@ -7,6 +7,9 @@
 @section('logout_route', route('logout'))
 
 @section('content')
+@php
+    $programTab = request('tab') === 'kelompok' && strtolower($mahasiswa->kegiatan ?? '') !== 'pkl' ? 'kelompok' : 'individu';
+@endphp
 <div class="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
     <!-- Header & Navigation -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -77,8 +80,15 @@
         </div>
     </div>
 
+    <nav class="flex flex-wrap gap-3" aria-label="Jenis program kerja">
+        <a class="dash-button {{ $programTab === 'individu' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700' }}" href="{{ request()->fullUrlWithQuery(['tab'=>'individu']) }}">Program Individu</a>
+        @if (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl')
+        <a class="dash-button {{ $programTab === 'kelompok' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700' }}" href="{{ request()->fullUrlWithQuery(['tab'=>'kelompok']) }}">Program Kelompok</a>
+        @endif
+    </nav>
     <!-- Program Kerja Individu Section -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
+    @if ($programTab === 'individu')
+<div data-program-individu class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
         <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
             <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
                 <i class="fas fa-clipboard-list text-primary-600"></i>
@@ -149,7 +159,7 @@
                             </div>
 
                             @if ($program->catatan_dosen)
-                                <div x-show="!openForm" class="p-3.5 bg-white rounded-xl border border-primary-100 text-xs text-gray-800 leading-relaxed space-y-1">
+                                <div class="p-3.5 bg-white rounded-xl border border-primary-100 text-xs text-gray-800 leading-relaxed space-y-1">
                                     <p class="whitespace-pre-wrap pl-3 border-l-2 border-primary-500 text-gray-700 font-medium">{{ $program->catatan_dosen }}</p>
                                 </div>
                             @endif
@@ -240,11 +250,7 @@
                                                 <p class="text-xs text-gray-500 mt-0.5">{{ ucfirst($luaran->tipe) }} • Progress: <strong class="text-primary-600">{{ $luaran->persentase_selesai }}%</strong></p>
                                             </div>
                                             <div class="flex items-center gap-3">
-                                                @if ($luaran->file_path)
-                                                    <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-xs text-primary-600 hover:text-primary-800 font-bold inline-flex items-center gap-1">
-                                                        <i class="fas fa-paperclip"></i> Berkas
-                                                    </a>
-                                                @endif
+                                                <x-luaran-file :luaran="$luaran" />
                                                 <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase
                                                     @if($luaran->status === 'belum_dikerjakan') bg-red-50 text-red-700 border border-red-200
                                                     @elseif($luaran->status === 'sedang_dikerjakan') bg-amber-50 text-amber-700 border border-amber-200
@@ -272,8 +278,9 @@
             </div>
         @endif
     </div>
+@endif
 
-    @if (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl')
+    @if ($programTab === 'kelompok')
         <!-- Program Kerja Kelompok Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
         <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
@@ -441,33 +448,18 @@
     @endif
 
     <!-- All Luaran Overview Section (Individu & Kelompok) -->
-    @if ($individuLuarans->count() > 0 || (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl' && $kelompokLuarans->count() > 0))
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8" x-data="{ luaranTab: 'individu' }">
+    @if (($programTab === 'individu' && $individuLuarans->isNotEmpty()) || ($programTab === 'kelompok' && $kelompokLuarans->isNotEmpty()))
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
                 <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
                     <i class="fas fa-boxes text-primary-600"></i>
-                    <span>Semua Luaran / Deliverables</span>
+                    <span>Luaran {{ $programTab === 'kelompok' ? 'Kelompok' : 'Individu' }}</span>
                 </h3>
-                @if (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl')
-                    <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-2xl">
-                        <button @click="luaranTab = 'individu'" 
-                            :class="luaranTab === 'individu' ? 'bg-white text-primary-700 shadow-sm font-bold' : 'text-gray-600 font-medium hover:text-gray-900'"
-                            class="px-4 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
-                            <i class="fas fa-user text-[10px]"></i>
-                            <span>Individu ({{ $individuLuarans->count() }})</span>
-                        </button>
-                        <button @click="luaranTab = 'kelompok'" 
-                            :class="luaranTab === 'kelompok' ? 'bg-white text-purple-700 shadow-sm font-bold' : 'text-gray-600 font-medium hover:text-gray-900'"
-                            class="px-4 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
-                            <i class="fas fa-users text-[10px]"></i>
-                            <span>Kelompok ({{ $kelompokLuarans->count() }})</span>
-                        </button>
-                    </div>
-                @endif
             </div>
 
             <!-- Tab Individu Luaran Table -->
-            <div x-show="luaranTab === 'individu'">
+            @if ($programTab === 'individu')
+<div>
                 @if($individuLuarans->count() > 0)
                     <div class="overflow-x-auto">
                         <table class="w-full">
@@ -485,12 +477,7 @@
                                     <tr class="hover:bg-gray-50 transition">
                                         <td class="px-6 py-4 text-sm font-bold text-gray-900">
                                             {{ $luaran->judul }}
-                                            @if ($luaran->file_path)
-                                                <br>
-                                                <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-xs text-primary-600 hover:underline inline-flex items-center gap-1 mt-1">
-                                                    <i class="fas fa-paperclip"></i> Lihat Berkas
-                                                </a>
-                                            @endif
+                                            <x-luaran-file :luaran="$luaran" />
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-600 font-medium">{{ $luaran->programKerja?->judul ?? '-' }}</td>
                                         <td class="px-6 py-4 text-sm text-gray-600">{{ ucfirst($luaran->tipe) }}</td>
@@ -521,10 +508,12 @@
                     <p class="text-center py-6 text-sm text-gray-400">Belum ada luaran individu.</p>
                 @endif
             </div>
+@endif
 
             @if (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl')
                 <!-- Tab Kelompok Luaran Table -->
-                <div x-show="luaranTab === 'kelompok'" style="display: none;">
+                @if ($programTab === 'kelompok')
+<div>
                     @if($kelompokLuarans->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="w-full">
@@ -542,12 +531,7 @@
                                         <tr class="hover:bg-gray-50 transition">
                                             <td class="px-6 py-4 text-sm font-bold text-gray-900">
                                                 {{ $luaran->judul }}
-                                                @if ($luaran->file_path)
-                                                    <br>
-                                                    <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-xs text-purple-600 hover:underline inline-flex items-center gap-1 mt-1">
-                                                        <i class="fas fa-paperclip"></i> Lihat Berkas
-                                                    </a>
-                                                @endif
+                                                <x-luaran-file :luaran="$luaran" />
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-600 font-medium">{{ $luaran->programKerja?->judul ?? '-' }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-600">{{ ucfirst($luaran->tipe) }}</td>
@@ -578,6 +562,7 @@
                         <p class="text-center py-6 text-sm text-gray-400">Belum ada luaran kelompok di lokasi ini.</p>
                     @endif
                 </div>
+@endif
             @endif
         </div>
     @endif

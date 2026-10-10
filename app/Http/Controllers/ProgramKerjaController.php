@@ -29,7 +29,7 @@ class ProgramKerjaController extends Controller
                   ->orWhere('kategori', strtoupper($kegiatanLower));
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'page_individu', 1);
+            ->paginate(10, ['*'], 'page_individu');
 
         $table = match($kegiatanLower) {
             'kkn' => 'pembagian_lokasi_kkn',
@@ -53,7 +53,7 @@ class ProgramKerjaController extends Controller
         }
 
         if ($kegiatanLower === 'pkl') {
-            $kelompokPrograms = KelompokProgramKerja::whereRaw('1 = 0')->paginate(10, ['*'], 'page_kelompok', 1);
+            $kelompokPrograms = KelompokProgramKerja::whereRaw('1 = 0')->paginate(10, ['*'], 'page_kelompok');
             $statistikKelompok = [
                 'total' => 0,
                 'rencana' => 0,
@@ -69,7 +69,7 @@ class ProgramKerjaController extends Controller
 
             $kelompokPrograms = (clone $kelompokQuery)
                 ->orderBy('created_at', 'desc')
-                ->paginate(10, ['*'], 'page_kelompok', 1);
+                ->paginate(10, ['*'], 'page_kelompok');
 
             $statistikKelompok = [
                 'total' => (clone $kelompokQuery)->count(),
@@ -296,7 +296,7 @@ class ProgramKerjaController extends Controller
         $kegiatanLower = strtolower($kegiatan);
 
         if ($kegiatanLower === 'pkl') {
-            return redirect()->route('program-kerja.index')
+            return redirect()->route('program-kerja.index', ['tab'=>'kelompok'])
                 ->with('error', 'Program kerja kelompok tidak tersedia untuk kegiatan PKL.');
         }
 
@@ -308,7 +308,7 @@ class ProgramKerjaController extends Controller
             };
 
             if (!$isKetua) {
-                return redirect()->route('program-kerja.index')
+                return redirect()->route('program-kerja.index', ['tab'=>'kelompok'])
                     ->with('error', 'Hanya Ketua Kelompok yang dapat membuat program kerja kelompok.');
             }
         }
@@ -327,7 +327,7 @@ class ProgramKerjaController extends Controller
             'status' => 'rencana',
         ]));
 
-        return redirect()->route('program-kerja.index')->with('success', 'Program kerja kelompok berhasil dibuat');
+        return redirect()->route('program-kerja.index', ['tab'=>'kelompok'])->with('success', 'Program kerja kelompok berhasil dibuat');
     }
 
     public function showKelompok(KelompokProgramKerja $kelompokProgramKerja)
@@ -411,7 +411,7 @@ class ProgramKerjaController extends Controller
 
         $kelompokProgramKerja->delete();
 
-        return redirect()->route('program-kerja.index')->with('success', 'Program kerja berhasil dihapus');
+        return redirect()->route('program-kerja.index', ['tab'=>'kelompok'])->with('success', 'Program kerja berhasil dihapus');
     }
 
     // Luaran Methods

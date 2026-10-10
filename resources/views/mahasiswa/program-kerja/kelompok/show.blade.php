@@ -13,7 +13,7 @@
     <!-- Header Card -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <div>
-            <a href="{{ route('program-kerja.index') }}" class="text-xs font-bold text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 mb-1">
+            <a href="{{ route('program-kerja.index', ['tab'=>'kelompok']) }}" class="text-xs font-bold text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 mb-1">
                 <i class="fas fa-arrow-left"></i> Kembali ke Daftar Program Kerja
             </a>
             <div class="flex items-center gap-2 mt-1">
@@ -176,11 +176,7 @@
                                         <p class="text-xs text-gray-500 mt-0.5">Target: {{ $luaran->tanggal_selesai ? $luaran->tanggal_selesai->format('d M Y') : '-' }}</p>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        @if ($luaran->file_path)
-                                            <a href="{{ $luaran->file_path }}" target="_blank" class="px-3 py-1 bg-white border border-gray-200 text-primary-600 hover:text-primary-700 text-xs font-bold rounded-xl inline-flex items-center gap-1 shadow-sm">
-                                                <i class="fas fa-external-link-alt text-[10px]"></i> Link Hasil
-                                            </a>
-                                        @endif
+                                        <x-luaran-file :luaran="$luaran" />
                                         @if ($isMember)
                                         <form action="{{ route('luaran.destroy', ['type' => 'kelompok', 'luaranId' => $luaran->id]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus luaran ini?')">
                                             @csrf @method('DELETE')

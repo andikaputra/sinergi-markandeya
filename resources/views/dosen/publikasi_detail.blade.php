@@ -153,9 +153,9 @@
                     </h4>
                     <div class="space-y-2">
                         @forelse($mahasiswa->publikasis as $pub)
-                            <a href="{{ $pub->link }}" target="_blank" class="flex items-center p-3 bg-primary-50 rounded-xl hover:bg-primary-600 hover:text-white transition-all group">
+                            <a href="{{ $pub->link }}" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-primary-50 rounded-xl hover:bg-primary-600 hover:text-white transition-all group">
                                 <i class="fas fa-external-link-alt text-primary-500 mr-3 group-hover:text-white"></i>
-                                <span class="text-[10px] font-semibold text-primary-700 group-hover:text-white truncate flex-1">{{ $pub->judul ?? 'Buka Artikel' }}</span>
+                                <span class="text-[10px] font-semibold text-primary-700 group-hover:text-white truncate flex-1">{{ $pub->judul ?? 'Artikel' }}</span><span class="text-xs font-semibold">Buka / unduh artikel</span>
                             </a>
                         @empty
                             <p class="text-[10px] font-bold text-gray-400 italic text-center py-2">Belum ada artikel</p>

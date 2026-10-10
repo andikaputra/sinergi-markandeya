@@ -190,16 +190,7 @@
                             </div>
                         </div>
 
-                        @if ($luaran->file_path)
-                            <div class="mb-4">
-                                <a href="{{ $luaran->file_path }}" class="text-sm text-primary-600 hover:text-primary-800" target="_blank" rel="noopener noreferrer">
-                                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                                    </svg>
-                                    Buka File di Google Drive
-                                </a>
-                            </div>
-                        @endif
+                        <x-luaran-file :luaran="$luaran" />
 
                         <!-- Update Status -->
                         <form action="{{ route('luaran.update-status', $luaran) }}" method="POST" class="pt-4 border-t border-gray-200">

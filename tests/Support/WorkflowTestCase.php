@@ -32,6 +32,7 @@ abstract class WorkflowTestCase extends TestCase
             'pengajuan_lokasi_magang' => ['nim', 'nama_instansi', 'alamat', 'kontak', 'status'],
             'dosen_pembimbings' => ['nim', 'nidn', 'nilai'],
             'dosen_pengujis' => ['nim', 'nidn', 'nilai'],
+            'dosen_penilai_publikasis' => ['nim', 'nidn', 'nilai'],
             'pembimbing_luar_mahasiswa' => ['nim', 'pembimbing_luar_id', 'nilai'],
             'pengumuman' => ['judul', 'isi'],
             'bimbingans' => ['nim', 'dosen_pembimbing_id', 'topik', 'deskripsi', 'materi_terlampir', 'catatan_dosen', 'status', 'tanggal_bimbingan'],
@@ -39,9 +40,10 @@ abstract class WorkflowTestCase extends TestCase
             'individu_program_kerjas' => ['nim', 'status', 'judul', 'kategori', 'tanggal_mulai', 'tanggal_selesai'],
             'dosen_monevs' => ['monev_type', 'kegiatan', 'nidn', 'nim', 'program_id', 'lokasi_id', 'nilai', 'catatan', 'tanggal_monev', 'link_monev', 'foto_monev'],
             'dosen_monev_tahaps' => ['dosen_monev_id', 'tahap_ke', 'nilai', 'catatan', 'tanggal_monev', 'link_monev', 'foto_monev'],
-            'kelompok_program_kerjas' => ['nim_ketua', 'kategori', 'judul'],
+            'kelompok_program_kerjas' => ['nim_ketua', 'kategori', 'judul', 'status', 'tanggal_mulai', 'tanggal_selesai'],
             'sso_access_tokens' => ['token', 'client_id', 'user_type', 'user_id', 'user_data', 'abilities', 'last_used_at', 'expires_at', 'revoked_at'],
-            'individu_luarans' => ['individu_program_kerja_id', 'judul', 'status'],
+            'individu_luarans' => ['individu_program_kerja_id', 'judul', 'status', 'file_path', 'tipe', 'persentase_selesai'],
+            'kelompok_luarans' => ['kelompok_program_kerja_id', 'judul', 'status', 'file_path', 'tipe', 'persentase_selesai'],
             'notifikasis' => ['nim', 'judul', 'isi', 'tipe'],
         ];
         foreach ($tables as $name => $columns) {

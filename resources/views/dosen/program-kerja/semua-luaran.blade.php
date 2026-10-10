@@ -7,7 +7,11 @@
 @section('logout_route', route('logout'))
 
 @section('content')
-<div class="space-y-8" x-data="{ activeTab: '{{ request('tab', 'individu') }}' }">
+@php
+    $programTab = request('tab') === 'kelompok' ? 'kelompok' : 'individu';
+@endphp
+
+<div class="space-y-8">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -24,28 +28,27 @@
 
     <!-- Tabs Navigation -->
     <div class="flex border-b border-gray-200 gap-4">
-        <button @click="activeTab = 'individu'" 
-            :class="activeTab === 'individu' ? 'border-primary-600 text-primary-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium'"
-            class="pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
+        <a href="{{ request()->fullUrlWithQuery(['tab'=>'individu']) }}" 
+            class="{{ $programTab === 'individu' ? 'border-primary-600 text-primary-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium' }} pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
             <i class="fas fa-user text-sm"></i>
             <span>Luaran Individu</span>
-            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full" :class="activeTab === 'individu' ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600'">
+            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full {{ $programTab === 'individu' ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600' }}">
                 {{ $individuLuarans->total() }}
             </span>
-        </button>
-        <button @click="activeTab = 'kelompok'" 
-            :class="activeTab === 'kelompok' ? 'border-purple-600 text-purple-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium'"
-            class="pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
+        </a>
+        <a href="{{ request()->fullUrlWithQuery(['tab'=>'kelompok']) }}" 
+            class="{{ $programTab === 'kelompok' ? 'border-purple-600 text-purple-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium' }} pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
             <i class="fas fa-users text-sm"></i>
             <span>Luaran Kelompok</span>
-            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full" :class="activeTab === 'kelompok' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-600'">
+            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full {{ $programTab === 'kelompok' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-600' }}">
                 {{ $kelompokLuarans->total() }}
             </span>
-        </button>
+        </a>
     </div>
 
     <!-- TAB 1: LUARAN INDIVIDU -->
-    <div x-show="activeTab === 'individu'" class="space-y-6">
+    @if ($programTab === 'individu')
+<div class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -64,11 +67,7 @@
                             <tr class="hover:bg-gray-50/80 transition">
                                 <td class="px-6 py-4 text-sm font-bold text-gray-900">
                                     <div class="font-bold">{{ $luaran->judul }}</div>
-                                    @if ($luaran->file_path)
-                                        <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-800 font-medium mt-1">
-                                            <i class="fas fa-paperclip text-[10px]"></i> Lihat Berkas
-                                        </a>
-                                    @endif
+                                    <x-luaran-file :luaran="$luaran" />
                                 </td>
                                 <td class="px-6 py-4 text-sm">
                                     @php
@@ -135,9 +134,11 @@
             </div>
         @endif
     </div>
+@endif
 
     <!-- TAB 2: LUARAN KELOMPOK -->
-    <div x-show="activeTab === 'kelompok'" class="space-y-6" style="display: none;">
+    @if ($programTab === 'kelompok')
+<div class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -156,11 +157,7 @@
                             <tr class="hover:bg-gray-50/80 transition">
                                 <td class="px-6 py-4 text-sm font-bold text-gray-900">
                                     <div class="font-bold">{{ $luaran->judul }}</div>
-                                    @if ($luaran->file_path)
-                                        <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-800 font-medium mt-1">
-                                            <i class="fas fa-paperclip text-[10px]"></i> Lihat Berkas
-                                        </a>
-                                    @endif
+                                    <x-luaran-file :luaran="$luaran" />
                                 </td>
                                 <td class="px-6 py-4 text-sm">
                                     <div class="flex items-center gap-2 mb-1">
@@ -170,7 +167,7 @@
                                          $targetNimLuaranKel = $luaran->programKerja?->mahasiswaKetua?->nim ?? $luaran->programKerja?->nim_ketua;
                                      @endphp
                                      @if ($targetNimLuaranKel)
-                                         <a href="{{ route('dosen.program-kerja.detail', $targetNimLuaranKel) }}" class="text-purple-600 hover:text-purple-700 font-bold">
+                                         <a href="{{ route('dosen.program-kerja.detail', ['mahasiswa'=>$targetNimLuaranKel, 'tab'=>'kelompok']) }}" class="text-purple-600 hover:text-purple-700 font-bold">
                                              {{ $luaran->programKerja?->mahasiswaKetua?->nama ?? '-' }}
                                          </a>
                                          <div class="text-xs text-gray-500 font-mono mt-0.5">Ketua NIM: {{ $targetNimLuaranKel }}</div>
@@ -230,6 +227,7 @@
             </div>
         @endif
     </div>
+@endif
 </div>
 @endsection
 

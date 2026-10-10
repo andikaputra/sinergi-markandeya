@@ -125,6 +125,7 @@
                                         <div class="bg-gray-50 p-3 rounded-lg flex items-start justify-between">
                                             <div>
                                                 <p class="text-sm font-medium text-gray-900">{{ $luaran->judul }}</p>
+                                                <x-luaran-file :luaran="$luaran" />
                                                 <p class="text-xs text-gray-600">{{ $luaran->tipe }} • {{ $luaran->persentase_selesai }}% selesai</p>
                                             </div>
                                             <span class="inline-block px-2 py-1 rounded text-xs font-semibold
@@ -171,7 +172,7 @@
                     <tbody class="divide-y divide-gray-100">
                         @foreach ($luarans as $luaran)
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $luaran->judul }}</td>
+                                <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $luaran->judul }}<br><x-luaran-file :luaran="$luaran" /></td>
                                 <td class="px-6 py-4 text-sm text-gray-600">{{ $luaran->programKerja->judul ?? '-' }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-600">{{ ucfirst($luaran->tipe) }}</td>
                                 <td class="px-6 py-4">

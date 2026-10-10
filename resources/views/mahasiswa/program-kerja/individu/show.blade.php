@@ -136,11 +136,7 @@
                                         <p class="text-xs text-gray-500 mt-0.5">Target: {{ $luaran->tanggal_selesai ? $luaran->tanggal_selesai->format('d M Y') : '-' }}</p>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        @if ($luaran->file_path)
-                                            <a href="{{ $luaran->file_path }}" target="_blank" class="px-3 py-1 bg-white border border-gray-200 text-primary-600 hover:text-primary-700 text-xs font-bold rounded-xl inline-flex items-center gap-1 shadow-sm">
-                                                <i class="fas fa-external-link-alt text-[10px]"></i> Link Hasil
-                                            </a>
-                                        @endif
+                                        <x-luaran-file :luaran="$luaran" />
                                         <form action="{{ route('luaran.destroy', ['type' => 'individu', 'luaranId' => $luaran->id]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus luaran ini?')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg text-xs" title="Hapus">

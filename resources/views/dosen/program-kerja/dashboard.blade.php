@@ -176,7 +176,7 @@
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $program->created_at->format('d M Y') }}</td>
                             <td class="px-6 py-4 text-sm">
                                 @if($targetNim)
-                                    <a href="{{ route('dosen.program-kerja.detail', $targetNim) }}" class="px-3.5 py-1.5 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition inline-flex items-center gap-1.5 shadow-sm">
+                                    <a href="{{ route('dosen.program-kerja.detail', ['mahasiswa'=>$targetNim, 'tab'=>$program->program_type ?? 'individu']) }}" class="px-3.5 py-1.5 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition inline-flex items-center gap-1.5 shadow-sm">
                                         <i class="fas fa-eye text-[10px]"></i> Lihat
                                     </a>
                                 @else

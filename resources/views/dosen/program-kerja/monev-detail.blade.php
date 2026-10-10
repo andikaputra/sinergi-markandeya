@@ -176,11 +176,7 @@
                                 <p class="text-xs text-gray-500 line-clamp-2 mb-2">{{ $luaran->deskripsi }}</p>
                                 <div class="flex items-center justify-between text-xs font-semibold">
                                     <span class="text-primary-600">Progress: {{ $luaran->persentase_selesai }}%</span>
-                                    @if ($luaran->file_path)
-                                        <a href="{{ asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-primary-600 hover:underline flex items-center gap-1">
-                                            <i class="fas fa-paperclip"></i> Berkas Luaran
-                                        </a>
-                                    @endif
+                                    <x-luaran-file :luaran="$luaran" />
                                 </div>
                             </div>
                         @endforeach

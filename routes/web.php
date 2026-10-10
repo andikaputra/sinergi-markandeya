@@ -52,6 +52,9 @@ Route::post('/logoutadmin', [AuthController::class, 'logoutadmin'])->name('logou
 
 Route::get('/berkas-bimbingan/{bimbingan}', [\App\Http\Controllers\BimbinganFileController::class, 'download'])
     ->middleware('auth:mahasiswa,dosen,web')->name('bimbingan.berkas');
+Route::get('/berkas-luaran/{type}/{id}', [\App\Http\Controllers\LuaranFileController::class, 'download'])
+    ->whereIn('type', ['individu', 'kelompok'])->whereNumber('id')
+    ->middleware('auth:mahasiswa,dosen,web')->name('luaran.berkas');
 
 // Proteksi Halaman Admin
 Route::middleware(['auth:web'])->group(function () {

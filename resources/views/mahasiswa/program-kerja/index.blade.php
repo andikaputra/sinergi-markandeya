@@ -3,7 +3,11 @@
 @section('title', 'Program Kerja')
 
 @section('content')
-<div class="space-y-6" x-data="{ activeTab: 'individu' }">
+@php
+    $programTab = request('tab') === 'kelompok' && strtolower($kegiatan ?? '') !== 'pkl' ? 'kelompok' : 'individu';
+@endphp
+
+<div class="space-y-6">
     <!-- Header Banner -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <div>
@@ -29,13 +33,13 @@
                     Buat Program Individu
                 </a>
             @else
-                <template x-if="activeTab === 'individu'">
+                @if ($programTab === 'individu')
                     <a href="{{ route('program-kerja.create-individu') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-primary-200 group">
                         <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform"></i>
                         Buat Program Individu
                     </a>
-                </template>
-                <template x-if="activeTab === 'kelompok'">
+                @endif
+                @if ($programTab === 'kelompok')
                     @if ($isKetua)
                         <a href="{{ route('program-kerja.create-kelompok') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-2xl transition-all shadow-md shadow-primary-200 group">
                             <i class="fas fa-crown mr-2 text-amber-300 group-hover:scale-110 transition-transform"></i>
@@ -52,7 +56,7 @@
                             Buat Program Kelompok
                         </a>
                     @endif
-                </template>
+                @endif
             @endif
         </div>
     </div>
@@ -74,29 +78,28 @@
     @if (strtolower($kegiatan ?? '') !== 'pkl')
         <!-- Tabs Navigation -->
         <div class="flex border-b border-gray-200 gap-4">
-            <button @click="activeTab = 'individu'" 
-                :class="activeTab === 'individu' ? 'border-primary-600 text-primary-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium'"
-                class="pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
+            <a href="{{ request()->fullUrlWithQuery(['tab'=>'individu']) }}" 
+                class="{{ $programTab === 'individu' ? 'border-primary-600 text-primary-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium' }} pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
                 <i class="fas fa-user text-sm"></i>
                 <span>Program Individu</span>
-                <span class="px-2 py-0.5 text-xs rounded-full" :class="activeTab === 'individu' ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600'">
+                <span class="px-2 py-0.5 text-xs rounded-full {{ $programTab === 'individu' ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600' }}">
                     {{ $statistikIndividu['total'] }}
                 </span>
-            </button>
-            <button @click="activeTab = 'kelompok'" 
-                :class="activeTab === 'kelompok' ? 'border-primary-600 text-primary-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium'"
-                class="pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
+            </a>
+            <a href="{{ request()->fullUrlWithQuery(['tab'=>'kelompok']) }}" 
+                class="{{ $programTab === 'kelompok' ? 'border-primary-600 text-primary-600 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 font-medium' }} pb-3 px-4 border-b-2 text-sm transition-all flex items-center gap-2">
                 <i class="fas fa-users text-sm"></i>
                 <span>Program Kelompok</span>
-                <span class="px-2 py-0.5 text-xs rounded-full" :class="activeTab === 'kelompok' ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600'">
+                <span class="px-2 py-0.5 text-xs rounded-full {{ $programTab === 'kelompok' ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600' }}">
                     {{ $statistikKelompok['total'] }}
                 </span>
-            </button>
+            </a>
         </div>
     @endif
 
     <!-- TAB 1: INDIVIDU -->
-    <div x-show="activeTab === 'individu'" class="space-y-6">
+    @if ($programTab === 'individu')
+<div class="space-y-6">
         @if ($dosenMonevIndividu && $dosenMonevIndividu->dosen)
             <div class="p-5 bg-gradient-to-r from-primary-900 via-primary-900 to-slate-900 rounded-xl text-white shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div class="flex items-center gap-4">
@@ -265,16 +268,18 @@
 
                 @if ($individuPrograms->hasPages())
                     <div class="p-4 border-t border-gray-100">
-                        {{ $individuPrograms->links() }}
+                        {{ $individuPrograms->appends(['tab'=>'individu'])->links() }}
                     </div>
                 @endif
             @endif
         </div>
     </div>
+@endif
 
     @if (strtolower($kegiatan ?? '') !== 'pkl')
         <!-- TAB 2: KELOMPOK -->
-        <div x-show="activeTab === 'kelompok'" class="space-y-6" style="display: none;">
+        @if ($programTab === 'kelompok')
+<div class="space-y-6">
         @if (in_array(strtolower($kegiatan ?? ''), ['kkn', 'ppl']))
             @if ($isKetua)
                 <div class="p-4 sm:p-5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 rounded-xl text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -507,12 +512,13 @@
 
                 @if ($kelompokPrograms->hasPages())
                     <div class="p-4 border-t border-gray-100">
-                        {{ $kelompokPrograms->links() }}
+                        {{ $kelompokPrograms->appends(['tab'=>'kelompok'])->links() }}
                     </div>
                 @endif
             @endif
         </div>
     </div>
+@endif
     @endif
 </div>
 @endsection

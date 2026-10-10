@@ -7,7 +7,7 @@
     <!-- Header Card -->
     <div class="flex items-center justify-between bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <div>
-            <a href="{{ route('program-kerja.index') }}" class="text-xs font-bold text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 mb-1">
+            <a href="{{ route('program-kerja.index', ['tab'=>'kelompok']) }}" class="text-xs font-bold text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 mb-1">
                 <i class="fas fa-arrow-left"></i> Kembali ke Daftar Program Kerja
             </a>
             <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Buat Program Kerja Kelompok</h2>
@@ -80,7 +80,7 @@
             </div>
 
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                <a href="{{ route('program-kerja.index') }}" class="px-6 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm transition-all">
+                <a href="{{ route('program-kerja.index', ['tab'=>'kelompok']) }}" class="px-6 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm transition-all">
                     Batal
                 </a>
                 <button type="submit" class="px-6 py-3 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm transition-all shadow-lg shadow-primary-200">
