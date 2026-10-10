@@ -8,10 +8,10 @@
         <a href="{{ route('lokasipkl.index') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-400 hover:text-amber-600 hover:border-amber-600 transition-all shadow-sm">
             <i class="fas fa-chevron-left text-xs"></i>
         </a>
-        <h2 class="text-2xl font-black text-gray-800 tracking-tight">Tambah Lokasi PKL</h2>
+        <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Tambah Lokasi PKL</h2>
     </div>
 
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 border-b border-gray-50 bg-slate-50/50">
             <div class="flex items-center space-x-3">
                 <div class="bg-amber-500 p-2 rounded-lg text-white shadow-lg shadow-amber-100">
@@ -28,7 +28,7 @@
             @csrf
             
             <div class="space-y-2">
-                <label for="nama_instansi" class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Nama Perusahaan / Instansi</label>
+                <label for="nama_instansi" class="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.2em] ml-1">Nama Perusahaan / Instansi</label>
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-300 group-focus-within:text-amber-500 transition-colors">
                         <i class="fas fa-industry text-sm"></i>
@@ -40,7 +40,7 @@
             </div>
 
             <div class="space-y-2">
-                <label for="alamat" class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Alamat Kantor</label>
+                <label for="alamat" class="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.2em] ml-1">Alamat Kantor</label>
                 <div class="relative group">
                     <div class="absolute top-4 left-0 pl-5 flex items-center pointer-events-none text-gray-300 group-focus-within:text-amber-500 transition-colors">
                         <i class="fas fa-map-marker-alt text-sm"></i>
@@ -53,7 +53,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <label for="kontak" class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Telepon / WhatsApp</label>
+                    <label for="kontak" class="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.2em] ml-1">Telepon / WhatsApp</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-300 group-focus-within:text-amber-500 transition-colors">
                             <i class="fas fa-phone text-sm"></i>
@@ -64,7 +64,7 @@
                     </div>
                 </div>
                 <div class="space-y-2">
-                    <label for="email" class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Email Instansi</label>
+                    <label for="email" class="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.2em] ml-1">Email Instansi</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-300 group-focus-within:text-amber-500 transition-colors">
                             <i class="fas fa-envelope text-sm"></i>
@@ -77,7 +77,7 @@
             </div>
 
             <div class="pt-4 flex space-x-4">
-                <button type="submit" class="flex-1 py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl shadow-xl shadow-amber-100 transition-all flex items-center justify-center space-x-2 group">
+                <button type="submit" class="flex-1 py-4 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-2xl shadow-xl shadow-amber-100 transition-all flex items-center justify-center space-x-2 group">
                     <i class="fas fa-save group-hover:scale-110 transition-transform"></i>
                     <span class="uppercase tracking-widest text-xs">Daftarkan Instansi</span>
                 </button>

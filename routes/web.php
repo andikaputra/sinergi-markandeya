@@ -50,6 +50,9 @@ Route::get('/admin', [AuthController::class, 'showLoginFormAdmin'])->name('login
 Route::post('/loginadmin', [AuthController::class, 'loginAdmin'])->name('loginadmin.submit')->middleware('throttle:5,1');
 Route::post('/logoutadmin', [AuthController::class, 'logoutadmin'])->name('logoutadmin');
 
+Route::get('/berkas-bimbingan/{bimbingan}', [\App\Http\Controllers\BimbinganFileController::class, 'download'])
+    ->middleware('auth:mahasiswa,dosen,web')->name('bimbingan.berkas');
+
 // Proteksi Halaman Admin
 Route::middleware(['auth:web'])->group(function () {
     
@@ -135,6 +138,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/admin/program-kerja/semua-program', [\App\Http\Controllers\Admin\ProgramKerjaMonitoringController::class, 'semuaProgram'])->name('admin.program-kerja.semua-program');
     Route::get('/admin/program-kerja/semua-luaran', [\App\Http\Controllers\Admin\ProgramKerjaMonitoringController::class, 'semuaLuaran'])->name('admin.program-kerja.semua-luaran');
     Route::get('/admin/program-kerja/{mahasiswa}', [\App\Http\Controllers\Admin\ProgramKerjaMonitoringController::class, 'detailMahasiswa'])->name('admin.program-kerja.detail-mahasiswa');
+
+    Route::get('/admin/monitoring-monev', [\App\Http\Controllers\Admin\MonevMonitoringController::class, 'index'])->name('admin.monev.monitoring');
 
     // Dosen Monev Plotting
     Route::get('/admin/dosen-monev', [\App\Http\Controllers\Admin\DosenMonevController::class, 'index'])->name('admin.dosen-monev.index');

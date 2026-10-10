@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6">
     <!-- Filter -->
-    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <form method="GET" class="flex flex-wrap items-end gap-4">
             <div class="flex-1 min-w-[180px]">
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">Tahun Akademik</label>
@@ -35,16 +35,16 @@
     </div>
 
     <!-- Daftar Mahasiswa -->
-    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 overflow-x-auto">
             <table class="w-full text-left border-separate border-spacing-0" id="bimbinganTable">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Kegiatan</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Lokasi</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Nilai</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Kegiatan</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Lokasi</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Nilai</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -63,7 +63,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-5">
-                            <span class="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg border border-blue-100">{{ $mhs->kegiatan }}</span>
+                            <span class="px-3 py-1 bg-primary-50 text-primary-600 text-xs font-bold rounded-lg border border-primary-100">{{ $mhs->kegiatan }}</span>
                         </td>
                         <td class="px-6 py-5 text-sm text-gray-600">
                             @if($mhs->kegiatan == 'KKN')

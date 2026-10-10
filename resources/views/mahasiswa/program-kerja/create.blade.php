@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.adminmhs')
 
 @section('content')
 <div class="container mx-auto px-4 py-8 max-w-2xl">
@@ -54,7 +54,7 @@
             </div>
 
             <div class="flex gap-4">
-                <button type="submit" class="px-6 py-3 text-white font-semibold rounded-lg transition duration-200" style="background-color: #d4a574; color: #0f2d26;" onmouseover="this.style.backgroundColor='#c9905c'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)';" onmouseout="this.style.backgroundColor='#d4a574'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                <button type="submit" class="px-6 py-3 text-white font-semibold rounded-lg transition duration-200" style="background-color: #56703f; color: #0f2d26;" onmouseover="this.style.backgroundColor='#c9905c'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)';" onmouseout="this.style.backgroundColor='#d4a574'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
                     Simpan Program Kerja
                 </button>
                 <a href="{{ route('program-kerja.index') }}" class="px-6 py-3 text-white font-semibold rounded-lg transition duration-200 bg-gray-600" onmouseover="this.style.backgroundColor='#4b5563';" onmouseout="this.style.backgroundColor='#4b5563';">

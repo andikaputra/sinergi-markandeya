@@ -7,7 +7,7 @@
     <!-- Header & Back Button -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div class="flex items-center space-x-4">
-            <a href="{{ route('dosen.bimbingan') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-600 transition-all shadow-sm">
+            <a href="{{ route('dosen.bimbingan') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-600 transition-all shadow-sm">
                 <i class="fas fa-chevron-left text-xs"></i>
             </a>
             <div>
@@ -28,16 +28,16 @@
     @endif
 
     <!-- Top Profile Header (Horizontal) -->
-    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-6">
-        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg shadow-blue-100 shrink-0">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-6">
+        <div class="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-2xl flex items-center justify-center text-2xl font-semibold shadow-lg shadow-primary-100 shrink-0">
             {{ substr($mahasiswa->nama, 0, 1) }}
         </div>
         <div class="flex-1 text-center md:text-left">
-            <h3 class="text-xl font-black text-gray-800">{{ $mahasiswa->nama }}</h3>
+            <h3 class="text-xl font-semibold text-gray-800">{{ $mahasiswa->nama }}</h3>
             <div class="flex flex-wrap justify-center md:justify-start gap-2 mt-2">
-                <span class="px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-black rounded-lg uppercase tracking-wider font-mono">{{ $mahasiswa->nim }}</span>
-                <span class="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black rounded-lg uppercase tracking-wider">{{ $mahasiswa->kegiatan }}</span>
-                <span class="px-3 py-1 bg-amber-50 text-amber-700 text-[10px] font-black rounded-lg uppercase tracking-wider">{{ $mahasiswa->prodi_full }}</span>
+                <span class="px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-semibold rounded-lg uppercase tracking-wider font-mono">{{ $mahasiswa->nim }}</span>
+                <span class="px-3 py-1 bg-primary-50 text-primary-600 text-[10px] font-semibold rounded-lg uppercase tracking-wider">{{ $mahasiswa->kegiatan }}</span>
+                <span class="px-3 py-1 bg-amber-50 text-amber-700 text-[10px] font-semibold rounded-lg uppercase tracking-wider">{{ $mahasiswa->prodi_full }}</span>
             </div>
         </div>
         <div class="grid grid-cols-1 gap-1 shrink-0 w-full md:w-auto border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
@@ -60,12 +60,12 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Left Side: Tabs for Bimbingan & Jurnal (8 cols) -->
         <div class="lg:col-span-7 xl:col-span-8 order-2 lg:order-1 space-y-6">
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <!-- Tab Headers -->
                 <div class="flex items-center border-b border-gray-100 bg-gray-50/50 p-2 gap-2">
                     <button
                         @click="activeTab = 'bimbingan'"
-                        :class="activeTab === 'bimbingan' ? 'bg-white text-blue-600 shadow-sm font-black' : 'text-gray-500 hover:text-gray-700 font-bold'"
+                        :class="activeTab === 'bimbingan' ? 'bg-white text-primary-600 shadow-sm font-semibold' : 'text-gray-500 hover:text-gray-700 font-bold'"
                         class="flex-1 py-3 px-4 rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all"
                     >
                         <i class="fas fa-chalkboard-teacher"></i>
@@ -73,7 +73,7 @@
                     </button>
                     <button
                         @click="activeTab = 'jurnal'"
-                        :class="activeTab === 'jurnal' ? 'bg-white text-blue-600 shadow-sm font-black' : 'text-gray-500 hover:text-gray-700 font-bold'"
+                        :class="activeTab === 'jurnal' ? 'bg-white text-primary-600 shadow-sm font-semibold' : 'text-gray-500 hover:text-gray-700 font-bold'"
                         class="flex-1 py-3 px-4 rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all"
                     >
                         <i class="fas fa-history"></i>
@@ -85,14 +85,14 @@
                 <div x-show="activeTab === 'bimbingan'" class="p-6 md:p-8 space-y-6">
                     <div class="flex items-center justify-between pb-4 border-b border-gray-100">
                         <div>
-                            <h4 class="text-base font-black text-gray-800">Sesi & Permohonan Bimbingan</h4>
+                            <h4 class="text-base font-semibold text-gray-800">Sesi & Permohonan Bimbingan</h4>
                             <p class="text-xs text-gray-400 mt-0.5">Tinjau draft laporan, ubah status persetujuan, dan berikan catatan arahan</p>
                         </div>
                     </div>
 
                     @if($bimbingans->isEmpty())
                         <div class="flex flex-col items-center justify-center py-16 text-gray-400">
-                            <div class="w-16 h-16 bg-blue-50 text-blue-400 rounded-2xl flex items-center justify-center mb-3">
+                            <div class="w-16 h-16 bg-primary-50 text-primary-400 rounded-2xl flex items-center justify-center mb-3">
                                 <i class="fas fa-comment-slash text-2xl"></i>
                             </div>
                             <p class="font-bold text-gray-600">Belum Ada Sesi Bimbingan</p>
@@ -101,15 +101,15 @@
                     @else
                         <div class="space-y-6">
                             @foreach ($bimbingans as $b)
-                            <div class="bg-gray-50/70 border border-gray-100 rounded-3xl p-6 hover:border-blue-200 transition-all space-y-4" x-data="{ openReview: {{ $b->status === 'belum_direview' ? 'true' : 'false' }} }">
+                            <div class="bg-gray-50/70 border border-gray-100 rounded-xl p-6 hover:border-primary-200 transition-all space-y-4" x-data="{ openReview: {{ $b->status === 'belum_direview' ? 'true' : 'false' }} }">
                                 <!-- Top Bar -->
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-gray-200/60">
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-xs">
+                                        <div class="w-8 h-8 rounded-xl bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-xs">
                                             #{{ $loop->iteration }}
                                         </div>
                                         <div>
-                                            <h5 class="text-sm font-black text-gray-900">{{ $b->topik }}</h5>
+                                            <h5 class="text-sm font-semibold text-gray-900">{{ $b->topik }}</h5>
                                             <p class="text-[11px] text-gray-500 font-semibold">
                                                 <i class="far fa-calendar-alt text-gray-400 mr-1"></i>
                                                 {{ \Carbon\Carbon::parse($b->tanggal_bimbingan)->translatedFormat('d M Y, H:i') }} WITA
@@ -120,22 +120,22 @@
                                     <!-- Status Badge -->
                                     <div class="flex items-center space-x-2">
                                         @if($b->status === 'disetujui')
-                                            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-[11px] font-black rounded-full flex items-center">
+                                            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-[11px] font-semibold rounded-full flex items-center">
                                                 <i class="fas fa-check-circle mr-1"></i> Disetujui
                                             </span>
                                         @elseif($b->status === 'perlu_revisi')
-                                            <span class="px-3 py-1 bg-amber-100 text-amber-800 text-[11px] font-black rounded-full flex items-center">
+                                            <span class="px-3 py-1 bg-amber-100 text-amber-800 text-[11px] font-semibold rounded-full flex items-center">
                                                 <i class="fas fa-exclamation-circle mr-1"></i> Perlu Revisi
                                             </span>
                                         @else
-                                            <span class="px-3 py-1 bg-blue-100 text-blue-800 text-[11px] font-black rounded-full flex items-center">
+                                            <span class="px-3 py-1 bg-primary-100 text-primary-800 text-[11px] font-semibold rounded-full flex items-center">
                                                 <i class="fas fa-clock mr-1"></i> Menunggu Review
                                             </span>
                                         @endif
 
                                         <button
                                             @click="openReview = !openReview"
-                                            class="px-3 py-1 bg-white border border-gray-200 hover:border-blue-500 text-blue-600 text-xs font-bold rounded-xl transition-all shadow-xs"
+                                            class="px-3 py-1 bg-white border border-gray-200 hover:border-primary-500 text-primary-600 text-xs font-bold rounded-xl transition-all shadow-xs"
                                         >
                                             <span x-text="openReview ? 'Tutup Form' : 'Beri Catatan / Review'"></span>
                                         </button>
@@ -144,21 +144,20 @@
 
                                 <!-- Deskripsi Pokok Bahasan -->
                                 <div class="bg-white p-4 rounded-2xl border border-gray-100 text-xs text-gray-700 leading-relaxed whitespace-pre-line">
-                                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-wider block mb-1">Materi / Pertanyaan Mahasiswa:</span>
+                                    <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Materi / Pertanyaan Mahasiswa:</span>
                                     {{ $b->deskripsi }}
                                 </div>
 
                                 <!-- Materi Terlampir -->
                                 @if($b->materi_terlampir)
-                                <div class="flex items-center justify-between p-3 bg-blue-50/50 border border-blue-100 rounded-2xl">
+                                <div class="flex items-center justify-between p-3 bg-primary-50/50 border border-primary-100 rounded-2xl">
                                     <div class="flex items-center space-x-2.5">
-                                        <i class="fas fa-paperclip text-blue-600"></i>
+                                        <i class="fas fa-paperclip text-primary-600"></i>
                                         <span class="text-xs font-bold text-gray-700">{{ $b->materi_terlampir }}</span>
                                     </div>
                                     <a
-                                        href="{{ asset('storage/bimbingan/' . $b->materi_terlampir) }}"
-                                        download
-                                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center"
+                                        href="{{ route('bimbingan.berkas', $b->id) }}"
+                                        class="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center"
                                     >
                                         <i class="fas fa-download mr-1.5"></i> Unduh Draft
                                     </a>
@@ -176,9 +175,9 @@
                                 @endif
 
                                 <!-- Form Review Catatan Dosen (Accordion / Expandable) -->
-                                <div x-show="openReview" x-transition class="pt-3 border-t border-gray-200/60 bg-white p-5 rounded-2xl border border-blue-100 shadow-sm space-y-4">
-                                    <h6 class="text-xs font-black text-gray-800 flex items-center">
-                                        <i class="fas fa-pen-nib text-blue-600 mr-1.5"></i>
+                                <div x-show="openReview" x-transition class="pt-3 border-t border-gray-200/60 bg-white p-5 rounded-2xl border border-primary-100 shadow-sm space-y-4">
+                                    <h6 class="text-xs font-semibold text-gray-800 flex items-center">
+                                        <i class="fas fa-pen-nib text-primary-600 mr-1.5"></i>
                                         Form Review & Catatan Dosen Pembimbing
                                     </h6>
 
@@ -197,8 +196,8 @@
                                                     <input type="radio" name="status" value="perlu_revisi" class="mr-2 text-amber-600 focus:ring-amber-500" {{ $b->status === 'perlu_revisi' ? 'checked' : '' }}>
                                                     <span>Perlu Revisi</span>
                                                 </label>
-                                                <label class="flex items-center justify-center p-3 border rounded-xl cursor-pointer text-xs font-bold transition-all" :class="'{{ $b->status }}' === 'belum_direview' ? 'bg-blue-50 border-blue-500 text-blue-800' : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'">
-                                                    <input type="radio" name="status" value="belum_direview" class="mr-2 text-blue-600 focus:ring-blue-500" {{ $b->status === 'belum_direview' ? 'checked' : '' }}>
+                                                <label class="flex items-center justify-center p-3 border rounded-xl cursor-pointer text-xs font-bold transition-all" :class="'{{ $b->status }}' === 'belum_direview' ? 'bg-primary-50 border-primary-500 text-primary-800' : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'">
+                                                    <input type="radio" name="status" value="belum_direview" class="mr-2 text-primary-600 focus:ring-primary-500" {{ $b->status === 'belum_direview' ? 'checked' : '' }}>
                                                     <span>Menunggu</span>
                                                 </label>
                                             </div>
@@ -211,7 +210,7 @@
                                                 name="catatan_dosen"
                                                 rows="3"
                                                 placeholder="Tuliskan arahan revisi, koreksi sistematika laporan, atau instruksi selanjutnya untuk mahasiswa..."
-                                                class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all resize-y"
+                                                class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 transition-all resize-y"
                                             >{{ old('catatan_dosen', $b->catatan_dosen) }}</textarea>
                                         </div>
 
@@ -219,7 +218,7 @@
                                         <div class="flex justify-end">
                                             <button
                                                 type="submit"
-                                                class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center space-x-1.5"
+                                                class="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-xl shadow-md shadow-primary-500/20 transition-all flex items-center space-x-1.5"
                                             >
                                                 <i class="fas fa-save"></i>
                                                 <span>Simpan Catatan & Status</span>
@@ -236,11 +235,11 @@
                 <!-- TAB 2: JURNAL AKTIVITAS HARIAN -->
                 <div x-show="activeTab === 'jurnal'" class="p-6 md:p-8 space-y-6">
                     <div class="flex items-center justify-between pb-4 border-b border-gray-100">
-                        <h4 class="text-base font-black text-gray-800 flex items-center">
-                            <i class="fas fa-history text-blue-500 mr-2"></i>
+                        <h4 class="text-base font-semibold text-gray-800 flex items-center">
+                            <i class="fas fa-history text-primary-500 mr-2"></i>
                             Jurnal Aktivitas Harian Mahasiswa
                         </h4>
-                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black rounded-full">{{ $jurnals->count() }} Entri</span>
+                        <span class="px-3 py-1 bg-primary-100 text-primary-700 text-[10px] font-semibold rounded-full">{{ $jurnals->count() }} Entri</span>
                     </div>
 
                     @if($jurnals->isEmpty())
@@ -254,12 +253,12 @@
                         <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gray-100">
                             @foreach ($jurnals as $jurnal)
                             <div class="relative flex items-start group" x-data="{ expanded: false }">
-                                <div class="absolute left-0 w-10 h-10 bg-white border-2 border-blue-500 rounded-xl flex items-center justify-center text-blue-600 z-10 transition-all group-hover:bg-blue-600 group-hover:text-white shadow-sm">
-                                    <span class="text-[10px] font-black">{{ \Carbon\Carbon::parse($jurnal->tanggal)->format('d') }}</span>
+                                <div class="absolute left-0 w-10 h-10 bg-white border-2 border-primary-500 rounded-xl flex items-center justify-center text-primary-600 z-10 transition-all group-hover:bg-primary-600 group-hover:text-white shadow-sm">
+                                    <span class="text-[10px] font-semibold">{{ \Carbon\Carbon::parse($jurnal->tanggal)->format('d') }}</span>
                                 </div>
-                                <div class="flex-1 ml-16 bg-white p-5 rounded-2xl border border-gray-100 group-hover:border-blue-100 group-hover:shadow-md transition-all duration-300">
+                                <div class="flex-1 ml-16 bg-white p-5 rounded-2xl border border-gray-100 group-hover:border-primary-100 group-hover:shadow-md transition-all duration-300">
                                     <div class="flex justify-between items-center mb-2">
-                                        <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+                                        <span class="text-[10px] font-semibold text-primary-600 uppercase tracking-widest">
                                             {{ \Carbon\Carbon::parse($jurnal->tanggal)->translatedFormat('F Y') }}
                                         </span>
                                         <span class="text-[9px] text-gray-400 font-bold uppercase"><i class="far fa-clock mr-1"></i> {{ $jurnal->created_at->diffForHumans() }}</span>
@@ -269,7 +268,7 @@
                                             {{ $jurnal->kegiatan }}
                                         </p>
                                         @if(strlen($jurnal->kegiatan) > 150)
-                                        <button @click="expanded = !expanded" class="text-[10px] font-black text-blue-600 hover:text-blue-800 uppercase tracking-widest mt-2 focus:outline-none flex items-center gap-1">
+                                        <button @click="expanded = !expanded" class="text-[10px] font-semibold text-primary-600 hover:text-primary-800 uppercase tracking-widest mt-2 focus:outline-none flex items-center gap-1">
                                             <span x-text="expanded ? 'Sembunyikan' : 'Baca Selengkapnya'"></span>
                                             <i class="fas transition-transform" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                                         </button>
@@ -287,23 +286,23 @@
         <!-- Right Side: Penilaian Akhir & Link Luaran (4 cols) -->
         <div class="lg:col-span-5 xl:col-span-4 order-1 lg:order-2 space-y-6">
             <!-- Form Nilai -->
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-6">
                 <div class="flex items-center justify-between mb-6">
                     <h4 class="text-lg font-bold text-gray-800 flex items-center">
                         <i class="fas fa-star text-amber-400 mr-2"></i>
                         Penilaian Pembimbing
                     </h4>
                     @if($isBimbingan->nilai !== null)
-                        <div class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Update</div>
+                        <div class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-semibold rounded-full uppercase">Update</div>
                     @endif
                 </div>
 
                 @if($isBimbingan->nilai !== null)
-                <div class="mb-6 p-4 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl text-center shadow-lg shadow-blue-100">
-                    <span class="text-[10px] font-bold text-blue-100 uppercase tracking-widest opacity-80">
+                <div class="mb-6 p-4 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl text-center shadow-lg shadow-primary-100">
+                    <span class="text-[10px] font-bold text-primary-100 uppercase tracking-widest opacity-80">
                         Nilai Akhir
                     </span>
-                    <p class="text-4xl font-black text-white mt-1">{{ $isBimbingan->nilai }}</p>
+                    <p class="text-4xl font-semibold text-white mt-1">{{ $isBimbingan->nilai }}</p>
                 </div>
                 @endif
 
@@ -320,22 +319,22 @@
                                     ];
                                 @endphp
                                 @foreach($kriteria_pkl as $k)
-                                <label class="block p-3 bg-gray-50 rounded-xl border border-gray-100 focus-within:border-blue-500 transition-all @if($loop->last && count($kriteria_pkl) % 2 != 0) col-span-2 @endif">
-                                    <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 block">{{ $k['label'] }}</span>
+                                <label class="block p-3 bg-gray-50 rounded-xl border border-gray-100 focus-within:border-primary-500 transition-all @if($loop->last && count($kriteria_pkl) % 2 != 0) col-span-2 @endif">
+                                    <span class="text-[9px] font-semibold text-gray-400 uppercase tracking-widest mb-1 block">{{ $k['label'] }}</span>
                                     <input type="number" name="{{ $k['key'] }}" value="{{ $isBimbingan->{$k['key']} }}" min="0" max="100" step="0.1"
-                                        class="w-full bg-transparent border-none p-0 focus:ring-0 font-black text-lg text-gray-800" placeholder="0">
+                                        class="w-full bg-transparent border-none p-0 focus:ring-0 font-semibold text-lg text-gray-800" placeholder="0">
                                 </label>
                                 @endforeach
                             </div>
                         @else
-                            <label class="block p-4 bg-gray-50 rounded-2xl border border-gray-100 focus-within:border-blue-500 transition-all text-center">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Skor Pembimbing (0-100)</span>
+                            <label class="block p-4 bg-gray-50 rounded-2xl border border-gray-100 focus-within:border-primary-500 transition-all text-center">
+                                <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2 block">Skor Pembimbing (0-100)</span>
                                 <input type="number" name="nilai" value="{{ $isBimbingan->nilai }}" min="0" max="100" step="0.1"
-                                    class="w-full bg-transparent border-none p-0 focus:ring-0 font-black text-3xl text-gray-800 text-center" placeholder="0">
+                                    class="w-full bg-transparent border-none p-0 focus:ring-0 font-semibold text-3xl text-gray-800 text-center" placeholder="0">
                             </label>
                         @endif
 
-                        <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-blue-100 transition-all active:scale-[0.98] uppercase tracking-widest">
+                        <button type="submit" class="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-2xl shadow-xl shadow-primary-100 transition-all active:scale-[0.98] uppercase tracking-widest">
                             <i class="fas fa-save mr-2"></i> Update Nilai
                         </button>
                     </div>
@@ -343,12 +342,12 @@
 
                 <!-- Luaran Publikasi Inside Sidebar -->
                 <div class="mt-6 pt-6 border-t border-gray-100">
-                    <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center">
+                    <h4 class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3 flex items-center">
                         <i class="fas fa-link mr-2"></i> Link Luaran
                     </h4>
                     <div class="flex flex-wrap gap-2">
                         @forelse($mahasiswa->publikasis as $pub)
-                            <a href="{{ $pub->link }}" target="_blank" class="px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-black hover:bg-blue-600 hover:text-white transition-all flex items-center">
+                            <a href="{{ $pub->link }}" target="_blank" class="px-3 py-2 bg-primary-50 text-primary-700 rounded-lg text-[10px] font-semibold hover:bg-primary-600 hover:text-white transition-all flex items-center">
                                 <i class="fas fa-file-alt mr-2"></i> {{ Str::limit($pub->judul ?? 'Link Luaran', 15) }}
                             </a>
                         @empty

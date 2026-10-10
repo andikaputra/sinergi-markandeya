@@ -193,8 +193,9 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/reports.css') }}">
 </head>
-<body>
+<body class="report-body">
 
     <div class="no-print-bar">
         <span><strong>Pratinjau Cetak:</strong> Kartu Kendali Bimbingan {{ $mahasiswa->kegiatan }}</span>
@@ -299,7 +300,7 @@
                     </td>
                     <td style="text-align: center; vertical-align: middle;">
                         @if($b->status === 'disetujui')
-                            <span style="font-size: 14pt;">✓</span>
+                            
                         @endif
                     </td>
                 </tr>
@@ -313,6 +314,7 @@
             </tbody>
         </table>
 
+        <p class="report-note">Kolom paraf dan tanda tangan diisi oleh pihak terkait setelah dokumen dicetak.</p>
         <!-- Tanda Tangan -->
         <div class="signature-section">
             <div class="sig-box">

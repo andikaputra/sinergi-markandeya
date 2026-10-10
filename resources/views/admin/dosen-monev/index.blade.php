@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.admin')
 
 @section('title', 'Plotting Dosen Monev')
 
@@ -9,13 +9,13 @@
 @section('content')
 <div class="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
     <!-- Header Banner -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-8 sm:p-10 shadow-xl border border-slate-800">
+    <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary-800 via-primary-700 to-primary-800 text-white p-8 sm:p-10 shadow-xl border border-slate-800">
         <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div class="space-y-2">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-semibold uppercase tracking-wider">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/20 text-primary-300 border border-primary-400/30 text-xs font-semibold uppercase tracking-wider">
                     <i class="fas fa-user-check"></i> Plotting & Penugasan
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">Plotting Dosen Pemonev</h1>
+                <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-white">Plotting Dosen Pemonev</h1>
                 <p class="text-slate-300 text-sm max-w-2xl">
                     Tugaskan dosen sebagai evaluator/pemonev program kerja mahasiswa peserta kegiatan {{ strtoupper($kegiatan) }} (Individu maupun Kelompok/Lokasi).
                 </p>
@@ -26,7 +26,7 @@
                 </a>
             </div>
         </div>
-        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl pointer-events-none"></div>
     </div>
 
     @if ($message = Session::get('success'))
@@ -44,11 +44,11 @@
     @endif
 
     <!-- Filter Tabs -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <!-- Kegiatan Tabs -->
         <div class="flex flex-wrap gap-2">
             @foreach (['kkn' => 'KKN', 'ppl' => 'PPL', 'pkl' => 'PKL', 'magang' => 'Magang'] as $kegKey => $kegLabel)
-                <a href="?kegiatan={{ $kegKey }}&type={{ $kegKey === 'pkl' ? 'individu' : $type }}" class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all {{ $kegiatan === $kegKey ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                <a href="?kegiatan={{ $kegKey }}&type={{ $kegKey === 'pkl' ? 'individu' : $type }}" class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all {{ $kegiatan === $kegKey ? 'bg-primary-600 text-white shadow-md shadow-primary-600/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
                     {{ $kegLabel }}
                 </a>
             @endforeach
@@ -56,11 +56,11 @@
 
         <!-- Type Selector (Individu vs Kelompok) -->
         <div class="inline-flex p-1 bg-gray-100 rounded-xl">
-            <a href="?kegiatan={{ $kegiatan }}&type=individu" class="px-5 py-2 rounded-lg text-xs font-bold transition-all {{ $type === 'individu' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-800' }}">
+            <a href="?kegiatan={{ $kegiatan }}&type=individu" class="px-5 py-2 rounded-lg text-xs font-bold transition-all {{ $type === 'individu' ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-500 hover:text-gray-800' }}">
                 <i class="fas fa-user mr-1.5"></i> Mahasiswa (Individu)
             </a>
             @if ($kegiatan !== 'pkl')
-                <a href="?kegiatan={{ $kegiatan }}&type=kelompok" class="px-5 py-2 rounded-lg text-xs font-bold transition-all {{ $type === 'kelompok' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-800' }}">
+                <a href="?kegiatan={{ $kegiatan }}&type=kelompok" class="px-5 py-2 rounded-lg text-xs font-bold transition-all {{ $type === 'kelompok' ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-500 hover:text-gray-800' }}">
                     <i class="fas fa-users mr-1.5"></i> Kelompok / Lokasi
                 </a>
             @endif
@@ -70,17 +70,17 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <!-- Main Form & Selection List (7 cols) -->
         <div class="lg:col-span-7 space-y-6">
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
                 <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
                     <div>
-                        <h2 class="text-xl font-black text-gray-900">
+                        <h2 class="text-xl font-semibold text-gray-900">
                             {{ $type === 'individu' ? 'Daftar Mahasiswa Peserta ' . strtoupper($kegiatan) : 'Daftar Kelompok / Lokasi ' . strtoupper($kegiatan) }}
                         </h2>
                         <p class="text-xs text-gray-500 mt-0.5">
                             {{ $type === 'individu' ? 'Pilih mahasiswa dan tentukan dosen pemonev' : 'Pilih kelompok/lokasi dan tentukan dosen pemonev' }}
                         </p>
                     </div>
-                    <span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full border border-indigo-100">
+                    <span class="px-3 py-1 bg-primary-50 text-primary-700 text-xs font-bold rounded-full border border-primary-100">
                         {{ $type === 'individu' ? (($mahasiswas ?? collect())->count()) . ' Mahasiswa' : (($lokasis ?? collect())->count()) . ' Kelompok/Lokasi' }}
                     </span>
                 </div>
@@ -98,7 +98,7 @@
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
                                     Pilih Dosen Pemonev <span class="text-red-500">*</span>
                                 </label>
-                                <select name="nidn" id="dosenSelect" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                <select name="nidn" id="dosenSelect" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition">
                                     <option value="">-- Pilih Nama Dosen --</option>
                                     @foreach ($dosens as $dosen)
                                         <option value="{{ $dosen->nidn }}">{{ $dosen->nama }} (NIDN: {{ $dosen->nidn }})</option>
@@ -115,7 +115,7 @@
                                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
                                         Pilih Mahasiswa yang Ditugaskan <span class="text-red-500">*</span>
                                     </label>
-                                    <button type="button" id="selectAllBtn" class="text-xs font-bold text-indigo-600 hover:underline">
+                                    <button type="button" id="selectAllBtn" class="text-xs font-bold text-primary-600 hover:underline">
                                         Pilih Semua
                                     </button>
                                 </div>
@@ -134,8 +134,8 @@
                                                 default => null,
                                             };
                                         @endphp
-                                        <label class="flex items-start gap-3 p-3.5 bg-gray-50 hover:bg-indigo-50/40 border border-gray-100 hover:border-indigo-200 rounded-2xl cursor-pointer transition">
-                                            <input type="checkbox" name="nims[]" value="{{ $mhs->nim }}" class="item-checkbox mt-1 w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                        <label class="flex items-start gap-3 p-3.5 bg-gray-50 hover:bg-primary-50/40 border border-gray-100 hover:border-primary-200 rounded-2xl cursor-pointer transition">
+                                            <input type="checkbox" name="nims[]" value="{{ $mhs->nim }}" class="item-checkbox mt-1 w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500">
                                             <div class="min-w-0 flex-1">
                                                 <div class="flex items-start justify-between gap-2">
                                                     <div>
@@ -151,7 +151,7 @@
 
                                                 <div class="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
                                                     @if ($lokasiName)
-                                                        <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-md">
+                                                        <span class="px-2 py-0.5 bg-primary-50 text-primary-700 border border-primary-100 rounded-md">
                                                             <i class="fas fa-map-marker-alt text-rose-500 mr-1"></i> {{ $lokasiName }}
                                                         </span>
                                                     @endif
@@ -176,7 +176,7 @@
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="submit" class="w-full px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center justify-center gap-2">
+                            <button type="submit" class="w-full px-6 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-primary-600/20 transition flex items-center justify-center gap-2">
                                 <i class="fas fa-check"></i>
                                 <span>Tugaskan Dosen Pemonev</span>
                             </button>
@@ -201,7 +201,7 @@
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
                                     Pilih Dosen Pemonev <span class="text-red-500">*</span>
                                 </label>
-                                <select name="nidn" id="dosenSelectKelompok" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                <select name="nidn" id="dosenSelectKelompok" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition">
                                     <option value="">-- Pilih Nama Dosen --</option>
                                     @foreach ($dosens as $dosen)
                                         <option value="{{ $dosen->nidn }}">{{ $dosen->nama }} (NIDN: {{ $dosen->nidn }})</option>
@@ -218,7 +218,7 @@
                                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
                                         Pilih Kelompok / Lokasi yang Ditugaskan <span class="text-red-500">*</span>
                                     </label>
-                                    <button type="button" id="selectAllKelompokBtn" class="text-xs font-bold text-indigo-600 hover:underline">
+                                    <button type="button" id="selectAllKelompokBtn" class="text-xs font-bold text-primary-600 hover:underline">
                                         Pilih Semua
                                     </button>
                                 </div>
@@ -243,8 +243,8 @@
                                                 default => 0,
                                             };
                                         @endphp
-                                        <label class="flex items-start gap-3 p-3.5 bg-gray-50 hover:bg-indigo-50/40 border border-gray-100 hover:border-indigo-200 rounded-2xl cursor-pointer transition">
-                                            <input type="checkbox" name="lokasi_ids[]" value="{{ $lok->id }}" class="item-checkbox mt-1 w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                        <label class="flex items-start gap-3 p-3.5 bg-gray-50 hover:bg-primary-50/40 border border-gray-100 hover:border-primary-200 rounded-2xl cursor-pointer transition">
+                                            <input type="checkbox" name="lokasi_ids[]" value="{{ $lok->id }}" class="item-checkbox mt-1 w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500">
                                             <div class="min-w-0 flex-1">
                                                 <div class="flex items-start justify-between gap-2">
                                                     <div>
@@ -281,7 +281,7 @@
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="submit" class="w-full px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center justify-center gap-2">
+                            <button type="submit" class="w-full px-6 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-primary-600/20 transition flex items-center justify-center gap-2">
                                 <i class="fas fa-check"></i>
                                 <span>Tugaskan Dosen Pemonev Kelompok</span>
                             </button>
@@ -300,13 +300,13 @@
         <!-- Existing Assignments & Import Sidebar (5 cols) -->
         <div class="lg:col-span-5 space-y-6">
             <!-- Active Assignments Card -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
                 <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
                     <div>
-                        <h2 class="text-lg font-black text-gray-900">Penugasan Saat Ini</h2>
+                        <h2 class="text-lg font-semibold text-gray-900">Penugasan Saat Ini</h2>
                         <p class="text-xs text-gray-500 mt-0.5">{{ ($assignments ?? collect())->count() }} penugasan aktif ({{ ucfirst($type) }} - {{ strtoupper($kegiatan) }})</p>
                     </div>
-                    <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm">
+                    <div class="w-8 h-8 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center font-bold text-sm">
                         <i class="fas fa-clipboard-list"></i>
                     </div>
                 </div>
@@ -333,17 +333,17 @@
                                 <div class="min-w-0 flex-1 space-y-1">
                                     <div class="flex items-center justify-between gap-2">
                                         <p class="font-bold text-gray-900 truncate">{{ $targetName }}</p>
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold flex-shrink-0 {{ $assignment->monev_selesai_count == 3 ? 'bg-emerald-100 text-emerald-800' : ($assignment->monev_selesai_count > 0 ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-200 text-gray-600') }}">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold flex-shrink-0 {{ $assignment->monev_selesai_count == 3 ? 'bg-emerald-100 text-emerald-800' : ($assignment->monev_selesai_count > 0 ? 'bg-primary-100 text-primary-800' : 'bg-gray-200 text-gray-600') }}">
                                             {{ $assignment->monev_selesai_count }}/3 Monev
                                         </span>
                                     </div>
                                     <p class="text-[11px] text-gray-400 truncate">{{ $targetSub }}</p>
                                     <p class="text-gray-600 pt-0.5">
-                                        Dosen: <strong class="text-indigo-700">{{ $assignment->dosen?->nama ?? '-' }}</strong>
+                                        Dosen: <strong class="text-primary-700">{{ $assignment->dosen?->nama ?? '-' }}</strong>
                                     </p>
                                     <div class="flex flex-wrap items-center gap-1.5 pt-1">
                                         @if (!is_null($assignment->rata_rata_nilai))
-                                            <span class="px-2 py-0.5 bg-amber-100 text-amber-800 font-black rounded-md text-[10px]">
+                                            <span class="px-2 py-0.5 bg-amber-100 text-amber-800 font-semibold rounded-md text-[10px]">
                                                 Rata-rata: {{ $assignment->rata_rata_nilai }}
                                             </span>
                                         @endif
@@ -378,7 +378,7 @@
             </div>
 
             <!-- Import CSV Card -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
                 <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
                         <i class="fas fa-file-csv text-amber-500"></i>

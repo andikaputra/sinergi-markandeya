@@ -6,10 +6,10 @@
 <div class="space-y-6">
     @include('admin._import_mahasiswa')
 
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <div class="flex-1">
             <form action="{{ route('admin.peserta.magang') }}" method="GET" class="mt-2 flex items-center space-x-2">
-                <select name="ta" onchange="this.form.submit()" class="text-xs font-bold bg-slate-50 border-none rounded-lg focus:ring-indigo-500">
+                <select name="ta" onchange="this.form.submit()" class="text-xs font-bold bg-slate-50 border-none rounded-lg focus:ring-primary-500">
                     <option value="">Semua Tahun Akademik</option>
                     @foreach($tahunAkademiks as $ta)
                         <option value="{{ $ta->tahun }} {{ $ta->semester }}" {{ request('ta') == ($ta->tahun . ' ' . $ta->semester) ? 'selected' : '' }}>
@@ -20,7 +20,7 @@
             </form>
         </div>
         <div class="flex space-x-2">
-            <a href="{{ route('admin.mahasiswa.create', ['kegiatan' => 'Magang']) }}" class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all duration-300 shadow-md shadow-indigo-100">
+            <a href="{{ route('admin.mahasiswa.create', ['kegiatan' => 'Magang']) }}" class="inline-flex items-center justify-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all duration-300 shadow-md shadow-primary-100">
                 <i class="fas fa-plus mr-2"></i>
                 Tambah Peserta
             </a>
@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-6 overflow-x-auto">
             <table class="w-full text-left border-separate border-spacing-0" id="magangTable">
                 <thead>
@@ -55,11 +55,11 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach ($pesertaMagang as $index => $mahasiswa)
-                    <tr class="hover:bg-blue-50/30 transition-colors group">
+                    <tr class="hover:bg-primary-50/30 transition-colors group">
                         <td class="px-6 py-5 text-sm text-gray-400 font-medium italic">{{ $index + 1 }}</td>
                         <td class="px-6 py-5">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs border border-indigo-200 group-hover:scale-110 transition-transform">
+                                <div class="w-10 h-10 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center font-bold text-xs border border-primary-200 group-hover:scale-110 transition-transform">
                                     {{ substr($mahasiswa->nama, 0, 1) }}
                                 </div>
                                 <div>
@@ -77,7 +77,7 @@
                             @php $instansi = $mahasiswa->penempatanmagang?->lokasimagang?->nama_instansi; @endphp
                             @if($instansi)
                             <div class="flex items-center space-x-2 text-slate-600">
-                                <i class="fas fa-building text-xs text-indigo-500"></i>
+                                <i class="fas fa-building text-xs text-primary-500"></i>
                                 <span class="text-sm font-bold">{{ $instansi }}</span>
                             </div>
                             @else
@@ -87,7 +87,7 @@
                         @include('admin._kolom_dosen', ['mahasiswa' => $mahasiswa])
                         <td class="px-6 py-5 text-center">
                             @if($mahasiswa->publikasis->isNotEmpty())
-                                <a href="{{ $mahasiswa->publikasis->first()->link }}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold">
+                                <a href="{{ $mahasiswa->publikasis->first()->link }}" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-800 text-xs font-bold">
                                     <i class="fas fa-link mr-1"></i> Lihat
                                 </a>
                             @else
@@ -95,7 +95,7 @@
                             @endif
                         </td>
                         <td class="px-6 py-5 text-center">
-                            <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-black border border-indigo-100">
+                            <span class="px-3 py-1 bg-primary-50 text-primary-700 rounded-lg text-sm font-semibold border border-primary-100">
                                 {{ $mahasiswa->nilai_akhir }}
                             </span>
                         </td>
@@ -106,7 +106,7 @@
                                 @csrf
                                 <select name="status_kegiatan" onchange="this.form.submit()"
                                     class="text-xs font-bold rounded-xl border px-2 py-1.5 focus:outline-none cursor-pointer
-                                    {{ $mk->status_kegiatan === 'selesai' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($mk->status_kegiatan === 'dibatalkan' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200') }}">
+                                    {{ $mk->status_kegiatan === 'selesai' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($mk->status_kegiatan === 'dibatalkan' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-primary-50 text-primary-700 border-primary-200') }}">
                                     <option value="aktif"      {{ $mk->status_kegiatan === 'aktif'      ? 'selected' : '' }}>Berlangsung</option>
                                     <option value="selesai"    {{ $mk->status_kegiatan === 'selesai'    ? 'selected' : '' }}>Selesai</option>
                                     <option value="dibatalkan" {{ $mk->status_kegiatan === 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
@@ -119,14 +119,14 @@
                                                 <td class="px-6 py-5 text-center">
                             @if($mk && ($mk->link_dokumen_1 || $mk->link_dokumen_2 || $mk->link_dokumen_3))
                             <div class="relative inline-block" x-data="{ open: false }">
-                                <button @click="open = !open" class="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors">
+                                <button @click="open = !open" class="px-3 py-1.5 bg-primary-50 text-primary-600 rounded-lg text-xs font-bold hover:bg-primary-100 transition-colors">
                                     <i class="fas fa-file-alt mr-1"></i>Dok
                                 </button>
                                 <div x-show="open" @click.away="open = false" x-cloak
                                     class="absolute right-0 mt-1 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 p-3 space-y-2">
                                     @foreach([['Transkip', $mk->link_dokumen_1],['Surat', $mk->link_dokumen_2],['CV/Ket.', $mk->link_dokumen_3]] as [$lbl, $lnk])
                                     @if($lnk)
-                                    <a href="{{ $lnk }}" target="_blank" class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-xl text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                                    <a href="{{ $lnk }}" target="_blank" class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-xl text-xs font-bold text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition-colors">
                                         <span>{{ $lbl }}</span><i class="fas fa-external-link-alt text-[9px]"></i>
                                     </a>
                                     @endif

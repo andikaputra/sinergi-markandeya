@@ -10,20 +10,20 @@
             <i class="fas fa-chevron-left text-sm"></i>
         </a>
         <div>
-            <h2 class="text-2xl font-black text-gray-800">Perbaiki & Kirim Ulang Bimbingan</h2>
+            <h2 class="text-2xl font-semibold text-gray-800">Perbaiki & Kirim Ulang Bimbingan</h2>
             <p class="text-xs text-gray-500">Sesuaikan draf laporan dan pokok bahasan sesuai dengan arahan revisi dosen pembimbing</p>
         </div>
     </div>
 
     <!-- Catatan Dosen yang Harus Direvisi (Highlight Box) -->
     @if($bimbingan->catatan_dosen)
-    <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6 rounded-3xl shadow-lg shadow-amber-500/10 space-y-2">
+    <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6 rounded-xl shadow-lg shadow-amber-500/10 space-y-2">
         <div class="flex items-center space-x-2.5">
             <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white text-sm font-bold backdrop-blur-xs">
                 <i class="fas fa-exclamation-circle"></i>
             </div>
             <div>
-                <span class="text-[10px] font-black uppercase tracking-wider text-amber-100 block">Catatan & Masukan Dosen Pembimbing</span>
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-amber-100 block">Catatan & Masukan Dosen Pembimbing</span>
                 <h4 class="text-sm font-bold text-white">{{ $bimbingan->dosenPembimbing?->dosen?->nama ?? 'Dosen Pembimbing' }}</h4>
             </div>
         </div>
@@ -49,7 +49,7 @@
     @endif
 
     <!-- Form Edit Revisi -->
-    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
         <form action="{{ route('bimbingan.update', $bimbingan->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
@@ -138,7 +138,7 @@
             <div class="pt-4 flex flex-col sm:flex-row items-center gap-3">
                 <button
                     type="submit"
-                    class="w-full sm:w-auto flex-1 py-4 px-8 bg-gold-500 hover:bg-gold-600 text-primary-950 font-black text-sm rounded-2xl transition-all shadow-lg shadow-gold-500/20 active:scale-98 flex items-center justify-center space-x-2"
+                    class="w-full sm:w-auto flex-1 py-4 px-8 bg-gold-500 hover:bg-gold-600 text-primary-950 font-semibold text-sm rounded-2xl transition-all shadow-lg shadow-gold-500/20 active:scale-98 flex items-center justify-center space-x-2"
                 >
                     <i class="fas fa-paper-plane"></i>
                     <span>Kirim Hasil Revisi ke Dosen</span>
@@ -159,7 +159,7 @@
         if (this.files && this.files.length > 0) {
             const fileName = this.files[0].name;
             const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
-            document.getElementById('file_name_display').innerHTML = `<span class="text-emerald-600 font-black"><i class="fas fa-check-circle mr-1"></i> ${fileName} (${fileSize} MB)</span>`;
+            document.getElementById('file_name_display').innerHTML = `<span class="text-emerald-600 font-semibold"><i class="fas fa-check-circle mr-1"></i> ${fileName} (${fileSize} MB)</span>`;
         }
     });
 </script>

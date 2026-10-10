@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.dosen')
 
 @php
     $kegiatan = strtoupper($monev->kegiatan ?? 'KKN');
@@ -17,13 +17,13 @@
 }" class="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
 
     <!-- Header Banner -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-8 sm:p-10 shadow-xl border border-slate-800">
+    <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary-800 via-primary-700 to-primary-800 text-white p-8 sm:p-10 shadow-xl border border-slate-800">
         <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div class="space-y-2">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-semibold uppercase tracking-wider">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/20 text-primary-300 border border-primary-400/30 text-xs font-semibold uppercase tracking-wider">
                     <i class="fas fa-search-location"></i> Evaluasi Lapangan & Monev (3 Tahap)
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white line-clamp-2">{{ $pageTitle }}</h1>
+                <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-white line-clamp-2">{{ $pageTitle }}</h1>
                 <p class="text-slate-300 text-sm">
                     Kegiatan: <strong class="text-white uppercase">{{ $kegiatan }}</strong> • Tipe: <strong class="text-white uppercase">{{ $type }}</strong> • Progress: <strong class="text-emerald-400">{{ $monev->monev_selesai_count }}/3 Monev Selesai</strong>
                     @if (!is_null($monev->rata_rata_nilai))
@@ -38,7 +38,7 @@
                 </a>
             </div>
         </div>
-        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl pointer-events-none"></div>
     </div>
 
     @if ($message = Session::get('success'))
@@ -59,15 +59,15 @@
         <!-- Left Column: Program Info & Luaran (5 cols) -->
         <div class="lg:col-span-5 space-y-6">
             <!-- Program / Target Details Card -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
                 <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-                    <h2 class="text-lg font-black text-gray-900 flex items-center gap-2">
-                        <i class="fas fa-info-circle text-indigo-600"></i>
+                    <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-info-circle text-primary-600"></i>
                         <span>Informasi {{ $type === 'individu' ? 'Mahasiswa' : 'Kelompok / Lokasi' }}</span>
                     </h2>
                     @if ($program)
                         @if ($program->status === 'rencana')
-                            <span class="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold rounded-full">Rencana</span>
+                            <span class="px-3 py-1 bg-primary-50 text-primary-700 border border-primary-200 text-xs font-bold rounded-full">Rencana</span>
                         @elseif ($program->status === 'sedang_berjalan')
                             <span class="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold rounded-full">Sedang Berjalan</span>
                         @elseif ($program->status === 'selesai')
@@ -130,9 +130,9 @@
 
             <!-- Group Members if Kelompok -->
             @if ($type === 'kelompok' && isset($anggota) && count($anggota) > 0)
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
-                <h3 class="text-base font-black text-gray-900 mb-4 flex items-center gap-2">
-                    <i class="fas fa-users text-indigo-600"></i>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-users text-primary-600"></i>
                     <span>Anggota Kelompok ({{ count($anggota) }})</span>
                 </h3>
                 <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
@@ -153,9 +153,9 @@
 
             <!-- Deliverables / Luaran Card -->
             @if ($program)
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
-                <h3 class="text-base font-black text-gray-900 mb-4 flex items-center gap-2">
-                    <i class="fas fa-box-open text-indigo-600"></i>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-box-open text-primary-600"></i>
                     <span>Luaran / Deliverables ({{ $luarans->count() }})</span>
                 </h3>
                 @if ($luarans->count() > 0)
@@ -164,7 +164,7 @@
                             <div class="p-4 border border-gray-100 bg-gray-50/50 rounded-2xl">
                                 <div class="flex items-start justify-between gap-2 mb-1">
                                     <h4 class="font-bold text-gray-900 text-sm">{{ $luaran->judul }}</h4>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold
                                         @if($luaran->status === 'belum_dikerjakan') bg-gray-100 text-gray-600
                                         @elseif($luaran->status === 'sedang_dikerjakan') bg-amber-100 text-amber-800
                                         @else bg-emerald-100 text-emerald-800
@@ -175,9 +175,9 @@
                                 </div>
                                 <p class="text-xs text-gray-500 line-clamp-2 mb-2">{{ $luaran->deskripsi }}</p>
                                 <div class="flex items-center justify-between text-xs font-semibold">
-                                    <span class="text-indigo-600">Progress: {{ $luaran->persentase_selesai }}%</span>
+                                    <span class="text-primary-600">Progress: {{ $luaran->persentase_selesai }}%</span>
                                     @if ($luaran->file_path)
-                                        <a href="{{ asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                                        <a href="{{ asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-primary-600 hover:underline flex items-center gap-1">
                                             <i class="fas fa-paperclip"></i> Berkas Luaran
                                         </a>
                                     @endif
@@ -195,7 +195,7 @@
         <!-- Right Column: 3-Stage Monev Tabs & Forms (7 cols) -->
         <div class="lg:col-span-7 space-y-6">
             <!-- Stage Selector Tabs -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-2.5 flex flex-wrap sm:flex-nowrap gap-2">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-2.5 flex flex-wrap sm:flex-nowrap gap-2">
                 @php
                     $tahapList = [
                         1 => ['title' => 'Monev 1', 'sub' => 'Tahap Awal', 'data' => $tahap1],
@@ -211,21 +211,21 @@
                     @endphp
                     <button type="button" 
                         @click="activeTahap = {{ $ke }}" 
-                        :class="activeTahap === {{ $ke }} ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200/70'"
+                        :class="activeTahap === {{ $ke }} ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200/70'"
                         class="flex-1 py-3 px-4 rounded-2xl font-bold text-left transition-all duration-200 relative overflow-hidden group">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs uppercase tracking-wider font-black">{{ $tInfo['title'] }}</span>
+                            <span class="text-xs uppercase tracking-wider font-semibold">{{ $tInfo['title'] }}</span>
                             @if ($isFilled)
                                 <span :class="activeTahap === {{ $ke }} ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'" class="px-2 py-0.5 rounded-full text-[10px] font-bold">
                                     <i class="fas fa-check-circle"></i> Selesai
                                 </span>
                             @else
-                                <span :class="activeTahap === {{ $ke }} ? 'bg-white/10 text-indigo-200' : 'bg-gray-200/80 text-gray-500'" class="px-2 py-0.5 rounded-full text-[10px] font-medium">
+                                <span :class="activeTahap === {{ $ke }} ? 'bg-white/10 text-primary-200' : 'bg-gray-200/80 text-gray-500'" class="px-2 py-0.5 rounded-full text-[10px] font-medium">
                                     Belum
                                 </span>
                             @endif
                         </div>
-                        <p :class="activeTahap === {{ $ke }} ? 'text-indigo-100' : 'text-gray-500'" class="text-[11px] font-normal truncate mt-0.5">
+                        <p :class="activeTahap === {{ $ke }} ? 'text-primary-100' : 'text-gray-500'" class="text-[11px] font-normal truncate mt-0.5">
                             {{ $tInfo['sub'] }}
                             @if ($isFilled && !is_null($tData->nilai))
                                 • Nilai: <strong>{{ $tData->nilai }}</strong>
@@ -244,16 +244,16 @@
 
                 <div x-show="activeTahap === {{ $ke }}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6">
                     <!-- Monev Review Form for Stage {{ $ke }} -->
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
                         <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
                             <div>
-                                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-black uppercase mb-1">
+                                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-50 text-primary-700 text-xs font-semibold uppercase mb-1">
                                     <i class="fas fa-layer-group"></i> {{ $tInfo['title'] }} - {{ $tInfo['sub'] }}
                                 </div>
-                                <h2 class="text-xl font-black text-gray-900">Form Evaluasi {{ $tInfo['title'] }}</h2>
+                                <h2 class="text-xl font-semibold text-gray-900">Form Evaluasi {{ $tInfo['title'] }}</h2>
                                 <p class="text-xs text-gray-500 mt-0.5">Masukkan catatan evaluasi lapangan, nilai monev, dan tautan Google Drive dokumentasi untuk {{ $tInfo['title'] }}.</p>
                             </div>
-                            <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">
+                            <div class="w-10 h-10 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center font-bold text-lg">
                                 <i class="fas fa-clipboard-check"></i>
                             </div>
                         </div>
@@ -267,7 +267,7 @@
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
                                     Tanggal Pelaksanaan {{ $tInfo['title'] }} <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" name="tanggal_monev" value="{{ old('tanggal_monev', $tData->tanggal_monev ? \Carbon\Carbon::parse($tData->tanggal_monev)->format('Y-m-d') : date('Y-m-d')) }}" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                <input type="date" name="tanggal_monev" value="{{ old('tanggal_monev', $tData->tanggal_monev ? \Carbon\Carbon::parse($tData->tanggal_monev)->format('Y-m-d') : date('Y-m-d')) }}" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition">
                             </div>
 
                             <!-- Catatan Monev / Hasil Pengamatan -->
@@ -284,7 +284,7 @@
                                         Fokus Tahap 3: Evaluasi akhir pencapaian luaran/program kerja, dampak kegiatan, dan penutupan/penarikan.
                                     @endif
                                 </p>
-                                <textarea name="catatan" rows="5" placeholder="Tuliskan hasil monitoring dan catatan evaluasi untuk {{ $tInfo['title'] }}..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition leading-relaxed">{{ old('catatan', $tData->catatan) }}</textarea>
+                                <textarea name="catatan" rows="5" placeholder="Tuliskan hasil monitoring dan catatan evaluasi untuk {{ $tInfo['title'] }}..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition leading-relaxed">{{ old('catatan', $tData->catatan) }}</textarea>
                             </div>
 
                             <!-- Nilai Monev (Opsional) -->
@@ -293,7 +293,7 @@
                                     Nilai {{ $tInfo['title'] }} (Opsional, Skala 0 - 100)
                                 </label>
                                 <div class="relative">
-                                    <input type="number" step="0.1" min="0" max="100" name="nilai" value="{{ old('nilai', $tData->nilai) }}" placeholder="Contoh: 88.5" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                    <input type="number" step="0.1" min="0" max="100" name="nilai" value="{{ old('nilai', $tData->nilai) }}" placeholder="Contoh: 88.5" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition">
                                     <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-xs font-bold text-gray-400">
                                         / 100
                                     </div>
@@ -301,13 +301,13 @@
                             </div>
 
                             <!-- Link Google Drive Dokumentasi Foto Monev -->
-                            <div class="p-5 bg-gradient-to-br from-indigo-50/70 via-blue-50/40 to-emerald-50/40 rounded-2xl border border-indigo-100/80 space-y-3">
+                            <div class="p-5 bg-gradient-to-br from-primary-50/70 via-primary-50/40 to-emerald-50/40 rounded-2xl border border-primary-100/80 space-y-3">
                                 <div class="flex items-center justify-between">
                                     <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
                                         <i class="fab fa-google-drive text-emerald-600 text-base"></i>
                                         <span>Tautan Google Drive Dokumentasi Foto {{ $tInfo['title'] }}</span>
                                     </label>
-                                    <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase tracking-wider">
+                                    <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-semibold rounded-full uppercase tracking-wider">
                                         Google Drive
                                     </span>
                                 </div>
@@ -322,7 +322,7 @@
                                 </div>
 
                                 @if ($tData->link_monev)
-                                    <div class="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-indigo-100/60">
+                                    <div class="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-primary-100/60">
                                         <span class="text-xs text-emerald-800 font-medium truncate min-w-0 flex-1">
                                             <i class="fas fa-check-circle text-emerald-600 mr-1"></i> Tautan aktif tersimpan
                                         </span>
@@ -340,7 +340,7 @@
                                 <span class="text-xs text-gray-400 font-medium">
                                     Menyimpan data evaluasi untuk <strong>{{ $tInfo['title'] }}</strong>
                                 </span>
-                                <button type="submit" class="px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200 flex items-center justify-center gap-2">
+                                <button type="submit" class="px-8 py-3.5 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-bold text-sm rounded-xl shadow-lg shadow-primary-600/30 transition duration-200 flex items-center justify-center gap-2">
                                     <i class="fas fa-save"></i>
                                     <span>Simpan {{ $tInfo['title'] }}</span>
                                 </button>
@@ -349,10 +349,10 @@
                     </div>
 
                     <!-- Saved Photos & Drive Gallery for Stage {{ $ke }} -->
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-6 overflow-hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-6 overflow-hidden">
                         <div class="flex items-center justify-between pb-4 border-b border-gray-100">
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 flex items-center gap-2">
+                                <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
                                     <i class="fab fa-google-drive text-emerald-600"></i>
                                     <span>Dokumentasi Google Drive ({{ $tInfo['title'] }})</span>
                                 </h2>
@@ -371,7 +371,7 @@
                                     </div>
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2">
-                                            <h4 class="font-black text-gray-900 text-sm truncate">Folder Drive {{ $tInfo['title'] }}</h4>
+                                            <h4 class="font-semibold text-gray-900 text-sm truncate">Folder Drive {{ $tInfo['title'] }}</h4>
                                             <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-md flex-shrink-0">Tersambung</span>
                                         </div>
                                         <p class="text-xs text-gray-500 truncate block mt-0.5 font-mono" title="{{ $tData->link_monev }}">{{ $tData->link_monev }}</p>

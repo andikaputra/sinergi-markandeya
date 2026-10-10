@@ -22,27 +22,27 @@
     </div>
     @endif
 
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
         <div>
-            <h2 class="text-2xl font-black text-gray-800 tracking-tight">Pengajuan Lokasi PKL</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Pengajuan Lokasi PKL</h2>
             <p class="text-sm text-gray-500 font-medium">Verifikasi dan kelola penempatan mandiri mahasiswa PKL.</p>
         </div>
         <div class="flex items-center space-x-2">
-            <span class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black border border-blue-100">
+            <span class="px-4 py-2 bg-primary-50 text-primary-600 rounded-xl text-xs font-semibold border border-primary-100">
                 TOTAL: {{ $pengajuans->count() }}
             </span>
         </div>
     </div>
 
-    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 overflow-x-auto">
             <table class="w-full text-left border-separate border-spacing-0" id="pklTable">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Instansi / Perusahaan</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-center">Status</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Instansi / Perusahaan</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-center">Status</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -71,11 +71,11 @@
                         </td>
                         <td class="px-6 py-5 text-center">
                             @if($pengajuan->status == 'pending')
-                                <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-[10px] font-black border border-amber-100 uppercase tracking-wider animate-pulse">Pending</span>
+                                <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-[10px] font-semibold border border-amber-100 uppercase tracking-wider animate-pulse">Pending</span>
                             @elseif($pengajuan->status == 'approved')
-                                <span class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black border border-emerald-100 uppercase tracking-wider">Approved</span>
+                                <span class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-semibold border border-emerald-100 uppercase tracking-wider">Approved</span>
                             @else
-                                <span class="px-3 py-1 bg-red-50 text-red-600 rounded-full text-[10px] font-black border border-red-100 uppercase tracking-wider">Rejected</span>
+                                <span class="px-3 py-1 bg-red-50 text-red-600 rounded-full text-[10px] font-semibold border border-red-100 uppercase tracking-wider">Rejected</span>
                             @endif
                         </td>
                         <td class="px-6 py-5 text-right">
@@ -83,13 +83,13 @@
                             <div class="flex items-center justify-end space-x-2">
                                 <form action="{{ route('pengajuanpkl.approve', $pengajuan->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black rounded-lg transition-all shadow-md shadow-emerald-100 uppercase tracking-widest">
+                                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-semibold rounded-lg transition-all shadow-md shadow-emerald-100 uppercase tracking-widest">
                                         Approve
                                     </button>
                                 </form>
                                 <form action="{{ route('pengajuanpkl.reject', $pengajuan->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="px-4 py-2 bg-white border border-gray-200 text-red-600 text-[10px] font-black rounded-lg hover:bg-red-50 transition-all uppercase tracking-widest">
+                                    <button type="submit" class="px-4 py-2 bg-white border border-gray-200 text-red-600 text-[10px] font-semibold rounded-lg hover:bg-red-50 transition-all uppercase tracking-widest">
                                         Reject
                                     </button>
                                 </form>

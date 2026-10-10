@@ -54,6 +54,7 @@ if (shell) {
         if (link.getAttribute('aria-current') === 'page') {
             const group = link.closest('details');
             if (group) group.open = true;
+            link.scrollIntoView({ block: 'nearest' });
         }
     });
 }

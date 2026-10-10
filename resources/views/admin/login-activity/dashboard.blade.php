@@ -6,13 +6,13 @@
 <div class="mb-4 text-right">
     <a href="{{ route('admin.login-activity.laporan') }}" class="text-primary-600 font-semibold">Laporan Aktivitas Login →</a>
 </div>
-<div style="background-color: #f5f3f0; padding: 24px; border-radius: 16px;">
+<div style="background-color: #f5f6f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1400px; margin: 0 auto;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #1a5d4d 0%, #0f2d26 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
             <div>
                 <h1 style="font-size: 2.5rem; margin: 0 0 10px 0; font-weight: 700;">🔍 Monitoring Login Activity</h1>
-                <p style="margin: 0; color: #d4a574; font-size: 1.1rem;">Pantau aktivitas login mahasiswa dan dosen</p>
+                <p style="margin: 0; color: #56703f; font-size: 1.1rem;">Pantau aktivitas login mahasiswa dan dosen</p>
             </div>
             <div>
                 <a href="{{ route('admindashboard') }}" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 700; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)';" onmouseout="this.style.background='rgba(255,255,255,0.15)';">
@@ -27,7 +27,7 @@
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
                 <div style="background: linear-gradient(135deg, #1a5d4d 0%, #0f2d26 100%); color: white; padding: 24px; border-radius: 12px;">
-                    <div style="color: #d4a574; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Total Mahasiswa</div>
+                    <div style="color: #56703f; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Total Mahasiswa</div>
                     <div style="font-size: 2.5rem; font-weight: 700;">{{ $statistik['mahasiswa']['total'] }}</div>
                 </div>
 
@@ -38,7 +38,7 @@
                 </div>
 
                 <div style="background: linear-gradient(135deg, #d4a574 0%, #c9905c 100%); color: white; padding: 24px; border-radius: 12px;">
-                    <div style="color: rgba(255,255,255,0.9); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Belum Login Sama Sekali</div>
+                    <div style="color: rgba(255,255,255,0.9); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Belum Ada Login Tercatat</div>
                     <div style="font-size: 2.5rem; font-weight: 700;">{{ $statistik['mahasiswa']['belum_login'] }}</div>
                     <a href="{{ route('admin.login-activity.mahasiswa-belum-login') }}" style="color: white; text-decoration: none; font-weight: 600; margin-top: 12px; display: inline-block;">
                         Lihat Detail →
@@ -59,7 +59,7 @@
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr style="background-color: #f5f3f0; border-bottom: 2px solid #d4a574;">
+                        <tr style="background-color: #f5f6f0; border-bottom: 2px solid #d4a574;">
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">NIM</th>
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Nama</th>
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Last Login</th>
@@ -70,7 +70,7 @@
                         <tr style="border-bottom: 1px solid #e0e0e0;">
                             <td style="padding: 12px; color: #333; font-weight: 500;">{{ $m->nim }}</td>
                             <td style="padding: 12px; color: #333;">{{ $m->nama }}</td>
-                            <td style="padding: 12px; color: #666;">{{ $m->last_login?->format('d M Y H:i') ?? 'Belum pernah login' }}</td>
+                            <td style="padding: 12px; color: #666;">{{ $m->last_login?->format('d M Y H:i') ?? 'Belum ada login tercatat' }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -84,7 +84,7 @@
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
                 <div style="background: linear-gradient(135deg, #1a5d4d 0%, #0f2d26 100%); color: white; padding: 24px; border-radius: 12px;">
-                    <div style="color: #d4a574; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Total Dosen</div>
+                    <div style="color: #56703f; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Total Dosen</div>
                     <div style="font-size: 2.5rem; font-weight: 700;">{{ $statistik['dosen']['total'] }}</div>
                 </div>
 
@@ -95,7 +95,7 @@
                 </div>
 
                 <div style="background: linear-gradient(135deg, #d4a574 0%, #c9905c 100%); color: white; padding: 24px; border-radius: 12px;">
-                    <div style="color: rgba(255,255,255,0.9); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Belum Login Sama Sekali</div>
+                    <div style="color: rgba(255,255,255,0.9); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Belum Ada Login Tercatat</div>
                     <div style="font-size: 2.5rem; font-weight: 700;">{{ $statistik['dosen']['belum_login'] }}</div>
                     <a href="{{ route('admin.login-activity.dosen-belum-login') }}" style="color: white; text-decoration: none; font-weight: 600; margin-top: 12px; display: inline-block;">
                         Lihat Detail →
@@ -116,7 +116,7 @@
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr style="background-color: #f5f3f0; border-bottom: 2px solid #d4a574;">
+                        <tr style="background-color: #f5f6f0; border-bottom: 2px solid #d4a574;">
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">NIDN</th>
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Nama</th>
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Last Login</th>
@@ -127,7 +127,7 @@
                         <tr style="border-bottom: 1px solid #e0e0e0;">
                             <td style="padding: 12px; color: #333; font-weight: 500;">{{ $d->nidn }}</td>
                             <td style="padding: 12px; color: #333;">{{ $d->nama }}</td>
-                            <td style="padding: 12px; color: #666;">{{ $d->last_login?->format('d M Y H:i') ?? 'Belum pernah login' }}</td>
+                            <td style="padding: 12px; color: #666;">{{ $d->last_login?->format('d M Y H:i') ?? 'Belum ada login tercatat' }}</td>
                         </tr>
                         @endforeach
                     </tbody>

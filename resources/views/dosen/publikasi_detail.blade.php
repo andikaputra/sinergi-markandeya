@@ -7,7 +7,7 @@
     <!-- Header & Back Button -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div class="flex items-center space-x-4">
-            <a href="{{ route('dosen.publikasi.index') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-600 transition-all shadow-sm">
+            <a href="{{ route('dosen.publikasi.index') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-600 transition-all shadow-sm">
                 <i class="fas fa-chevron-left text-xs"></i>
             </a>
             <div>
@@ -18,21 +18,21 @@
     </div>
 
     <!-- Top Profile Header -->
-    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-        <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg shadow-indigo-100 shrink-0">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+        <div class="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-2xl flex items-center justify-center text-2xl font-semibold shadow-lg shadow-primary-100 shrink-0">
             {{ substr($mahasiswa->nama, 0, 1) }}
         </div>
         <div class="flex-1">
-            <h3 class="text-xl font-black text-gray-800">{{ $mahasiswa->nama }}</h3>
+            <h3 class="text-xl font-semibold text-gray-800">{{ $mahasiswa->nama }}</h3>
             <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-2">
-                <span class="px-3 py-1 bg-gray-100 text-gray-500 text-[10px] font-black rounded-lg uppercase tracking-wider">{{ $mahasiswa->nim }}</span>
-                <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded-lg uppercase tracking-wider">{{ $mahasiswa->kegiatan }}</span>
+                <span class="px-3 py-1 bg-gray-100 text-gray-500 text-[10px] font-semibold rounded-lg uppercase tracking-wider">{{ $mahasiswa->nim }}</span>
+                <span class="px-3 py-1 bg-primary-50 text-primary-600 text-[10px] font-semibold rounded-lg uppercase tracking-wider">{{ $mahasiswa->kegiatan }}</span>
             </div>
         </div>
         <div class="grid grid-cols-1 gap-2 shrink-0 w-full md:w-auto border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Status Publikasi</span>
-            <div class="flex items-center justify-center md:justify-start text-indigo-700 font-bold text-sm">
-                <i class="fas fa-check-circle text-indigo-400 mr-2"></i>
+            <div class="flex items-center justify-center md:justify-start text-primary-700 font-bold text-sm">
+                <i class="fas fa-check-circle text-primary-400 mr-2"></i>
                 {{ $mahasiswa->publikasis->count() }} Artikel Terunggah
             </div>
         </div>
@@ -41,13 +41,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Left Side: Journal Timeline -->
         <div class="lg:col-span-7 xl:col-span-8 order-2 lg:order-1">
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
                 <div class="p-6 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
                     <h4 class="text-lg font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-history text-indigo-500 mr-3"></i>
+                        <i class="fas fa-history text-primary-500 mr-3"></i>
                         Riwayat Jurnal Harian
                     </h4>
-                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-[10px] font-black rounded-full">{{ $jurnals->count() }} Entri</span>
+                    <span class="px-3 py-1 bg-primary-100 text-primary-700 text-[10px] font-semibold rounded-full">{{ $jurnals->count() }} Entri</span>
                 </div>
 
                 <div class="p-8 flex-1">
@@ -60,12 +60,12 @@
                         <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gray-100">
                             @foreach ($jurnals as $jurnal)
                             <div class="relative flex items-start group" x-data="{ expanded: false }">
-                                <div class="absolute left-0 w-10 h-10 bg-white border-2 border-indigo-500 rounded-xl flex items-center justify-center text-indigo-600 z-10 transition-all group-hover:bg-indigo-600 group-hover:text-white shadow-sm">
-                                    <span class="text-[10px] font-black">{{ \Carbon\Carbon::parse($jurnal->tanggal)->format('d') }}</span>
+                                <div class="absolute left-0 w-10 h-10 bg-white border-2 border-primary-500 rounded-xl flex items-center justify-center text-primary-600 z-10 transition-all group-hover:bg-primary-600 group-hover:text-white shadow-sm">
+                                    <span class="text-[10px] font-semibold">{{ \Carbon\Carbon::parse($jurnal->tanggal)->format('d') }}</span>
                                 </div>
-                                <div class="flex-1 ml-16 bg-white p-5 rounded-2xl border border-gray-100 group-hover:border-indigo-100 group-hover:shadow-md transition-all duration-300">
+                                <div class="flex-1 ml-16 bg-white p-5 rounded-2xl border border-gray-100 group-hover:border-primary-100 group-hover:shadow-md transition-all duration-300">
                                     <div class="flex justify-between items-center mb-2">
-                                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
+                                        <span class="text-[10px] font-semibold text-primary-600 uppercase tracking-widest">
                                             {{ \Carbon\Carbon::parse($jurnal->tanggal)->translatedFormat('F Y') }}
                                         </span>
                                         <span class="text-[9px] text-gray-400 font-bold uppercase"><i class="far fa-clock mr-1"></i> {{ $jurnal->created_at->diffForHumans() }}</span>
@@ -75,7 +75,7 @@
                                             {{ $jurnal->kegiatan }}
                                         </p>
                                         @if(strlen($jurnal->kegiatan) > 150)
-                                        <button @click="expanded = !expanded" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest mt-2 focus:outline-none flex items-center gap-1">
+                                        <button @click="expanded = !expanded" class="text-[10px] font-semibold text-primary-600 hover:text-primary-800 uppercase tracking-widest mt-2 focus:outline-none flex items-center gap-1">
                                             <span x-text="expanded ? 'Sembunyikan' : 'Baca Selengkapnya'"></span>
                                             <i class="fas transition-transform" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                                         </button>
@@ -92,23 +92,23 @@
 
         <!-- Right Side: Action Panel -->
         <div class="lg:col-span-5 xl:col-span-4 order-1 lg:order-2 space-y-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-6">
                 <div class="flex items-center justify-between mb-6">
                     <h4 class="text-lg font-bold text-gray-800 flex items-center">
                         <i class="fas fa-star text-amber-400 mr-2"></i>
                         Panel Penilaian
                     </h4>
                     @if($isPenilai->nilai !== null)
-                        <div class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Update</div>
+                        <div class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-semibold rounded-full uppercase">Update</div>
                     @endif
                 </div>
 
                 @if($isPenilai->nilai !== null)
-                <div class="mb-6 p-4 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl text-center shadow-lg shadow-indigo-100">
-                    <span class="text-[10px] font-bold text-indigo-100 uppercase tracking-widest opacity-80">
+                <div class="mb-6 p-4 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl text-center shadow-lg shadow-primary-100">
+                    <span class="text-[10px] font-bold text-primary-100 uppercase tracking-widest opacity-80">
                         Skor Rata-Rata
                     </span>
-                    <p class="text-4xl font-black text-white mt-1">{{ $isPenilai->nilai }}</p>
+                    <p class="text-4xl font-semibold text-white mt-1">{{ $isPenilai->nilai }}</p>
                 </div>
                 @endif
 
@@ -132,15 +132,15 @@
                                 ];
                             @endphp
                             @foreach($kriteria_pub as $k)
-                            <label class="block p-3 bg-gray-50 rounded-xl border border-gray-100 focus-within:border-indigo-500 transition-all @if($loop->last) col-span-2 @endif">
-                                <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 block">{{ $k['label'] }}</span>
+                            <label class="block p-3 bg-gray-50 rounded-xl border border-gray-100 focus-within:border-primary-500 transition-all @if($loop->last) col-span-2 @endif">
+                                <span class="text-[9px] font-semibold text-gray-400 uppercase tracking-widest mb-1 block">{{ $k['label'] }}</span>
                                 <input type="number" name="{{ $k['key'] }}" value="{{ $isPenilai->{$k['key']} }}" min="0" max="100" step="0.1"
-                                    class="w-full bg-transparent border-none p-0 focus:ring-0 font-black text-lg text-gray-800" placeholder="0">
+                                    class="w-full bg-transparent border-none p-0 focus:ring-0 font-semibold text-lg text-gray-800" placeholder="0">
                             </label>
                             @endforeach
                         </div>
 
-                        <button type="submit" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-indigo-100 transition-all active:scale-[0.98] uppercase tracking-widest mt-2">
+                        <button type="submit" class="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-2xl shadow-xl shadow-primary-100 transition-all active:scale-[0.98] uppercase tracking-widest mt-2">
                             <i class="fas fa-save mr-2 text-xs"></i> Update Nilai
                         </button>
                     </div>
@@ -148,14 +148,14 @@
 
                 <!-- Link Publikasi Aktif -->
                 <div class="mt-6 pt-6 border-t border-gray-100">
-                    <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center">
-                        <i class="fas fa-newspaper mr-2 text-indigo-500"></i> Artikel Terunggah
+                    <h4 class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3 flex items-center">
+                        <i class="fas fa-newspaper mr-2 text-primary-500"></i> Artikel Terunggah
                     </h4>
                     <div class="space-y-2">
                         @forelse($mahasiswa->publikasis as $pub)
-                            <a href="{{ $pub->link }}" target="_blank" class="flex items-center p-3 bg-indigo-50 rounded-xl hover:bg-indigo-600 hover:text-white transition-all group">
-                                <i class="fas fa-external-link-alt text-indigo-500 mr-3 group-hover:text-white"></i>
-                                <span class="text-[10px] font-black text-indigo-700 group-hover:text-white truncate flex-1">{{ $pub->judul ?? 'Buka Artikel' }}</span>
+                            <a href="{{ $pub->link }}" target="_blank" class="flex items-center p-3 bg-primary-50 rounded-xl hover:bg-primary-600 hover:text-white transition-all group">
+                                <i class="fas fa-external-link-alt text-primary-500 mr-3 group-hover:text-white"></i>
+                                <span class="text-[10px] font-semibold text-primary-700 group-hover:text-white truncate flex-1">{{ $pub->judul ?? 'Buka Artikel' }}</span>
                             </a>
                         @empty
                             <p class="text-[10px] font-bold text-gray-400 italic text-center py-2">Belum ada artikel</p>

@@ -39,7 +39,8 @@
     <section class="dash-card dash-monitoring"><div class="dash-card-heading"><div><p class="dash-eyebrow">PANTAU PERKEMBANGAN</p><h2>Monitoring kegiatan</h2></div><span class="dash-muted">Akses langsung ke laporan</span></div><div class="dash-monitoring-grid">
         @foreach([
             [route('admin.bimbingan.dashboard'), 'fa-comments', 'Bimbingan', 'Pantau permohonan dan tindak lanjut dosen.'],
-            [route('admin.login-activity.dashboard'), 'fa-user-clock', 'Aktivitas Login', 'Lihat aktivitas mahasiswa dan dosen.'],
+            [route('admin.login-activity.dosen-belum-login'), 'fa-user-clock', 'Dosen Tanpa Login', 'Lihat dan cetak dosen tanpa aktivitas login tercatat.'],
+            [route('admin.monev.monitoring'), 'fa-clipboard-check', 'Pelaksanaan Monev', 'Lihat dosen yang belum mencatat Monev dan tahap yang tertunda.'],
             [route('admin.program-kerja.dashboard'), 'fa-tasks', 'Program Kerja & Luaran', 'Tinjau program dan hasil kegiatan mahasiswa.'],
         ] as [$href, $icon, $title, $description])
         <a href="{{ $href }}"><span class="dash-action-icon dash-tone-green"><i class="fas {{ $icon }}" aria-hidden="true"></i></span><div><strong>{{ $title }}</strong><p>{{ $description }}</p></div><i class="fas fa-arrow-right" aria-hidden="true"></i></a>

@@ -23,14 +23,14 @@
     ])
 
     <!-- Assignment Form Card -->
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <form action="{{ route('assign.dosen.store') }}" method="POST" class="p-8">
             @csrf
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 <!-- Student Selection -->
                 <div class="lg:col-span-7 space-y-4">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Mahasiswa</label>
-                    <div class="bg-slate-50 rounded-3xl border border-gray-100 overflow-hidden">
+                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Mahasiswa</label>
+                    <div class="bg-slate-50 rounded-xl border border-gray-100 overflow-hidden">
                         <div class="max-h-[400px] overflow-y-auto sidebar-scroll p-4 space-y-2">
                             @foreach($mahasiswas as $mahasiswa)
                                 <label class="flex items-center p-4 bg-white border border-gray-100 rounded-2xl cursor-pointer hover:border-amber-300 hover:bg-amber-50 transition-all group">
@@ -56,7 +56,7 @@
                 <!-- Dosen Selection & Submit -->
                 <div class="lg:col-span-5 space-y-6">
                     <div class="space-y-4">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Dosen Pembimbing</label>
+                        <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Dosen Pembimbing</label>
                         <div class="relative">
                             <select name="nidn" required class="w-full pl-5 pr-10 py-4 bg-slate-50 border border-gray-100 rounded-2xl text-gray-700 font-bold focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 appearance-none transition-all">
                                 <option value="">-- Pilih Nama Dosen --</option>
@@ -71,7 +71,7 @@
                     </div>
 
                     <div class="pt-4">
-                        <button type="submit" class="w-full py-5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl shadow-xl shadow-amber-100 transition-all flex items-center justify-center space-x-3 group">
+                        <button type="submit" class="w-full py-5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-2xl shadow-xl shadow-amber-100 transition-all flex items-center justify-center space-x-3 group">
                             <i class="fas fa-user-check group-hover:scale-110 transition-transform"></i>
                             <span class="uppercase tracking-widest text-xs">Simpan Plotting PKL</span>
                         </button>
@@ -82,17 +82,17 @@
     </div>
 
     <!-- Assignments List -->
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 flex items-center justify-between border-b border-gray-50">
-            <h3 class="text-lg font-black text-gray-800 tracking-tight uppercase tracking-widest text-xs">Data Bimbingan PKL</h3>
+            <h3 class="text-lg font-semibold text-gray-800 tracking-tight uppercase tracking-widest text-xs">Data Bimbingan PKL</h3>
         </div>
         <div class="overflow-x-auto p-8">
             <table class="w-full text-left border-separate border-spacing-0" id="assignmentsTable">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Dosen Pembimbing</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Dosen Pembimbing</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">

@@ -18,12 +18,12 @@
     @endif
 
     <!-- Header Card -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
         <div>
             <p class="text-sm text-gray-400">Kelola data pembimbing dari luar institusi</p>
         </div>
         <div class="flex space-x-2">
-            <a href="{{ route('pembimbing_luar.export') }}" class="inline-flex items-center justify-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-100 group">
+            <a href="{{ route('pembimbing_luar.export') }}" class="inline-flex items-center justify-center px-5 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary-100 group">
                 <i class="fas fa-file-export mr-2 group-hover:scale-110 transition-transform"></i>
                 Export CSV
             </a>
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Import CSV -->
-    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
             <div class="flex-1">
                 <h5 class="text-sm font-bold text-gray-800 flex items-center mb-1">
@@ -45,8 +45,8 @@
             </div>
             <form action="{{ route('pembimbing_luar.import') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2">
                 @csrf
-                <input type="file" name="file_csv" accept=".csv,.txt" required class="block text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-emerald-50 file:text-emerald-600 cursor-pointer hover:file:bg-emerald-100">
-                <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition-all whitespace-nowrap shadow-sm">
+                <input type="file" name="file_csv" accept=".csv,.txt" required class="block text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-600 cursor-pointer hover:file:bg-emerald-100">
+                <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-all whitespace-nowrap shadow-sm">
                     <i class="fas fa-upload mr-1"></i> Upload
                 </button>
             </form>
@@ -54,15 +54,15 @@
     </div>
 
     <!-- Data Table Card -->
-    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 overflow-x-auto">
             <table class="w-full text-left border-separate border-spacing-0" id="pembimbingLuarTable">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Identitas</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Instansi</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Kontak</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Opsi</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Identitas</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Instansi</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Kontak</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Opsi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -70,7 +70,7 @@
                     <tr class="hover:bg-slate-50/50 transition-colors group">
                         <td class="px-6 py-5">
                             <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black border border-emerald-100 group-hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-semibold border border-emerald-100 group-hover:scale-110 transition-transform">
                                     {{ substr($pl->nama, 0, 1) }}
                                 </div>
                                 <div>

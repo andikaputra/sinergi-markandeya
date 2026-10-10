@@ -3,7 +3,7 @@
 @section('title', 'Laporan Aktivitas Login')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6"><div class="print-actions flex justify-end"><a class="dash-button bg-primary-600 text-white" href="{{ route('admin.login-activity.laporan', ['cetak'=>1]) }}" target="_blank" rel="noopener noreferrer">Cetak seluruh laporan / PDF</a></div>
     <a href="{{ route('admin.login-activity.dashboard') }}" class="text-primary-600 font-semibold">
         ← Kembali ke Monitoring Aktivitas Login
     </a>

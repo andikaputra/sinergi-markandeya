@@ -129,6 +129,158 @@ class SystemWorkflowTest extends WorkflowTestCase
             ->assertViewHas('mahasiswaTerbaru', fn ($rows) => $rows->count() === 1 && $rows->first()->nim === $student->nim);
     }
 
+    public function test_attachment_download_preserves_bytes_and_checks_access_and_missing_file(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $student = $this->student();
+        $dosen = Dosen::create(['nidn' => '987', 'nip' => '654', 'password' => 'password']);
+        $assignment = DosenPembimbing::create(['nim' => $student->nim, 'nidn' => '654']);
+        $review = Bimbingan::create(['nim' => $student->nim, 'dosen_pembimbing_id' => $assignment->id,
+            'topik' => 'Lampiran Word', 'status' => 'belum_direview', 'materi_terlampir' => 'lampiran.docx']);
+        foreach (['doc', 'docx'] as $extension) {
+            $filename = 'lampiran.'.$extension;
+            $review->update(['materi_terlampir' => $filename]);
+            $bytes = ($extension === 'doc' ? "\xD0\xCF\x11\xE0" : "PK\x03\x04")."original-document-bytes\x00";
+            \Illuminate\Support\Facades\Storage::disk('public')->put('bimbingan/'.$filename, $bytes);
+            $response = $this->actingAs($student, 'mahasiswa')->get(route('bimbingan.berkas', $review));
+            $response->assertOk()->assertDownload($filename);
+            $this->assertSame($bytes, $response->streamedContent());
+        }
+        $other = Mahasiswa::create(['nim' => 'other', 'nama' => 'Lain', 'password' => 'password']);
+        $this->actingAs($other, 'mahasiswa')->get(route('bimbingan.berkas', $review))->assertForbidden();
+        auth('mahasiswa')->logout();
+        $this->actingAs($dosen, 'dosen')->get(route('bimbingan.berkas', $review))->assertOk()->assertDownload('lampiran.docx');
+        \Illuminate\Support\Facades\Storage::disk('public')->delete('bimbingan/lampiran.docx');
+        $this->get(route('bimbingan.berkas', $review))->assertNotFound()->assertHeaderMissing('Content-Disposition');
+    }
+
+    public function test_printed_participant_report_uses_selected_academic_period(): void
+    {
+        $this->student();
+        $this->actingAs($this->admin(), 'web')->get(route('admin.print.kkn', ['ta' => '2025/2026 Ganjil']))
+            ->assertOk()->assertSee('2025/2026 Ganjil')->assertSee('Mahasiswa Test')->assertSee('Cetak / Simpan PDF')
+            ->assertDontSee('id="sidebar"', false)->assertSee('Belum tersedia');
+    }
+
+    public function test_bimbingan_print_matches_status_date_and_activity_filters(): void
+    {
+        $student = $this->student();
+        $assignment = DosenPembimbing::create(['nim' => $student->nim, 'nidn' => '987']);
+        foreach ([['Topik Disetujui', 'disetujui'], ['Topik Menunggu', 'belum_direview']] as [$title, $status]) {
+            Bimbingan::create(['nim' => $student->nim, 'dosen_pembimbing_id' => $assignment->id,
+                'topik' => $title, 'status' => $status, 'tanggal_bimbingan' => now()]);
+        }
+        $query = ['cetak'=>1, 'kegiatan'=>'KKN', 'status'=>'disetujui', 'ta'=>'2025/2026 Ganjil',
+            'tanggal_mulai'=>now()->toDateString(), 'tanggal_selesai'=>now()->toDateString()];
+        $this->actingAs($this->admin(), 'web')->get(route('admin.bimbingan.laporan', $query))->assertOk()
+            ->assertSee('Topik Disetujui')->assertDontSee('Topik Menunggu')->assertViewHas('bimbingans', fn ($rows) => $rows->count() === 1);
+        $admin = User::create(['name'=>'Admin KKN', 'email'=>'scoped@example.test', 'password'=>'password', 'role'=>'admin', 'kegiatan'=>['KKN']]);
+        $query['kegiatan'] = 'PKL';
+        $this->actingAs($admin, 'web')->get(route('admin.bimbingan.laporan', $query))->assertForbidden();
+    }
+
+    public function test_login_print_contains_all_records_beyond_pagination(): void
+    {
+        for ($i = 1; $i <= 25; $i++) {
+            DB::table('mahasiswas')->insert(['nim'=>'nim'.$i, 'nama'=>'Mahasiswa '.$i, 'last_login'=>now()]);
+            DB::table('dosens')->insert(['nidn'=>'nidn'.$i, 'nama'=>'Dosen '.$i, 'last_login'=>now()]);
+        }
+        $this->actingAs($this->admin(), 'web')->get(route('admin.login-activity.laporan', ['cetak'=>1]))
+            ->assertOk()->assertViewHas('mahasiswas', fn ($rows) => $rows->count() === 25)
+            ->assertViewHas('dosens', fn ($rows) => $rows->count() === 25)->assertSee('Dosen 25');
+    }
+
+    public function test_student_and_program_prints_render_without_dashboard_chrome(): void
+    {
+        $student = $this->student();
+        $this->actingAs($student, 'mahasiswa')->get(route('jurnal.cetak'))->assertOk()->assertSee('2025/2026 Ganjil');
+        $this->get(route('bimbingan.cetak'))->assertOk()->assertDontSee('id="sidebar"', false);
+        auth('mahasiswa')->logout();
+        $this->actingAs($this->admin(), 'web');
+        foreach (['admin.program-kerja.semua-program', 'admin.program-kerja.semua-luaran'] as $route) {
+            $this->get(route($route, ['cetak'=>1]))->assertOk()->assertSee('Cetak / Simpan PDF')->assertDontSee('id="sidebar"', false);
+        }
+    }
+
+    public function test_successful_web_login_records_dosen_before_redirect_and_failed_login_does_not(): void
+    {
+        $this->mock(\App\Services\AisService::class, function ($mock) {
+            $mock->shouldReceive('loginMahasiswa')->andReturn(null);
+            $mock->shouldReceive('loginDosen')->andReturn(null);
+        });
+        $dosen = Dosen::create(['nidn'=>'987','nip'=>'654','nama'=>'Dosen Login','password'=>'secret-password']);
+        $this->post(route('login.submit'), ['email'=>'654','password'=>'wrong-password'])->assertSessionHasErrors('email');
+        $this->assertNull($dosen->fresh()->last_login);
+        $this->post(route('login.submit'), ['email'=>'654','password'=>'secret-password'])->assertRedirect(route('dosen.dashboard'));
+        $this->assertNotNull($dosen->fresh()->last_login);
+        auth('dosen')->logout();
+        $this->actingAs($this->admin(), 'web')->get(route('admin.login-activity.dosen-belum-login', ['cetak'=>1]))
+            ->assertOk()->assertDontSee('Dosen Login');
+    }
+
+    public function test_api_login_records_dosen_activity_and_returns_positive_token_lifetime(): void
+    {
+        $dosen = Dosen::create(['nidn'=>'987','nama'=>'Dosen API','password'=>'secret-password']);
+        $this->postJson('/api/v1/login/dosen', ['username'=>'987','password'=>'secret-password'])
+            ->assertOk()->assertJsonPath('user_type','dosen')->assertJson(fn ($json) => $json->where('expires_in', fn ($value) => $value > 0)->etc());
+        $this->assertNotNull($dosen->fresh()->last_login);
+    }
+
+    public function test_monev_monitoring_resolves_aliases_and_does_not_duplicate_mirrored_stages(): void
+    {
+        $first = Dosen::create(['nidn'=>'111','nip'=>'old-111','nama'=>'Belum Monev','password'=>'password']);
+        $second = Dosen::create(['nidn'=>'222','nama'=>'Sudah Mulai','password'=>'password']);
+        Dosen::create(['nidn'=>'333','nama'=>'Monev Lengkap','password'=>'password']);
+        Dosen::create(['nidn'=>'444','nama'=>'Tanpa Penugasan','password'=>'password']);
+        $completed = \App\Models\DosenMonev::create(['nidn'=>'333','monev_type'=>'individu','kegiatan'=>'kkn','nim'=>'unknown']);
+        foreach ([1,2,3] as $stage) \App\Models\DosenMonevTahap::create(['dosen_monev_id'=>$completed->id,'tahap_ke'=>$stage,'catatan'=>'Evaluasi tercatat','tanggal_monev'=>now()]);
+        $empty = \App\Models\DosenMonev::create(['nidn'=>'old-111','monev_type'=>'individu','kegiatan'=>'kkn','nim'=>'unknown','catatan'=>'   ','foto_monev'=>[]]);
+        $started = \App\Models\DosenMonev::create(['nidn'=>'222','monev_type'=>'individu','kegiatan'=>'kkn','nim'=>'unknown','tanggal_monev'=>now(),'catatan'=>'Data tersalin dari tahap 2']);
+        \App\Models\DosenMonevTahap::create(['dosen_monev_id'=>$started->id,'tahap_ke'=>2,'nilai'=>0,'tanggal_monev'=>now()]);
+        $this->assertSame([1=>false,2=>true,3=>false], $started->fresh()->load('tahaps')->recordedStages());
+        $this->actingAs($this->admin(), 'web')->get(route('admin.monev.monitoring'))
+            ->assertOk()->assertSee('Belum Monev')->assertDontSee('Sudah Mulai')->assertDontSee('Monev Lengkap')->assertDontSee('Tanpa Penugasan')
+            ->assertViewHas('summary', fn ($summary) => $summary['belum_mulai'] === 1 && $summary['berjalan'] === 1 && $summary['lengkap'] === 1 && $summary['total'] === 3);
+        $this->get(route('admin.monev.monitoring',['status'=>'semua','cetak'=>1]))
+            ->assertOk()->assertSee('Belum Monev')->assertSee('Sudah Mulai')->assertSee('Monev Lengkap')->assertDontSee('id="sidebar"', false);
+        auth('web')->logout();
+        $this->actingAs($second,'dosen')->get(route('dosen.program-kerja.monev-dashboard'))
+            ->assertOk()->assertSee('1/3 tahap')->assertViewHas('totalBelum',0)->assertViewHas('totalLengkap',0);
+    }
+
+    public function test_monev_monitoring_scopes_activities_and_counts_legacy_date_only_records(): void
+    {
+        Dosen::create(['nidn'=>'111','nama'=>'Pemonev','password'=>'password']);
+        $legacy = \App\Models\DosenMonev::create(['nidn'=>'111','monev_type'=>'kelompok','kegiatan'=>'kkn','tanggal_monev'=>now()]);
+        \App\Models\DosenMonev::create(['nidn'=>'111','monev_type'=>'kelompok','kegiatan'=>'ppl']);
+        $this->assertSame(1,$legacy->load('tahaps')->monev_selesai_count);
+        $admin = User::create(['name'=>'KKN','email'=>'only-kkn@example.test','password'=>'password','role'=>'admin','kegiatan'=>['KKN']]);
+        $this->actingAs($admin,'web')->get(route('admin.monev.monitoring',['status'=>'semua']))->assertOk()
+            ->assertViewHas('lecturers', fn ($rows) => $rows->first()['total'] === 1 && $rows->first()['berjalan'] === 1);
+        $this->get(route('admin.monev.monitoring',['kegiatan'=>'ppl']))->assertForbidden();
+    }
+
+    public function test_print_of_dosen_without_login_contains_all_filtered_records(): void
+    {
+        for ($i=1;$i<=30;$i++) Dosen::create(['nidn'=>'never-'.$i,'nama'=>'Belum Tercatat '.$i,'password'=>'password']);
+        $logged = Dosen::create(['nidn'=>'logged','nama'=>'Sudah Tercatat','password'=>'password']);
+        $logged->forceFill(['last_login'=>now()])->save();
+        $this->actingAs($this->admin(),'web')->get(route('admin.login-activity.dosen-belum-login',['cetak'=>1]))
+            ->assertOk()->assertViewHas('dosen', fn ($rows) => $rows->count() === 30)->assertDontSee('Sudah Tercatat');
+        $this->get(route('admin.login-activity.dosen-belum-login',['q'=>'never-30','cetak'=>1]))
+            ->assertOk()->assertViewHas('dosen', fn ($rows) => $rows->count() === 1)->assertSee('Belum Tercatat 30');
+    }
+
+    public function test_monev_monitoring_accepts_legacy_encoded_admin_permissions(): void
+    {
+        $admin = User::create(['name'=>'Admin Legacy','email'=>'legacy@example.test','password'=>'password',
+            'role'=>'admin','kegiatan'=>json_encode(['KKN'])]);
+        $this->assertSame(['KKN'],$admin->getAllowedKegiatan());
+        $this->assertTrue($admin->canManage('KKN'));
+        $this->assertFalse($admin->canManage('PPL'));
+        $this->actingAs($admin,'web')->get(route('admin.monev.monitoring'))->assertOk();
+    }
+
     public function test_monitoring_requires_admin_authentication(): void
     {
         foreach (['admin.bimbingan.dashboard', 'admin.login-activity.dashboard', 'admin.program-kerja.dashboard'] as $name) {

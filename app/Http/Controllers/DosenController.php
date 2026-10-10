@@ -99,6 +99,8 @@ class DosenController extends Controller
 
         $mahasiswaBimbingan = $query->get();
 
+        if ($request->boolean('cetak')) return view('reports.dosen-bimbingan', compact('mahasiswaBimbingan', 'selectedTA', 'selectedKegiatan'));
+
         return view('dosen.bimbingan', compact('mahasiswaBimbingan', 'tahunAkademiks', 'selectedTA', 'selectedKegiatan'));
     }
 

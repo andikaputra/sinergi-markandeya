@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.dosen')
 
 @section('title', 'Program Kerja - ' . $mahasiswa->nama)
 
@@ -11,10 +11,10 @@
     <!-- Header & Navigation -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-semibold uppercase tracking-wider mb-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 text-primary-700 border border-primary-200 text-xs font-semibold uppercase tracking-wider mb-2">
                 <i class="fas fa-tasks"></i> Detail Program Kerja Mahasiswa
             </div>
-            <h2 class="text-3xl font-black text-gray-900 tracking-tight">{{ $mahasiswa->nama }}</h2>
+            <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">{{ $mahasiswa->nama }}</h2>
             <p class="text-gray-500 text-sm mt-1 font-mono">NIM: {{ $mahasiswa->nim }} • {{ $mahasiswa->prodi_full ?? $mahasiswa->prodi }}</p>
         </div>
         <div class="flex items-center gap-3">
@@ -40,9 +40,9 @@
     @endif
 
     <!-- Mahasiswa Information Card -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
-        <h3 class="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
-            <i class="fas fa-user-graduate text-blue-600"></i>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <i class="fas fa-user-graduate text-primary-600"></i>
             <span>Informasi Mahasiswa Bimbingan</span>
         </h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
@@ -56,7 +56,7 @@
             </div>
             <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Kegiatan Aktif</p>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-blue-100 text-blue-800 uppercase mt-0.5">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-800 uppercase mt-0.5">
                     {{ $mahasiswa->kegiatan ?? 'Belum Terdaftar' }}
                 </span>
             </div>
@@ -78,12 +78,12 @@
     </div>
 
     <!-- Program Kerja Individu Section -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
         <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-            <h3 class="text-xl font-black text-gray-900 flex items-center gap-2">
-                <i class="fas fa-clipboard-list text-blue-600"></i>
+            <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                <i class="fas fa-clipboard-list text-primary-600"></i>
                 <span>Program Kerja Individu</span>
-                <span class="ml-2 px-2.5 py-0.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-full border border-blue-200">
+                <span class="ml-2 px-2.5 py-0.5 bg-primary-50 text-primary-700 text-xs font-bold rounded-full border border-primary-200">
                     {{ $individuPrograms->count() }}
                 </span>
             </h3>
@@ -92,15 +92,15 @@
         @if ($individuPrograms->count() > 0)
             <div class="space-y-6">
                 @foreach ($individuPrograms as $program)
-                    <div class="border border-gray-200 rounded-3xl p-6 hover:shadow-md transition-all duration-200 bg-white">
+                    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200 bg-white">
                         <!-- Program Title & Status -->
                         <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 pb-3 border-b border-gray-100">
                             <div>
                                 <h4 class="text-lg font-bold text-gray-900">{{ $program->judul }}</h4>
                                 <p class="text-gray-600 text-sm mt-1 leading-relaxed">{{ $program->deskripsi }}</p>
                             </div>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider whitespace-nowrap self-start
-                                @if($program->status === 'rencana') bg-blue-50 text-blue-700 border border-blue-200
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap self-start
+                                @if($program->status === 'rencana') bg-primary-50 text-primary-700 border border-primary-200
                                 @elseif($program->status === 'sedang_berjalan') bg-amber-50 text-amber-700 border border-amber-200
                                 @elseif($program->status === 'selesai') bg-emerald-50 text-emerald-700 border border-emerald-200
                                 @else bg-gray-100 text-gray-800 border border-gray-200
@@ -127,14 +127,14 @@
                         </div>
 
                         <!-- Catatan & Bimbingan Dosen Pembimbing (Individu) -->
-                        <div x-data="{ openForm: {{ $program->catatan_dosen ? 'false' : 'true' }} }" class="mt-4 p-5 rounded-2xl bg-gradient-to-br from-blue-50/70 via-indigo-50/40 to-slate-50 border border-blue-200/80 shadow-sm space-y-3">
-                            <div class="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-blue-200/50">
+                        <div x-data="{ openForm: {{ $program->catatan_dosen ? 'false' : 'true' }} }" class="mt-4 p-5 rounded-2xl bg-gradient-to-br from-primary-50/70 via-primary-50/40 to-slate-50 border border-primary-200/80 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-primary-200/50">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs shadow-sm">
+                                    <div class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs shadow-sm">
                                         <i class="fas fa-comment-dots"></i>
                                     </div>
                                     <div>
-                                        <span class="text-xs font-black text-blue-950 uppercase tracking-wider">Catatan & Arahan Dosen Pembimbing</span>
+                                        <span class="text-xs font-semibold text-blue-950 uppercase tracking-wider">Catatan & Arahan Dosen Pembimbing</span>
                                         @if ($program->catatan_dosen_at)
                                             <span class="text-[11px] text-gray-500 font-medium block">
                                                 Terakhir disimpan: {{ $program->catatan_dosen_at->format('d M Y, H:i') }} WIB
@@ -142,15 +142,15 @@
                                         @endif
                                     </div>
                                 </div>
-                                <button type="button" @click="openForm = !openForm" class="px-3 py-1 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-sm transition">
+                                <button type="button" @click="openForm = !openForm" class="px-3 py-1 bg-white hover:bg-primary-50 text-primary-700 border border-primary-200 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-sm transition">
                                     <i :class="openForm ? 'fa-chevron-up' : 'fa-edit'" class="fas text-[10px]"></i>
                                     <span x-text="openForm ? 'Tutup Form' : '{{ $program->catatan_dosen ? 'Ubah Catatan' : '+ Tulis Catatan' }}'"></span>
                                 </button>
                             </div>
 
                             @if ($program->catatan_dosen)
-                                <div x-show="!openForm" class="p-3.5 bg-white rounded-xl border border-blue-100 text-xs text-gray-800 leading-relaxed space-y-1">
-                                    <p class="whitespace-pre-wrap pl-3 border-l-2 border-blue-500 text-gray-700 font-medium">{{ $program->catatan_dosen }}</p>
+                                <div x-show="!openForm" class="p-3.5 bg-white rounded-xl border border-primary-100 text-xs text-gray-800 leading-relaxed space-y-1">
+                                    <p class="whitespace-pre-wrap pl-3 border-l-2 border-primary-500 text-gray-700 font-medium">{{ $program->catatan_dosen }}</p>
                                 </div>
                             @endif
 
@@ -159,19 +159,19 @@
                                     @csrf
                                     <div>
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Catatan / Arahan untuk Mahasiswa:</label>
-                                        <textarea name="catatan_dosen" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-blue-200 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800" placeholder="Tuliskan catatan perbaikan, persetujuan, revisi, atau arahan tindak lanjut untuk program kerja ini...">{{ old('catatan_dosen', $program->catatan_dosen) }}</textarea>
+                                        <textarea name="catatan_dosen" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-primary-200 text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-800" placeholder="Tuliskan catatan perbaikan, persetujuan, revisi, atau arahan tindak lanjut untuk program kerja ini...">{{ old('catatan_dosen', $program->catatan_dosen) }}</textarea>
                                     </div>
                                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                         <div class="flex items-center gap-2">
                                             <label class="text-xs font-bold text-gray-700">Status Program:</label>
-                                            <select name="status" class="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                                            <select name="status" class="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-primary-500">
                                                 <option value="rencana" @selected($program->status === 'rencana')>Rencana</option>
                                                 <option value="sedang_berjalan" @selected($program->status === 'sedang_berjalan')>Sedang Berjalan</option>
                                                 <option value="selesai" @selected($program->status === 'selesai')>Selesai</option>
                                                 <option value="tunda" @selected($program->status === 'tunda')>Tunda</option>
                                             </select>
                                         </div>
-                                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm transition inline-flex items-center gap-1.5 self-end sm:self-auto">
+                                        <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-xl shadow-sm transition inline-flex items-center gap-1.5 self-end sm:self-auto">
                                             <i class="fas fa-save"></i>
                                             <span>Simpan Catatan</span>
                                         </button>
@@ -185,17 +185,17 @@
                             $monev = $program->monev;
                         @endphp
                         @if ($monev && ($monev->catatan || $monev->nilai !== null || $monev->link_monev))
-                            <div class="mt-4 p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-3">
+                            <div class="mt-4 p-4 rounded-2xl bg-primary-50/50 border border-primary-100 space-y-3">
                                 <div class="flex items-center justify-between flex-wrap gap-2">
                                     <div class="flex items-center gap-2">
-                                        <i class="fas fa-search-location text-indigo-600"></i>
-                                        <span class="text-xs font-black text-indigo-950 uppercase tracking-wider">Hasil Evaluasi Monev</span>
+                                        <i class="fas fa-search-location text-primary-600"></i>
+                                        <span class="text-xs font-semibold text-indigo-950 uppercase tracking-wider">Hasil Evaluasi Monev</span>
                                         @if($monev->dosen)
-                                            <span class="text-xs text-indigo-700 font-medium">oleh {{ $monev->dosen->nama }}</span>
+                                            <span class="text-xs text-primary-700 font-medium">oleh {{ $monev->dosen->nama }}</span>
                                         @endif
                                     </div>
                                     @if(!is_null($monev->nilai))
-                                        <div class="flex items-center gap-1.5 px-3 py-1 bg-indigo-600 text-white font-black text-xs rounded-full shadow-sm">
+                                        <div class="flex items-center gap-1.5 px-3 py-1 bg-primary-600 text-white font-semibold text-xs rounded-full shadow-sm">
                                             <i class="fas fa-star text-amber-300 text-[10px]"></i>
                                             <span>Nilai Monev: {{ $monev->nilai }}</span>
                                         </div>
@@ -207,8 +207,8 @@
                                 @endif
 
                                 @if($monev->catatan)
-                                    <div class="p-3 bg-white rounded-xl border border-indigo-100 text-xs text-gray-700 leading-relaxed">
-                                        <strong class="text-indigo-900 block mb-1">Catatan Evaluasi:</strong>
+                                    <div class="p-3 bg-white rounded-xl border border-primary-100 text-xs text-gray-700 leading-relaxed">
+                                        <strong class="text-primary-900 block mb-1">Catatan Evaluasi:</strong>
                                         <p class="whitespace-pre-wrap">{{ $monev->catatan }}</p>
                                     </div>
                                 @endif
@@ -229,7 +229,7 @@
                         @if ($program->luarans && $program->luarans->count() > 0)
                             <div class="mt-4 pt-4 border-t border-gray-100">
                                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                    <i class="fas fa-box-open text-blue-600"></i>
+                                    <i class="fas fa-box-open text-primary-600"></i>
                                     <span>Luaran / Deliverables ({{ $program->luarans->count() }})</span>
                                 </p>
                                 <div class="space-y-2">
@@ -237,15 +237,15 @@
                                          <div class="bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                             <div>
                                                 <p class="text-sm font-bold text-gray-900">{{ $luaran->judul }}</p>
-                                                <p class="text-xs text-gray-500 mt-0.5">{{ ucfirst($luaran->tipe) }} • Progress: <strong class="text-blue-600">{{ $luaran->persentase_selesai }}%</strong></p>
+                                                <p class="text-xs text-gray-500 mt-0.5">{{ ucfirst($luaran->tipe) }} • Progress: <strong class="text-primary-600">{{ $luaran->persentase_selesai }}%</strong></p>
                                             </div>
                                             <div class="flex items-center gap-3">
                                                 @if ($luaran->file_path)
-                                                    <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 font-bold inline-flex items-center gap-1">
+                                                    <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-xs text-primary-600 hover:text-primary-800 font-bold inline-flex items-center gap-1">
                                                         <i class="fas fa-paperclip"></i> Berkas
                                                     </a>
                                                 @endif
-                                                <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-black uppercase
+                                                <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase
                                                     @if($luaran->status === 'belum_dikerjakan') bg-red-50 text-red-700 border border-red-200
                                                     @elseif($luaran->status === 'sedang_dikerjakan') bg-amber-50 text-amber-700 border border-amber-200
                                                     @else bg-emerald-50 text-emerald-700 border border-emerald-200
@@ -263,8 +263,8 @@
                 @endforeach
             </div>
         @else
-            <div class="text-center py-12 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl border border-blue-100">
+            <div class="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                <div class="w-16 h-16 bg-primary-50 text-primary-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl border border-primary-100">
                     <i class="fas fa-inbox"></i>
                 </div>
                 <h4 class="text-base font-bold text-gray-800">Belum Ada Program Kerja Individu</h4>
@@ -275,9 +275,9 @@
 
     @if (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl')
         <!-- Program Kerja Kelompok Section -->
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
         <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-            <h3 class="text-xl font-black text-gray-900 flex items-center gap-2">
+            <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
                 <i class="fas fa-users text-purple-600"></i>
                 <span>Program Kerja Kelompok</span>
                 <span class="ml-2 px-2.5 py-0.5 bg-purple-50 text-purple-700 text-xs font-bold rounded-full border border-purple-200">
@@ -289,11 +289,11 @@
         @if ($kelompokPrograms->count() > 0)
             <div class="space-y-6">
                 @foreach ($kelompokPrograms as $program)
-                    <div class="border border-gray-200 rounded-3xl p-6 hover:shadow-md transition-all duration-200 bg-white">
+                    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200 bg-white">
                         <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 pb-3 border-b border-gray-100">
                             <div>
                                 <div class="flex items-center gap-2 mb-1 flex-wrap">
-                                    <span class="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-black rounded-md uppercase">Kelompok</span>
+                                    <span class="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-semibold rounded-md uppercase">Kelompok</span>
                                     @if($program->mahasiswaKetua)
                                         <span class="text-xs text-gray-600 font-medium">Ketua: <strong class="text-gray-900">{{ $program->mahasiswaKetua->nama }}</strong> ({{ $program->nim_ketua }})</span>
                                     @endif
@@ -301,8 +301,8 @@
                                 <h4 class="text-lg font-bold text-gray-900">{{ $program->judul }}</h4>
                                 <p class="text-gray-600 text-sm mt-1 leading-relaxed">{{ $program->deskripsi }}</p>
                             </div>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider whitespace-nowrap self-start
-                                @if($program->status === 'rencana') bg-blue-50 text-blue-700 border border-blue-200
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap self-start
+                                @if($program->status === 'rencana') bg-primary-50 text-primary-700 border border-primary-200
                                 @elseif($program->status === 'sedang_berjalan') bg-amber-50 text-amber-700 border border-amber-200
                                 @elseif($program->status === 'selesai') bg-emerald-50 text-emerald-700 border border-emerald-200
                                 @else bg-gray-100 text-gray-800 border border-gray-200
@@ -328,14 +328,14 @@
                         </div>
 
                         <!-- Catatan & Bimbingan Dosen Pembimbing (Kelompok) -->
-                        <div x-data="{ openForm: {{ $program->catatan_dosen ? 'false' : 'true' }} }" class="mt-4 p-5 rounded-2xl bg-gradient-to-br from-purple-50/70 via-indigo-50/40 to-slate-50 border border-purple-200/80 shadow-sm space-y-3">
+                        <div x-data="{ openForm: {{ $program->catatan_dosen ? 'false' : 'true' }} }" class="mt-4 p-5 rounded-2xl bg-gradient-to-br from-purple-50/70 via-primary-50/40 to-slate-50 border border-purple-200/80 shadow-sm space-y-3">
                             <div class="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-purple-200/50">
                                 <div class="flex items-center gap-2">
                                     <div class="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs shadow-sm">
                                         <i class="fas fa-comment-dots"></i>
                                     </div>
                                     <div>
-                                        <span class="text-xs font-black text-purple-950 uppercase tracking-wider">Catatan & Arahan Dosen Pembimbing</span>
+                                        <span class="text-xs font-semibold text-purple-950 uppercase tracking-wider">Catatan & Arahan Dosen Pembimbing</span>
                                         @if ($program->catatan_dosen_at)
                                             <span class="text-[11px] text-gray-500 font-medium block">
                                                 Terakhir disimpan: {{ $program->catatan_dosen_at->format('d M Y, H:i') }} WIB
@@ -390,13 +390,13 @@
                                 <div class="flex items-center justify-between flex-wrap gap-2">
                                     <div class="flex items-center gap-2">
                                         <i class="fas fa-search-location text-purple-600"></i>
-                                        <span class="text-xs font-black text-purple-950 uppercase tracking-wider">Hasil Evaluasi Monev Kelompok</span>
+                                        <span class="text-xs font-semibold text-purple-950 uppercase tracking-wider">Hasil Evaluasi Monev Kelompok</span>
                                         @if($monevKel->dosen)
                                             <span class="text-xs text-purple-700 font-medium">oleh {{ $monevKel->dosen->nama }}</span>
                                         @endif
                                     </div>
                                     @if(!is_null($monevKel->nilai))
-                                        <div class="flex items-center gap-1.5 px-3 py-1 bg-purple-600 text-white font-black text-xs rounded-full shadow-sm">
+                                        <div class="flex items-center gap-1.5 px-3 py-1 bg-purple-600 text-white font-semibold text-xs rounded-full shadow-sm">
                                             <i class="fas fa-star text-amber-300 text-[10px]"></i>
                                             <span>Nilai Monev: {{ $monevKel->nilai }}</span>
                                         </div>
@@ -429,7 +429,7 @@
                     @endforeach
                 </div>
             @else
-                <div class="text-center py-12 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+                <div class="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
                     <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl border border-purple-100">
                         <i class="fas fa-users"></i>
                     </div>
@@ -442,16 +442,16 @@
 
     <!-- All Luaran Overview Section (Individu & Kelompok) -->
     @if ($individuLuarans->count() > 0 || (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl' && $kelompokLuarans->count() > 0))
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8" x-data="{ luaranTab: 'individu' }">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8" x-data="{ luaranTab: 'individu' }">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
-                <h3 class="text-xl font-black text-gray-900 flex items-center gap-2">
-                    <i class="fas fa-boxes text-blue-600"></i>
+                <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                    <i class="fas fa-boxes text-primary-600"></i>
                     <span>Semua Luaran / Deliverables</span>
                 </h3>
                 @if (strtolower($mahasiswa->kegiatan ?? '') !== 'pkl')
                     <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-2xl">
                         <button @click="luaranTab = 'individu'" 
-                            :class="luaranTab === 'individu' ? 'bg-white text-blue-700 shadow-sm font-bold' : 'text-gray-600 font-medium hover:text-gray-900'"
+                            :class="luaranTab === 'individu' ? 'bg-white text-primary-700 shadow-sm font-bold' : 'text-gray-600 font-medium hover:text-gray-900'"
                             class="px-4 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
                             <i class="fas fa-user text-[10px]"></i>
                             <span>Individu ({{ $individuLuarans->count() }})</span>
@@ -487,7 +487,7 @@
                                             {{ $luaran->judul }}
                                             @if ($luaran->file_path)
                                                 <br>
-                                                <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-xs text-blue-600 hover:underline inline-flex items-center gap-1 mt-1">
+                                                <a href="{{ str_starts_with($luaran->file_path, 'http') ? $luaran->file_path : asset('storage/' . $luaran->file_path) }}" target="_blank" class="text-xs text-primary-600 hover:underline inline-flex items-center gap-1 mt-1">
                                                     <i class="fas fa-paperclip"></i> Lihat Berkas
                                                 </a>
                                             @endif
@@ -497,7 +497,7 @@
                                         <td class="px-6 py-4">
                                             <div class="flex items-center gap-2">
                                                 <div class="w-24 bg-gray-200 rounded-full h-2">
-                                                    <div class="bg-blue-600 h-2 rounded-full" style="width: {{ $luaran->persentase_selesai }}%"></div>
+                                                    <div class="bg-primary-600 h-2 rounded-full" style="width: {{ $luaran->persentase_selesai }}%"></div>
                                                 </div>
                                                 <span class="text-xs font-bold text-gray-600">{{ $luaran->persentase_selesai }}%</span>
                                             </div>

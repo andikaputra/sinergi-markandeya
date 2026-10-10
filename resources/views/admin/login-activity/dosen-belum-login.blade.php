@@ -1,66 +1,11 @@
 @extends('layouts.admin')
-
-@section('title', 'Dosen Belum Login')
-
+@section('title', 'Dosen Tanpa Login Tercatat')
 @section('content')
-<div style="background-color: #f5f3f0; padding: 24px; border-radius: 16px;">
-    <div style="max-width: 1200px; margin: 0 auto;">
-        <a href="{{ route('admin.login-activity.dashboard') }}" style="color: #d4a574; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px;">
-            ← Kembali
-        </a>
+<div class="space-y-6"><section class="dash-card"><div class="dash-card-heading"><div><h2>Dosen yang belum memiliki login tercatat</h2><p>Daftar berdasarkan kolom aktivitas login yang masih kosong, bukan pembuktian bahwa dosen tidak pernah mengakses sistem.</p></div><a class="dash-button bg-primary-600 text-white" href="{{ route('admin.login-activity.dosen-belum-login', array_merge(request()->query(), ['cetak'=>1])) }}" target="_blank" rel="noopener noreferrer">Cetak seluruh hasil / PDF</a></div><form class="monev-filter" method="GET"><label>Cari dosen<input type="text" name="q" value="{{ request('q') }}" placeholder="Nama, NIDN, atau NIP"></label><button class="dash-button bg-primary-600 text-white">Tampilkan</button><a class="dash-link" href="{{ route('admin.login-activity.dosen-belum-login') }}">Reset</a></form><p class="monev-note">Pencatatan sekarang dilakukan saat login berhasil dan saat akun mengakses sistem. Riwayat lama yang sebelumnya tidak direkam tetap tidak dapat disimpulkan dari kolom kosong.</p></section><section class="dash-card"><div class="dash-card-heading"><h2>Hasil pencarian</h2><span class="dash-subtle-chip">{{ $dosen->total() }} dosen</span></div><div class="overflow-x-auto"><table class="monev-table"><thead><tr><th>No</th><th>Dosen</th><th>NIDN</th><th>NIP</th><th>Status pencatatan</th><th>Akun dibuat</th></tr></thead><tbody>@forelse($dosen as $lecturer)<tr><td>{{ $dosen->firstItem()+$loop->index }}</td><td>{{ $lecturer->nama }}</td><td>{{ $lecturer->nidn }}</td><td>{{ $lecturer->nip ?? '—' }}</td><td>Belum ada login tercatat</td><td>{{ $lecturer->created_at?->format('d/m/Y') ?? '—' }}</td></tr>
+@empty
+<tr><td colspan="6">Tidak ada dosen sesuai filter.</td></tr>
+@endforelse
+</tbody></table></div>{{ $dosen->links() }}</section></div>
 
-        <div style="background: white; padding: 30px; border-radius: 12px; margin-bottom: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h1 style="margin: 0; color: #1a5d4d; font-size: 1.8rem; font-weight: 700;">👨‍🏫 Dosen Belum Login Sama Sekali</h1>
-                <div style="background: #d4a574; color: white; padding: 12px 24px; border-radius: 20px; font-weight: 700;">
-                    Total: {{ $dosen->total() }}
-                </div>
-            </div>
-
-            @if($dosen->count() > 0)
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background-color: #f5f3f0; border-bottom: 2px solid #d4a574;">
-                            <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">No.</th>
-                            <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">NIDN</th>
-                            <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Nama</th>
-                            <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Email</th>
-                            <th style="padding: 12px; text-align: center; color: #1a5d4d; font-weight: 700;">Jabatan</th>
-                            <th style="padding: 12px; text-align: center; color: #1a5d4d; font-weight: 700;">Terdaftar Sejak</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($dosen as $index => $d)
-                        <tr style="border-bottom: 1px solid #e0e0e0; {{ $loop->odd ? 'background-color: #fafaf8;' : '' }}">
-                            <td style="padding: 12px; color: #666;">{{ ($dosen->currentPage()-1) * $dosen->perPage() + $index + 1 }}</td>
-                            <td style="padding: 12px; color: #333; font-weight: 500;">{{ $d->nidn }}</td>
-                            <td style="padding: 12px; color: #333;">{{ $d->nama }}</td>
-                            <td style="padding: 12px; color: #666;">{{ $d->email }}</td>
-                            <td style="padding: 12px; text-align: center;">
-                                <span style="background-color: #f3e5f5; color: #6a1b9a; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
-                                    {{ $d->jabatan ?? '-' }}
-                                </span>
-                            </td>
-                            <td style="padding: 12px; text-align: center; color: #666; font-size: 0.9rem;">
-                                {{ $d->created_at?->format('d M Y') ?? '-' }}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <div style="margin-top: 20px;">
-                {{ $dosen->links() }}
-            </div>
-            @else
-            <div style="text-align: center; padding: 60px 20px;">
-                <div style="font-size: 3rem; margin-bottom: 15px;">🎉</div>
-                <p style="color: #666; font-size: 1.1rem; font-weight: 600;">Semua dosen sudah pernah login!</p>
-            </div>
-            @endif
-        </div>
-    </div>
-</div>
 @endsection
+

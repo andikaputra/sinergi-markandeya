@@ -5,13 +5,13 @@
 @section('content')
 <div class="space-y-8">
     <!-- Header Hero Card -->
-    <div class="p-8 rounded-3xl text-white shadow-xl border border-slate-700/50 relative overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e1b4b 100%);">
+    <div class="p-8 rounded-xl text-white shadow-xl border border-slate-700/50 relative overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e1b4b 100%);">
         <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div class="space-y-3">
                 <div class="flex flex-wrap items-center gap-2">
-                    <span class="px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black rounded-lg uppercase tracking-wider shadow-sm">
+                    <span class="px-3 py-1 bg-amber-400 text-slate-950 text-xs font-semibold rounded-lg uppercase tracking-wider shadow-sm">
                         {{ $mahasiswa->kegiatan ?? 'Kegiatan' }}
                     </span>
                     <span class="px-3 py-1 bg-white/10 text-white text-xs font-bold rounded-lg backdrop-blur-sm border border-white/20">
@@ -21,7 +21,7 @@
                         {{ $mahasiswa->prodi_full }}
                     </span>
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
                     Bimbingan & Konsultasi {{ $mahasiswa->kegiatan }}
                 </h1>
                 <p class="text-slate-300 text-sm max-w-2xl leading-relaxed">
@@ -35,7 +35,7 @@
                     <i class="fas fa-print text-amber-400"></i>
                     <span>Cetak Kartu Bimbingan</span>
                 </a>
-                <a href="{{ route('bimbingan.create') }}" class="inline-flex items-center space-x-2 px-6 py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-sm rounded-2xl transition-all duration-200 shadow-lg shadow-amber-400/20 active:scale-95">
+                <a href="{{ route('bimbingan.create') }}" class="inline-flex items-center space-x-2 px-6 py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 font-semibold text-sm rounded-2xl transition-all duration-200 shadow-lg shadow-amber-400/20 active:scale-95">
                     <i class="fas fa-plus"></i>
                     <span>Ajukan Bimbingan</span>
                 </a>
@@ -65,7 +65,7 @@
     <!-- 2 Column: Info Pembimbing & Lokasi + Statistik Cards -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Info Card: Dosen & Penempatan -->
-        <div class="lg:col-span-5 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
+        <div class="lg:col-span-5 bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between">
             <div class="space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-gray-100">
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Informasi Bimbingan</span>
@@ -79,7 +79,7 @@
                     </div>
                     <div>
                         <p class="text-xs font-bold text-gray-400 uppercase">Dosen Pembimbing</p>
-                        <h4 class="text-base font-black text-gray-800">{{ $dosenPembimbing->dosen->nama ?? 'Belum Di-plotting' }}</h4>
+                        <h4 class="text-base font-semibold text-gray-800">{{ $dosenPembimbing->dosen->nama ?? 'Belum Di-plotting' }}</h4>
                         <p class="text-xs text-gray-500 font-mono mt-0.5">NIDN: {{ $dosenPembimbing->dosen->nidn ?? '-' }}</p>
                     </div>
                 </div>
@@ -117,56 +117,56 @@
         <!-- 4 Metric Cards -->
         <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-4">
             <!-- Total Bimbingan -->
-            <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between">
+            <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between">
                 <div class="w-10 h-10 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center text-base font-bold mb-3">
                     <i class="fas fa-clipboard-list"></i>
                 </div>
                 <div>
                     <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Total Sesi</span>
-                    <span class="text-3xl font-black text-gray-800">{{ $statistik['total'] }}</span>
+                    <span class="text-3xl font-semibold text-gray-800">{{ $statistik['total'] }}</span>
                 </div>
             </div>
 
             <!-- Disetujui -->
-            <div class="bg-white p-5 rounded-3xl border border-emerald-100 shadow-sm flex flex-col justify-between">
+            <div class="bg-white p-5 rounded-xl border border-emerald-100 shadow-sm flex flex-col justify-between">
                 <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base font-bold mb-3">
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div>
                     <span class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Disetujui</span>
-                    <span class="text-3xl font-black text-emerald-700">{{ $statistik['disetujui'] }}</span>
+                    <span class="text-3xl font-semibold text-emerald-700">{{ $statistik['disetujui'] }}</span>
                 </div>
             </div>
 
             <!-- Perlu Revisi -->
-            <div class="bg-white p-5 rounded-3xl border border-amber-100 shadow-sm flex flex-col justify-between">
+            <div class="bg-white p-5 rounded-xl border border-amber-100 shadow-sm flex flex-col justify-between">
                 <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-base font-bold mb-3">
                     <i class="fas fa-edit"></i>
                 </div>
                 <div>
                     <span class="text-[11px] font-bold text-amber-600 uppercase tracking-wider block mb-1">Perlu Revisi</span>
-                    <span class="text-3xl font-black text-amber-700">{{ $statistik['perlu_revisi'] }}</span>
+                    <span class="text-3xl font-semibold text-amber-700">{{ $statistik['perlu_revisi'] }}</span>
                 </div>
             </div>
 
             <!-- Belum Direview -->
-            <div class="bg-white p-5 rounded-3xl border border-blue-100 shadow-sm flex flex-col justify-between">
-                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-base font-bold mb-3">
+            <div class="bg-white p-5 rounded-xl border border-primary-100 shadow-sm flex flex-col justify-between">
+                <div class="w-10 h-10 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center text-base font-bold mb-3">
                     <i class="fas fa-hourglass-half"></i>
                 </div>
                 <div>
-                    <span class="text-[11px] font-bold text-blue-600 uppercase tracking-wider block mb-1">Menunggu</span>
-                    <span class="text-3xl font-black text-blue-700">{{ $statistik['belum_direview'] }}</span>
+                    <span class="text-[11px] font-bold text-primary-600 uppercase tracking-wider block mb-1">Menunggu</span>
+                    <span class="text-3xl font-semibold text-primary-700">{{ $statistik['belum_direview'] }}</span>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Riwayat Bimbingan Table Section -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-6 md:p-8 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h3 class="text-xl font-black text-gray-800">Riwayat Permohonan & Catatan Bimbingan</h3>
+                <h3 class="text-xl font-semibold text-gray-800">Riwayat Permohonan & Catatan Bimbingan</h3>
                 <p class="text-xs text-gray-400 mt-1">Daftar semua sesi bimbingan yang telah diajukan kepada dosen pembimbing</p>
             </div>
             <span class="px-4 py-1.5 bg-gray-100 text-gray-700 rounded-full text-xs font-bold self-start sm:self-center">
@@ -228,15 +228,15 @@
                         </td>
                         <td class="px-6 py-5 text-center whitespace-nowrap">
                             @if($bimbingan->status === 'disetujui')
-                                <span class="inline-flex items-center px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-black shadow-xs">
+                                <span class="inline-flex items-center px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-semibold shadow-xs">
                                     <i class="fas fa-check-circle mr-1.5 text-[10px]"></i> Disetujui
                                 </span>
                             @elseif($bimbingan->status === 'perlu_revisi')
-                                <span class="inline-flex items-center px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-black shadow-xs">
+                                <span class="inline-flex items-center px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold shadow-xs">
                                     <i class="fas fa-exclamation-circle mr-1.5 text-[10px]"></i> Perlu Revisi
                                 </span>
                             @else
-                                <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-black shadow-xs">
+                                <span class="inline-flex items-center px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-xs font-semibold shadow-xs">
                                     <i class="fas fa-hourglass-half mr-1.5 text-[10px]"></i> Menunggu Review
                                 </span>
                             @endif
@@ -265,14 +265,14 @@
         </div>
         @else
         <div class="p-16 text-center">
-            <div class="w-20 h-20 bg-primary-50 text-primary-500 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-4 border border-primary-100">
+            <div class="w-20 h-20 bg-primary-50 text-primary-500 rounded-xl flex items-center justify-center text-3xl mx-auto mb-4 border border-primary-100">
                 <i class="fas fa-comments"></i>
             </div>
             <h4 class="text-lg font-bold text-gray-800">Belum Ada Riwayat Bimbingan</h4>
             <p class="text-sm text-gray-500 max-w-md mx-auto mt-1 mb-6">
                 Anda belum pernah mengajukan sesi bimbingan kepada dosen pembimbing. Silakan ajukan topik konsultasi pertama Anda!
             </p>
-            <a href="{{ route('bimbingan.create') }}" class="inline-flex items-center space-x-2 px-6 py-3 bg-gold-500 hover:bg-gold-600 text-primary-950 font-black text-sm rounded-xl transition-all shadow-md shadow-gold-500/20">
+            <a href="{{ route('bimbingan.create') }}" class="inline-flex items-center space-x-2 px-6 py-3 bg-gold-500 hover:bg-gold-600 text-primary-950 font-semibold text-sm rounded-xl transition-all shadow-md shadow-gold-500/20">
                 <i class="fas fa-plus"></i>
                 <span>Ajukan Bimbingan Pertama</span>
             </a>

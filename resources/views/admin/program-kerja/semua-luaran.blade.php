@@ -3,10 +3,11 @@
 @section('title', 'Semua Luaran (Deliverables)')
 
 @section('content')
+<div class="print-actions flex justify-end mb-4"><a class="dash-button bg-primary-600 text-white" href="{{ route('admin.program-kerja.semua-luaran', ['cetak'=>1]) }}" target="_blank" rel="noopener noreferrer">Cetak seluruh laporan / PDF</a></div>
 <div class="space-y-8">
     <div class="flex items-center justify-between">
         <div>
-            <h2 class="text-3xl font-black text-gray-900">Semua Luaran / Deliverables</h2>
+            <h2 class="text-3xl font-semibold text-gray-900">Semua Luaran / Deliverables</h2>
             <p class="text-gray-500 mt-1">Total: {{ $luarans->total() }} luaran</p>
         </div>
         <a href="{{ route('admin.program-kerja.dashboard') }}" class="px-6 py-3 bg-gray-200 text-gray-800 font-bold rounded-xl hover:bg-gray-300 transition">
@@ -18,19 +19,19 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-red-50 rounded-2xl border border-red-100 p-6">
             <p class="text-xs font-bold text-red-600 uppercase">Belum Dikerjakan</p>
-            <p class="text-3xl font-black text-red-900 mt-2">{{ $luarans->where('status', 'belum_dikerjakan')->count() }}</p>
+            <p class="text-3xl font-semibold text-red-900 mt-2">{{ $luarans->where('status', 'belum_dikerjakan')->count() }}</p>
         </div>
         <div class="bg-orange-50 rounded-2xl border border-orange-100 p-6">
             <p class="text-xs font-bold text-orange-600 uppercase">Sedang Dikerjakan</p>
-            <p class="text-3xl font-black text-orange-900 mt-2">{{ $luarans->where('status', 'sedang_dikerjakan')->count() }}</p>
+            <p class="text-3xl font-semibold text-orange-900 mt-2">{{ $luarans->where('status', 'sedang_dikerjakan')->count() }}</p>
         </div>
         <div class="bg-green-50 rounded-2xl border border-green-100 p-6">
             <p class="text-xs font-bold text-green-600 uppercase">Selesai</p>
-            <p class="text-3xl font-black text-green-900 mt-2">{{ $luarans->where('status', 'selesai')->count() }}</p>
+            <p class="text-3xl font-semibold text-green-900 mt-2">{{ $luarans->where('status', 'selesai')->count() }}</p>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-100">
@@ -48,7 +49,7 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ Str::limit($luaran->judul, 30) }}</td>
                             <td class="px-6 py-4 text-sm">
-                                <a href="{{ route('admin.program-kerja.detail-mahasiswa', $luaran->programKerja->mahasiswa) }}" class="text-blue-600 hover:text-blue-700 font-medium">
+                                <a href="{{ route('admin.program-kerja.detail-mahasiswa', $luaran->programKerja->mahasiswa) }}" class="text-primary-600 hover:text-primary-700 font-medium">
                                     {{ $luaran->programKerja->mahasiswa->nama ?? '-' }}
                                     <br>
                                     <span class="text-xs text-gray-500">{{ $luaran->programKerja->nim }}</span>
@@ -59,7 +60,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
                                     <div class="w-20 bg-gray-200 rounded-full h-2">
-                                        <div class="bg-blue-600 h-2 rounded-full" style="width: {{ $luaran->persentase_selesai }}%"></div>
+                                        <div class="bg-primary-600 h-2 rounded-full" style="width: {{ $luaran->persentase_selesai }}%"></div>
                                     </div>
                                     <span class="text-xs font-bold text-gray-600 w-10">{{ $luaran->persentase_selesai }}%</span>
                                 </div>

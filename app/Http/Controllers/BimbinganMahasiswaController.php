@@ -76,8 +76,10 @@ class BimbinganMahasiswaController extends Controller
 
         if ($request->hasFile('materi_terlampir')) {
             $file = $request->file('materi_terlampir');
-            $filename = 'bimbingan_' . $mahasiswa->nim . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('bimbingan', $filename, 'public');
+            $filename = 'bimbingan_' . $mahasiswa->nim . '_' . \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
+            if (!$file->storeAs('bimbingan', $filename, 'public')) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['materi_terlampir' => 'Berkas gagal disimpan. Coba unggah ulang.']);
+            }
             $validated['materi_terlampir'] = $filename;
         }
 
@@ -152,8 +154,10 @@ class BimbinganMahasiswaController extends Controller
 
         if ($request->hasFile('materi_terlampir')) {
             $file = $request->file('materi_terlampir');
-            $filename = 'bimbingan_revisi_' . $mahasiswa->nim . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('bimbingan', $filename, 'public');
+            $filename = 'bimbingan_revisi_' . $mahasiswa->nim . '_' . \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
+            if (!$file->storeAs('bimbingan', $filename, 'public')) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['materi_terlampir' => 'Berkas gagal disimpan. Coba unggah ulang.']);
+            }
             $updateData['materi_terlampir'] = $filename;
         }
 

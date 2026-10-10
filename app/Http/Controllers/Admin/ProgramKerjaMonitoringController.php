@@ -71,8 +71,13 @@ class ProgramKerjaMonitoringController extends Controller
         return view('admin.program-kerja.detail-mahasiswa', compact('mahasiswa', 'programs', 'luarans'));
     }
 
-    public function semuaProgram()
+    public function semuaProgram(Request $request)
     {
+        if ($request->boolean('cetak')) {
+            $programs = IndividuProgramKerja::with('mahasiswa')->latest()->get();
+            return view('reports.program-kerja', compact('programs'));
+        }
+
         $programs = IndividuProgramKerja::with('mahasiswa')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
@@ -80,8 +85,13 @@ class ProgramKerjaMonitoringController extends Controller
         return view('admin.program-kerja.semua-program', compact('programs'));
     }
 
-    public function semuaLuaran()
+    public function semuaLuaran(Request $request)
     {
+        if ($request->boolean('cetak')) {
+            $luarans = IndividuLuaran::with('programKerja.mahasiswa')->latest()->get();
+            return view('reports.luaran', compact('luarans'));
+        }
+
         $luarans = IndividuLuaran::with('programKerja.mahasiswa')
             ->orderBy('created_at', 'desc')
             ->paginate(20);

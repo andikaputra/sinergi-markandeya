@@ -48,10 +48,13 @@ class DosenMonevTahap extends Model
      */
     public function getIsFilledAttribute(): bool
     {
-        return !empty($this->catatan) 
-            || !is_null($this->nilai) 
-            || !empty($this->foto_monev) 
-            || !empty($this->link_monev)
+        $photos = $this->foto_monev ?? [];
+        if (is_string($photos)) $photos = json_decode($photos, true) ?? [$photos];
+        if (!is_array($photos)) $photos = [$photos];
+        return trim((string) $this->catatan) !== ''
+            || !is_null($this->nilai)
+            || count(array_filter($photos, fn ($photo) => is_string($photo) && trim($photo) !== '')) > 0
+            || trim((string) $this->link_monev) !== ''
             || !empty($this->tanggal_monev);
     }
 

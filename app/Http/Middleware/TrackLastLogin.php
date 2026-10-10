@@ -10,13 +10,15 @@ class TrackLastLogin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Aktivitas terakhir digunakan oleh dashboard monitoring mahasiswa dan dosen.
-        foreach (['mahasiswa', 'dosen'] as $guard) {
-            if ($user = auth()->guard($guard)->user()) {
-                $user->forceFill(['last_login' => now()])->save();
+        $response = $next($request);
+        // Also record authenticated access from an existing session, including
+        // sessions created before login tracking was corrected.
+        if ($response->getStatusCode() < 400) {
+            foreach (['mahasiswa', 'dosen'] as $guard) {
+                app(\App\Services\LoginActivityRecorder::class)->record(auth()->guard($guard)->user());
             }
         }
 
-        return $next($request);
+        return $response;
     }
 }

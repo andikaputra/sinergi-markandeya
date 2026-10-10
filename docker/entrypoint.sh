@@ -6,12 +6,19 @@ trap 'status=$?; if [ "$status" -ne 0 ]; then echo "[startup] Failed during: $ST
 
 # Storage may be a persistent volume with ownership from an older container.
 STEP="storage permissions"
-mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
+mkdir -p storage/app/public storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache
 
 # Rebuild config using the environment supplied by Coolify, not a build-time cache.
 STEP="clear cached configuration"
 php artisan config:clear
+
+STEP="public storage link"
+# Preserve a real directory mounted by Coolify. Replace only symlinks, including
+# an absolute developer-machine link accidentally copied by an older image.
+if [ ! -e public/storage ] || [ -L public/storage ]; then
+    php artisan storage:link --force
+fi
 
 STEP="database connection"
 php docker/wait-for-database.php

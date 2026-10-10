@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.adminmhs')
 
 @section('content')
 <div class="container mx-auto px-4 py-8 max-w-4xl">
@@ -29,7 +29,7 @@
             <div>
                 <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Status</h3>
                 <span class="inline-block px-4 py-2 rounded-full text-sm font-semibold
-                    @if($programKerja->status === 'rencana') bg-blue-100 text-blue-800
+                    @if($programKerja->status === 'rencana') bg-primary-100 text-primary-800
                     @elseif($programKerja->status === 'sedang_berjalan') bg-orange-100 text-orange-800
                     @elseif($programKerja->status === 'selesai') bg-green-100 text-green-800
                     @else bg-gray-100 text-gray-800
@@ -67,7 +67,7 @@
     <div class="bg-white rounded-lg shadow-lg p-8">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">Luaran / Deliverables</h2>
-            <button onclick="document.getElementById('luaranForm').classList.toggle('hidden')" class="px-4 py-2 text-white font-semibold rounded-lg transition" style="background-color: #d4a574; color: #0f2d26;" onmouseover="this.style.backgroundColor='#c9905c';" onmouseout="this.style.backgroundColor='#d4a574';">
+            <button onclick="document.getElementById('luaranForm').classList.toggle('hidden')" class="px-4 py-2 text-white font-semibold rounded-lg transition" style="background-color: #56703f; color: #0f2d26;" onmouseover="this.style.backgroundColor='#c9905c';" onmouseout="this.style.backgroundColor='#d4a574';">
                 <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -128,7 +128,7 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="submit" class="px-4 py-2 text-white font-semibold rounded-lg transition" style="background-color: #d4a574; color: #0f2d26;" onmouseover="this.style.backgroundColor='#c9905c';" onmouseout="this.style.backgroundColor='#d4a574';">
+                    <button type="submit" class="px-4 py-2 text-white font-semibold rounded-lg transition" style="background-color: #56703f; color: #0f2d26;" onmouseover="this.style.backgroundColor='#c9905c';" onmouseout="this.style.backgroundColor='#d4a574';">
                         Simpan Luaran
                     </button>
                     <button type="button" onclick="document.getElementById('luaranForm').classList.add('hidden')" class="px-4 py-2 text-gray-700 font-semibold rounded-lg bg-gray-300 transition" onmouseover="this.style.backgroundColor='#d1d5db';" onmouseout="this.style.backgroundColor='#d3d4d6';">
@@ -192,7 +192,7 @@
 
                         @if ($luaran->file_path)
                             <div class="mb-4">
-                                <a href="{{ $luaran->file_path }}" class="text-sm text-blue-600 hover:text-blue-800" target="_blank" rel="noopener noreferrer">
+                                <a href="{{ $luaran->file_path }}" class="text-sm text-primary-600 hover:text-primary-800" target="_blank" rel="noopener noreferrer">
                                     <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                     </svg>
@@ -232,7 +232,7 @@
         @else
             <div class="text-center py-8">
                 <p class="text-gray-600 mb-4">Belum ada luaran untuk program ini</p>
-                <button onclick="document.getElementById('luaranForm').classList.toggle('hidden')" class="px-4 py-2 text-white font-semibold rounded-lg transition" style="background-color: #d4a574; color: #0f2d26;">
+                <button onclick="document.getElementById('luaranForm').classList.toggle('hidden')" class="px-4 py-2 text-white font-semibold rounded-lg transition" style="background-color: #56703f; color: #0f2d26;">
                     Tambah Luaran Pertama
                 </button>
             </div>

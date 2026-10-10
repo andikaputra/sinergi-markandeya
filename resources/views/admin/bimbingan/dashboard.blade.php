@@ -3,13 +3,13 @@
 @section('title', 'Admin Dashboard Bimbingan')
 
 @section('content')
-<div style="background-color: #f5f3f0; padding: 24px; border-radius: 16px;">
+<div style="background-color: #f5f6f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1400px; margin: 0 auto;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #1a5d4d 0%, #0f2d26 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
             <div>
                 <h1 style="font-size: 2.5rem; margin: 0 0 10px 0; font-weight: 700;">📊 Admin Dashboard Bimbingan</h1>
-                <p style="margin: 0; color: #d4a574; font-size: 1.1rem;">Monitoring dan kontrol sistem bimbingan mahasiswa</p>
+                <p style="margin: 0; color: #56703f; font-size: 1.1rem;">Monitoring dan kontrol sistem bimbingan mahasiswa</p>
             </div>
             <div>
                 <a href="{{ route('admindashboard') }}" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 700; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)';" onmouseout="this.style.background='rgba(255,255,255,0.15)';">
@@ -49,7 +49,7 @@
 
             <div style="background: white; padding: 24px; border-radius: 12px; border-top: 4px solid #d4a574; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                 <div style="color: #666; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">❌ Belum Bimbingan</div>
-                <div style="font-size: 2.5rem; font-weight: 700; color: #d4a574;">{{ $statistik['belum_bimbingan'] }}</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: #56703f;">{{ $statistik['belum_bimbingan'] }}</div>
                 <p style="margin: 8px 0 0 0; color: #999; font-size: 0.85rem;">Perlu follow-up</p>
             </div>
 
@@ -73,14 +73,14 @@
         <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                 <h2 style="margin: 0; color: #1a5d4d; font-size: 1.5rem; font-weight: 700;">📰 Permohonan Bimbingan Terbaru</h2>
-                <a href="{{ route('admin.bimbingan.laporan') }}" style="color: #d4a574; text-decoration: none; font-weight: 600;">Lihat Semua →</a>
+                <a href="{{ route('admin.bimbingan.laporan') }}" style="color: #56703f; text-decoration: none; font-weight: 600;">Lihat Semua →</a>
             </div>
 
             @if($bimbinganTerbaru->count() > 0)
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
-                            <tr style="background-color: #f5f3f0; border-bottom: 2px solid #d4a574;">
+                            <tr style="background-color: #f5f6f0; border-bottom: 2px solid #d4a574;">
                                 <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">NIM / Nama</th>
                                 <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Topik Bimbingan</th>
                                 <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Dosen Pembimbing</th>

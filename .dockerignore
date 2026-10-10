@@ -10,10 +10,12 @@ node_modules
 vendor
 public/build
 public/hot
+public/storage
 screenshots
 .phpunit.cache
 storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
+storage/framework/testing
 bootstrap/cache/*.php

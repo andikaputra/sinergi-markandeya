@@ -10,13 +10,13 @@
             <i class="fas fa-chevron-left text-sm"></i>
         </a>
         <div>
-            <h2 class="text-2xl font-black text-gray-800">Ajukan Permohonan Bimbingan</h2>
+            <h2 class="text-2xl font-semibold text-gray-800">Ajukan Permohonan Bimbingan</h2>
             <p class="text-xs text-gray-500">Sampaikan topik, progres laporan, atau kendala yang ingin Anda diskusikan</p>
         </div>
     </div>
 
     <!-- Info Dosen Pembimbing Banner -->
-    <div class="p-6 rounded-3xl text-white shadow-lg border border-slate-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e1b4b 100%);">
+    <div class="p-6 rounded-xl text-white shadow-lg border border-slate-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e1b4b 100%);">
         <div class="flex items-center space-x-4">
             <div class="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-xl font-bold shrink-0 shadow-md">
                 <i class="fas fa-user-tie"></i>
@@ -48,7 +48,7 @@
     @endif
 
     <!-- Form -->
-    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
         <form action="{{ route('bimbingan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
@@ -127,7 +127,7 @@
             <div class="pt-4 flex flex-col sm:flex-row items-center gap-3">
                 <button
                     type="submit"
-                    class="w-full sm:w-auto flex-1 py-4 px-8 bg-gold-500 hover:bg-gold-600 text-primary-950 font-black text-sm rounded-2xl transition-all shadow-lg shadow-gold-500/20 active:scale-98 flex items-center justify-center space-x-2"
+                    class="w-full sm:w-auto flex-1 py-4 px-8 bg-gold-500 hover:bg-gold-600 text-primary-950 font-semibold text-sm rounded-2xl transition-all shadow-lg shadow-gold-500/20 active:scale-98 flex items-center justify-center space-x-2"
                 >
                     <i class="fas fa-paper-plane"></i>
                     <span>Kirim Pengajuan Bimbingan</span>
@@ -148,7 +148,7 @@
         if (this.files && this.files.length > 0) {
             const fileName = this.files[0].name;
             const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
-            document.getElementById('file_name_display').innerHTML = `<span class="text-emerald-600 font-black"><i class="fas fa-check-circle mr-1"></i> ${fileName} (${fileSize} MB)</span>`;
+            document.getElementById('file_name_display').innerHTML = `<span class="text-emerald-600 font-semibold"><i class="fas fa-check-circle mr-1"></i> ${fileName} (${fileSize} MB)</span>`;
         }
     });
 </script>

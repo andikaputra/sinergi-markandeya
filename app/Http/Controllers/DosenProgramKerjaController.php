@@ -347,33 +347,23 @@ class DosenProgramKerjaController extends Controller
     }
 
     // Dosen Monev Methods
-    public function monevDashboard()
+    public function monevDashboard(Request $request, \App\Services\MonevMonitoring $monitoring)
     {
+        $request->validate(['kegiatan'=>'nullable|in:kkn,ppl,pkl,magang', 'q'=>'nullable|string|max:100', 'status'=>'nullable|in:semua,belum,berjalan,lengkap']);
         $dosen = Auth::guard('dosen')->user();
-        $nidns = method_exists($dosen, 'getAllNidns') ? $dosen->getAllNidns() : [$dosen->nidn];
-
-        $monevPrograms = DosenMonev::whereIn('nidn', $nidns)
-            ->with(['tahaps', 'mahasiswa', 'programKerja', 'lokasiKkn', 'lokasiPpl', 'lokasiPkl', 'lokasiMagang'])
-            ->orderBy('updated_at', 'desc')
-            ->paginate(20);
-
-        $totalTugas = DosenMonev::whereIn('nidn', $nidns)->count();
-        $totalSelesai = DosenMonev::whereIn('nidn', $nidns)
-            ->where(function ($q) {
-                $q->whereHas('tahaps', function ($t) {
-                    $t->whereNotNull('catatan')
-                      ->orWhereNotNull('nilai')
-                      ->orWhereNotNull('foto_monev')
-                      ->orWhereNotNull('link_monev');
-                })
-                ->orWhereNotNull('catatan')
-                ->orWhereNotNull('nilai')
-                ->orWhereNotNull('foto_monev')
-                ->orWhereNotNull('link_monev');
-            })->count();
-        $totalBelum = max(0, $totalTugas - $totalSelesai);
-
-        return view('dosen.program-kerja.monev-dashboard', compact('monevPrograms', 'totalTugas', 'totalSelesai', 'totalBelum'));
+        $rows = $monitoring->assignments(DosenMonev::whereIn('nidn', $dosen->getAllNidns()));
+        $totalTugas = $rows->count();
+        $totalSelesai = $rows->where('stage_count','>',0)->count();
+        $totalBelum = $rows->where('stage_count',0)->count();
+        $totalLengkap = $rows->where('stage_count',3)->count();
+        $rows = $rows->filter(function ($row) use ($request) {
+            if ($request->filled('kegiatan') && $row['activity'] !== $request->kegiatan) return false;
+            if ($request->filled('status') && $request->status !== 'semua' && $row['status'] !== $request->status) return false;
+            return !$request->filled('q') || str_contains(mb_strtolower($row['target'].' '.$row['nim'].' '.$row['program']), mb_strtolower($request->q));
+        })->values();
+        $page = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
+        $monevPrograms = new \Illuminate\Pagination\LengthAwarePaginator($rows->forPage($page,20)->values(),$rows->count(),20,$page,['path'=>$request->url(),'query'=>$request->query()]);
+        return view('dosen.program-kerja.monev-dashboard', compact('monevPrograms','totalTugas','totalSelesai','totalBelum','totalLengkap'));
     }
 
     public function monevDetail(Request $request, $idOrType, $programId = null)

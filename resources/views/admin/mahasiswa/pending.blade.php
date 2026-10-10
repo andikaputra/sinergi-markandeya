@@ -5,17 +5,17 @@
 
     <div class="flex items-center justify-between">
         <div>
-            <h2 class="text-2xl font-black text-gray-800">Kelola Akun Mahasiswa</h2>
+            <h2 class="text-2xl font-semibold text-gray-800">Kelola Akun Mahasiswa</h2>
             <p class="text-sm text-gray-400 mt-1">Aktifkan atau nonaktifkan akun mahasiswa.</p>
         </div>
         <div class="flex items-center gap-3">
             @if($jumlahNonaktif > 0)
-            <span class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-black border border-red-100">
+            <span class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-semibold border border-red-100">
                 {{ $jumlahNonaktif }} akun nonaktif
             </span>
             @endif
             <a href="{{ route('admin.mahasiswa.create') }}"
-                class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-blue-100">
+                class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-primary-100">
                 <i class="fas fa-user-plus"></i>
                 Tambah Mahasiswa
             </a>
@@ -23,16 +23,16 @@
     </div>
 
     {{-- Search Form --}}
-    <form method="GET" action="{{ route('admin.mahasiswa.pending') }}" class="flex items-center gap-3 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+    <form method="GET" action="{{ route('admin.mahasiswa.pending') }}" class="flex items-center gap-3 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
         <div class="relative flex-1 max-w-md">
             <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
                 <i class="fas fa-search text-sm"></i>
             </span>
             <input type="text" name="search" value="{{ request('search') }}"
                    placeholder="Cari nama, NIM, atau email mahasiswa..."
-                   class="w-full bg-slate-50 border border-gray-100 text-gray-700 placeholder-gray-400 rounded-2xl pl-12 pr-4 py-3.5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all">
+                   class="w-full bg-slate-50 border border-gray-100 text-gray-700 placeholder-gray-400 rounded-2xl pl-12 pr-4 py-3.5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-600 focus:bg-white transition-all">
         </div>
-        <button type="submit" class="px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl transition-all shadow-lg shadow-blue-100">
+        <button type="submit" class="px-6 py-3.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-2xl transition-all shadow-lg shadow-primary-100">
             Cari
         </button>
         @if(request('search'))
@@ -48,15 +48,15 @@
     </div>
     @endif
 
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead>
                     <tr class="bg-slate-50/70">
-                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Mahasiswa</th>
-                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Prodi / Kampus</th>
-                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Status</th>
-                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Aksi</th>
+                        <th class="px-6 py-4 text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Mahasiswa</th>
+                        <th class="px-6 py-4 text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Prodi / Kampus</th>
+                        <th class="px-6 py-4 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-center">Status</th>
+                        <th class="px-6 py-4 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -64,7 +64,7 @@
                     <tr class="hover:bg-slate-50/30 transition-colors">
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 {{ $mhs->status === 'aktif' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-400' }} rounded-xl flex items-center justify-center font-black text-sm shrink-0">
+                                <div class="w-9 h-9 {{ $mhs->status === 'aktif' ? 'bg-primary-50 text-primary-600' : 'bg-gray-100 text-gray-400' }} rounded-xl flex items-center justify-center font-semibold text-sm shrink-0">
                                     {{ substr($mhs->nama, 0, 1) }}
                                 </div>
                                 <div>
@@ -79,10 +79,10 @@
                         </td>
                         <td class="px-6 py-4 text-center">
                             @if($mhs->status === 'aktif')
-                            <span class="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black border border-emerald-100 uppercase tracking-widest">Aktif</span>
+                            <span class="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-semibold border border-emerald-100 uppercase tracking-widest">Aktif</span>
                             @else
                             <div>
-                                <span class="px-3 py-1.5 bg-red-50 text-red-600 rounded-xl text-[10px] font-black border border-red-100 uppercase tracking-widest">Nonaktif</span>
+                                <span class="px-3 py-1.5 bg-red-50 text-red-600 rounded-xl text-[10px] font-semibold border border-red-100 uppercase tracking-widest">Nonaktif</span>
                                 @if($mhs->catatan_penolakan)
                                 <p class="text-[10px] text-gray-400 mt-1 max-w-[160px] truncate">{{ $mhs->catatan_penolakan }}</p>
                                 @endif
@@ -109,7 +109,7 @@
 
                                 <button type="button"
                                     onclick="document.getElementById('form-assign-{{ $mhs->id }}').classList.toggle('hidden'); document.getElementById('form-nonaktif-{{ $mhs->id }}')?.classList.add('hidden')"
-                                    class="px-3 py-1.5 bg-blue-50 hover:bg-blue-500 hover:text-white text-blue-600 text-xs font-bold rounded-xl transition-all">
+                                    class="px-3 py-1.5 bg-primary-50 hover:bg-primary-500 hover:text-white text-primary-600 text-xs font-bold rounded-xl transition-all">
                                     <i class="fas fa-clipboard-list mr-1"></i> Plot
                                 </button>
 
@@ -135,13 +135,13 @@
 
                             {{-- Form Assign Kegiatan --}}
                             <div id="form-assign-{{ $mhs->id }}" class="hidden mt-2">
-                                <form action="{{ route('admin.mahasiswa.assign-kegiatan') }}" method="POST" class="space-y-3 p-4 bg-blue-50/50 rounded-2xl border border-blue-100 text-left">
+                                <form action="{{ route('admin.mahasiswa.assign-kegiatan') }}" method="POST" class="space-y-3 p-4 bg-primary-50/50 rounded-2xl border border-primary-100 text-left">
                                     @csrf
                                     <input type="hidden" name="nim" value="{{ $mhs->nim }}">
                                     
                                     <div class="space-y-1">
-                                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest block ml-1">Pilih Kegiatan</label>
-                                        <select name="kegiatan" required class="w-full px-3 py-2 bg-white border border-blue-100 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold">
+                                        <label class="text-[9px] font-semibold text-gray-400 uppercase tracking-widest block ml-1">Pilih Kegiatan</label>
+                                        <select name="kegiatan" required class="w-full px-3 py-2 bg-white border border-primary-100 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 font-bold">
                                             <option value="KKN" {{ $mhs->kegiatan === 'KKN' ? 'selected' : '' }}>KKN (Kuliah Kerja Nyata)</option>
                                             <option value="PPL" {{ $mhs->kegiatan === 'PPL' ? 'selected' : '' }}>PPL (Praktik Pengalaman Lapangan)</option>
                                             <option value="PKL" {{ $mhs->kegiatan === 'PKL' ? 'selected' : '' }}>PKL (Praktik Kerja Lapangan)</option>
@@ -150,8 +150,8 @@
                                     </div>
                                     
                                     <div class="space-y-1">
-                                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest block ml-1">Tahun Akademik</label>
-                                        <select name="tahun_akademik" required class="w-full px-3 py-2 bg-white border border-blue-100 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold">
+                                        <label class="text-[9px] font-semibold text-gray-400 uppercase tracking-widest block ml-1">Tahun Akademik</label>
+                                        <select name="tahun_akademik" required class="w-full px-3 py-2 bg-white border border-primary-100 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 font-bold">
                                             @foreach($tahunAkademiks as $ta)
                                                 <option value="{{ $ta->tahun }} {{ $ta->semester }}" {{ $mhs->tahun_akademik === ($ta->tahun . ' ' . $ta->semester) ? 'selected' : '' }}>
                                                     {{ $ta->tahun }} - {{ $ta->semester }}
@@ -160,7 +160,7 @@
                                         </select>
                                     </div>
                                     
-                                    <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl transition-all uppercase tracking-wider">
+                                    <button type="submit" class="w-full py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-xl transition-all uppercase tracking-wider">
                                         Simpan Plotting
                                     </button>
                                 </form>

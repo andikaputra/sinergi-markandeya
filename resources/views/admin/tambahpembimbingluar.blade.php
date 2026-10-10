@@ -11,7 +11,7 @@
         <h2 class="text-2xl font-bold text-gray-800">Tambah Pembimbing Luar</h2>
     </div>
 
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden p-8 sm:p-12">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-8 sm:p-12">
         @if ($errors->any())
         <div class="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
             <ul class="list-disc list-inside">

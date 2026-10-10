@@ -6,7 +6,7 @@
 <div class="space-y-8">
     <div class="flex items-center justify-between">
         <div>
-            <h2 class="text-3xl font-black text-gray-900">Mahasiswa Tanpa Program Kerja</h2>
+            <h2 class="text-3xl font-semibold text-gray-900">Mahasiswa Tanpa Program Kerja</h2>
             <p class="text-gray-500 mt-1">{{ $mahasiswaTanpaProgram->total() }} mahasiswa</p>
         </div>
         <a href="{{ route('admin.program-kerja.dashboard') }}" class="px-6 py-3 bg-gray-200 text-gray-800 font-bold rounded-xl hover:bg-gray-300 transition">
@@ -14,7 +14,7 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-100">
@@ -35,7 +35,7 @@
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $mahasiswa->prodi_full ?? '-' }}</td>
                             <td class="px-6 py-4">
                                 <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold
-                                    @if($mahasiswa->kegiatan) bg-blue-100 text-blue-800
+                                    @if($mahasiswa->kegiatan) bg-primary-100 text-primary-800
                                     @else bg-gray-100 text-gray-800
                                     @endif
                                 ">
@@ -44,7 +44,7 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $mahasiswa->created_at->format('d M Y') }}</td>
                             <td class="px-6 py-4 text-sm">
-                                <a href="{{ route('admin.program-kerja.detail-mahasiswa', $mahasiswa) }}" class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition">
+                                <a href="{{ route('admin.program-kerja.detail-mahasiswa', $mahasiswa) }}" class="px-3 py-1 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition">
                                     Lihat Detail
                                 </a>
                             </td>

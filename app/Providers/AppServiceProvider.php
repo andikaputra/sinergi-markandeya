@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
+            app(\App\Services\LoginActivityRecorder::class)->record($event->user, true);
+        });
             if (config('app.env') === 'production') {
                 \URL::forceScheme('https');
             }

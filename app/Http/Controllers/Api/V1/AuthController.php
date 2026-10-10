@@ -99,6 +99,11 @@ class AuthController extends Controller
         }
 
         $accessToken->touchLastUsed();
+        app(\App\Services\LoginActivityRecorder::class)->record(match ($accessToken->user_type) {
+            'dosen' => Dosen::find($accessToken->user_id),
+            'mahasiswa' => Mahasiswa::find($accessToken->user_id),
+            default => null,
+        });
 
         return response()->json([
             'user_type' => $accessToken->user_type,
@@ -162,11 +167,12 @@ class AuthController extends Controller
         ];
 
         $token = SsoAccessToken::issue('api-v1', 'dosen', $dosen->id, $userData, ['dosen']);
+        app(\App\Services\LoginActivityRecorder::class)->record($dosen, true);
 
         return response()->json([
             'access_token' => $token->token,
             'token_type'   => 'Bearer',
-            'expires_in'   => $token->expires_at->diffInSeconds(now()),
+            'expires_in'   => max(0, (int) now()->diffInSeconds($token->expires_at)),
             'user_type'    => 'dosen',
             'user'         => $userData,
         ]);
@@ -186,11 +192,12 @@ class AuthController extends Controller
         ];
 
         $token = SsoAccessToken::issue('api-v1', 'mahasiswa', $mahasiswa->id, $userData, ['mahasiswa']);
+        app(\App\Services\LoginActivityRecorder::class)->record($mahasiswa, true);
 
         return response()->json([
             'access_token' => $token->token,
             'token_type'   => 'Bearer',
-            'expires_in'   => $token->expires_at->diffInSeconds(now()),
+            'expires_in'   => max(0, (int) now()->diffInSeconds($token->expires_at)),
             'user_type'    => 'mahasiswa',
             'user'         => $userData,
         ]);

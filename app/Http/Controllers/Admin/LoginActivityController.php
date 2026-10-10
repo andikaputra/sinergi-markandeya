@@ -86,12 +86,18 @@ class LoginActivityController extends Controller
         return view('admin.login-activity.mahasiswa-tidak-aktif', compact('mahasiswa'));
     }
 
-    public function dosenBelumLogin()
+    public function dosenBelumLogin(Request $request)
     {
-        $dosen = Dosen::whereNull('last_login')
-            ->orderBy('created_at', 'desc')
-            ->paginate(25);
-
+        $request->validate(['q'=>'nullable|string|max:100']);
+        $query = Dosen::whereNull('last_login')->orderBy('nama')->orderBy('id');
+        if ($request->filled('q')) $query->where(function ($query) use ($request) {
+            $query->where('nama','like','%'.$request->q.'%')->orWhere('nidn','like','%'.$request->q.'%')->orWhere('nip','like','%'.$request->q.'%');
+        });
+        if ($request->boolean('cetak')) {
+            $dosen = $query->get();
+            return view('reports.dosen-belum-login', compact('dosen'));
+        }
+        $dosen = $query->paginate(25)->withQueryString();
         return view('admin.login-activity.dosen-belum-login', compact('dosen'));
     }
 
@@ -109,8 +115,14 @@ class LoginActivityController extends Controller
         return view('admin.login-activity.dosen-tidak-aktif', compact('dosen'));
     }
 
-    public function aktivitasLogin()
+    public function aktivitasLogin(Request $request)
     {
+        if ($request->boolean('cetak')) {
+            $mahasiswas = Mahasiswa::whereNotNull('last_login')->orderByDesc('last_login')->get();
+            $dosens = Dosen::whereNotNull('last_login')->orderByDesc('last_login')->get();
+            return view('reports.login', compact('mahasiswas', 'dosens'));
+        }
+
         $mahasiswas = Mahasiswa::whereNotNull('last_login')
             ->orderBy('last_login', 'desc')
             ->paginate(20, ['*'], 'mahasiswa_page')->withQueryString();

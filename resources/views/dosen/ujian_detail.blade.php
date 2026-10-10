@@ -7,7 +7,7 @@
     <!-- Header & Back Button -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div class="flex items-center space-x-4">
-            <a href="{{ route('dosen.ujian.index') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-600 transition-all shadow-sm">
+            <a href="{{ route('dosen.ujian.index') }}" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-600 transition-all shadow-sm">
                 <i class="fas fa-chevron-left text-xs"></i>
             </a>
             <div>
@@ -18,16 +18,16 @@
     </div>
 
     <!-- Top Profile Header -->
-    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-6">
-        <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg shadow-indigo-100 shrink-0">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-6">
+        <div class="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-700 text-white rounded-2xl flex items-center justify-center text-2xl font-semibold shadow-lg shadow-primary-100 shrink-0">
             {{ substr($mahasiswa->nama, 0, 1) }}
         </div>
         <div class="flex-1 text-center md:text-left">
-            <h3 class="text-xl font-black text-gray-800">{{ $mahasiswa->nama }}</h3>
+            <h3 class="text-xl font-semibold text-gray-800">{{ $mahasiswa->nama }}</h3>
             <div class="flex flex-wrap justify-center md:justify-start gap-2 mt-2">
-                <span class="px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-black rounded-lg uppercase tracking-wider font-mono">{{ $mahasiswa->nim }}</span>
-                <span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-black rounded-lg uppercase tracking-wider">{{ $mahasiswa->kegiatan }}</span>
-                <span class="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-black rounded-lg uppercase tracking-wider">{{ $mahasiswa->prodi_full ?? $mahasiswa->prodi }}</span>
+                <span class="px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-semibold rounded-lg uppercase tracking-wider font-mono">{{ $mahasiswa->nim }}</span>
+                <span class="px-3 py-1 bg-primary-50 text-primary-700 text-[10px] font-semibold rounded-lg uppercase tracking-wider">{{ $mahasiswa->kegiatan }}</span>
+                <span class="px-3 py-1 bg-primary-50 text-primary-700 text-[10px] font-semibold rounded-lg uppercase tracking-wider">{{ $mahasiswa->prodi_full ?? $mahasiswa->prodi }}</span>
             </div>
         </div>
         <div class="grid grid-cols-1 gap-2 shrink-0 w-full md:w-auto border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 text-center md:text-left">
@@ -61,12 +61,12 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Left Side: Tabs for Journal & Bimbingan History -->
         <div class="lg:col-span-7 xl:col-span-8 order-2 lg:order-1 space-y-6">
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
                 <!-- Tab Headers -->
                 <div class="flex items-center border-b border-gray-100 bg-gray-50/50 p-2 gap-2">
                     <button
                         @click="activeTab = 'jurnal'"
-                        :class="activeTab === 'jurnal' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-gray-500 hover:text-gray-700 font-bold'"
+                        :class="activeTab === 'jurnal' ? 'bg-white text-primary-600 shadow-sm font-semibold' : 'text-gray-500 hover:text-gray-700 font-bold'"
                         class="flex-1 py-3 px-4 rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all"
                     >
                         <i class="fas fa-history"></i>
@@ -74,7 +74,7 @@
                     </button>
                     <button
                         @click="activeTab = 'bimbingan'"
-                        :class="activeTab === 'bimbingan' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-gray-500 hover:text-gray-700 font-bold'"
+                        :class="activeTab === 'bimbingan' ? 'bg-white text-primary-600 shadow-sm font-semibold' : 'text-gray-500 hover:text-gray-700 font-bold'"
                         class="flex-1 py-3 px-4 rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all"
                     >
                         <i class="fas fa-chalkboard-teacher"></i>
@@ -93,12 +93,12 @@
                         <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gray-100">
                             @foreach ($jurnals as $jurnal)
                             <div class="relative flex items-start group" x-data="{ expanded: false }">
-                                <div class="absolute left-0 w-10 h-10 bg-white border-2 border-indigo-500 rounded-xl flex items-center justify-center text-indigo-600 z-10 transition-all group-hover:bg-indigo-600 group-hover:text-white shadow-sm">
-                                    <span class="text-[10px] font-black">{{ \Carbon\Carbon::parse($jurnal->tanggal)->format('d') }}</span>
+                                <div class="absolute left-0 w-10 h-10 bg-white border-2 border-primary-500 rounded-xl flex items-center justify-center text-primary-600 z-10 transition-all group-hover:bg-primary-600 group-hover:text-white shadow-sm">
+                                    <span class="text-[10px] font-semibold">{{ \Carbon\Carbon::parse($jurnal->tanggal)->format('d') }}</span>
                                 </div>
-                                <div class="flex-1 ml-16 bg-white p-5 rounded-2xl border border-gray-100 group-hover:border-indigo-100 group-hover:shadow-md transition-all duration-300">
+                                <div class="flex-1 ml-16 bg-white p-5 rounded-2xl border border-gray-100 group-hover:border-primary-100 group-hover:shadow-md transition-all duration-300">
                                     <div class="flex justify-between items-center mb-2">
-                                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
+                                        <span class="text-[10px] font-semibold text-primary-600 uppercase tracking-widest">
                                             {{ \Carbon\Carbon::parse($jurnal->tanggal)->translatedFormat('F Y') }}
                                         </span>
                                         <span class="text-[9px] text-gray-400 font-bold uppercase"><i class="far fa-clock mr-1"></i> {{ $jurnal->created_at->diffForHumans() }}</span>
@@ -108,7 +108,7 @@
                                             {{ $jurnal->kegiatan }}
                                         </p>
                                         @if(strlen($jurnal->kegiatan) > 150)
-                                        <button @click="expanded = !expanded" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest mt-2 focus:outline-none flex items-center gap-1">
+                                        <button @click="expanded = !expanded" class="text-[10px] font-semibold text-primary-600 hover:text-primary-800 uppercase tracking-widest mt-2 focus:outline-none flex items-center gap-1">
                                             <span x-text="expanded ? 'Sembunyikan' : 'Baca Selengkapnya'"></span>
                                             <i class="fas transition-transform" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                                         </button>
@@ -124,13 +124,13 @@
                 <!-- TAB 2: LOG BIMBINGAN (READ-ONLY FOR PENGUJI) -->
                 <div x-show="activeTab === 'bimbingan'" class="p-6 md:p-8 flex-1 space-y-6" style="display: none;">
                     <div class="pb-4 border-b border-gray-100">
-                        <h4 class="text-base font-black text-gray-800">Riwayat Konsultasi & Log Bimbingan Mahasiswa</h4>
+                        <h4 class="text-base font-semibold text-gray-800">Riwayat Konsultasi & Log Bimbingan Mahasiswa</h4>
                         <p class="text-xs text-gray-400 mt-0.5">Dosen Penguji dapat meninjau proses konsultasi dan catatan yang telah diberikan oleh Dosen Pembimbing</p>
                     </div>
 
                     @if($bimbingans->isEmpty())
                         <div class="flex flex-col items-center justify-center py-20 text-gray-400">
-                            <div class="w-16 h-16 bg-indigo-50 text-indigo-400 rounded-2xl flex items-center justify-center mb-3">
+                            <div class="w-16 h-16 bg-primary-50 text-primary-400 rounded-2xl flex items-center justify-center mb-3">
                                 <i class="fas fa-comment-slash text-2xl"></i>
                             </div>
                             <p class="font-bold text-gray-600">Belum Ada Sesi Bimbingan</p>
@@ -142,7 +142,7 @@
                             <div class="bg-gray-50/70 border border-gray-100 rounded-2xl p-5 space-y-3">
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-gray-200/60">
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-black text-xs">
+                                        <div class="w-7 h-7 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-xs">
                                             #{{ $loop->iteration }}
                                         </div>
                                         <div>
@@ -152,10 +152,10 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase self-start sm:self-auto
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase self-start sm:self-auto
                                         @if($b->status === 'disetujui') bg-emerald-100 text-emerald-800
                                         @elseif($b->status === 'perlu_revisi') bg-amber-100 text-amber-800
-                                        @else bg-blue-100 text-blue-800
+                                        @else bg-primary-100 text-primary-800
                                         @endif
                                     ">
                                         {{ str_replace('_', ' ', $b->status) }}
@@ -168,9 +168,9 @@
                                 </div>
 
                                 @if($b->materi_terlampir)
-                                <div class="flex items-center justify-between p-2.5 bg-indigo-50/50 border border-indigo-100 rounded-xl text-xs">
-                                    <span class="font-medium text-gray-700 truncate max-w-xs"><i class="fas fa-paperclip text-indigo-600 mr-1.5"></i>{{ $b->materi_terlampir }}</span>
-                                    <a href="{{ asset('storage/bimbingan/' . $b->materi_terlampir) }}" download class="text-indigo-600 hover:text-indigo-800 font-bold ml-2 shrink-0">
+                                <div class="flex items-center justify-between p-2.5 bg-primary-50/50 border border-primary-100 rounded-xl text-xs">
+                                    <span class="font-medium text-gray-700 truncate max-w-xs"><i class="fas fa-paperclip text-primary-600 mr-1.5"></i>{{ $b->materi_terlampir }}</span>
+                                    <a href="{{ route('bimbingan.berkas', $b->id) }}" class="text-primary-600 hover:text-primary-800 font-bold ml-2 shrink-0">
                                         <i class="fas fa-download mr-1"></i> Unduh
                                     </a>
                                 </div>
@@ -192,30 +192,30 @@
 
         <!-- Right Side: Panel Ujian & Catatan Revisi -->
         <div class="lg:col-span-5 xl:col-span-4 order-1 lg:order-2 space-y-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-6 space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-6 space-y-6">
                 <div class="flex items-center justify-between pb-4 border-b border-gray-100">
                     <h4 class="text-lg font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-gavel text-indigo-600 mr-2"></i>
+                        <i class="fas fa-gavel text-primary-600 mr-2"></i>
                         Panel Penilaian & Revisi Ujian
                     </h4>
                     @if($isUjian->nilai !== null)
-                        <div class="px-3 py-1 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase">Selesai</div>
+                        <div class="px-3 py-1 bg-emerald-100 text-emerald-800 text-[10px] font-semibold rounded-full uppercase">Selesai</div>
                     @endif
                 </div>
 
                 @if($isUjian->nilai !== null)
-                <div class="p-4 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-2xl text-center shadow-lg shadow-indigo-100">
-                    <span class="text-[10px] font-bold text-indigo-100 uppercase tracking-widest opacity-80">
+                <div class="p-4 bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl text-center shadow-lg shadow-primary-100">
+                    <span class="text-[10px] font-bold text-primary-100 uppercase tracking-widest opacity-80">
                         Skor Akhir Ujian
                     </span>
-                    <p class="text-4xl font-black text-white mt-1">{{ $isUjian->nilai }}</p>
+                    <p class="text-4xl font-semibold text-white mt-1">{{ $isUjian->nilai }}</p>
                 </div>
                 @endif
 
                 <!-- Existing Note Preview if Available -->
                 @if($isUjian->catatan)
                 <div class="p-4 bg-amber-50/80 border border-amber-200 rounded-2xl text-xs text-amber-950 space-y-1">
-                    <strong class="text-amber-900 flex items-center gap-1.5 font-black text-xs">
+                    <strong class="text-amber-900 flex items-center gap-1.5 font-semibold text-xs">
                         <i class="fas fa-comment-alt text-amber-600"></i> Catatan/Revisi Ujian Sebelumnya:
                     </strong>
                     <p class="text-gray-800 leading-relaxed italic whitespace-pre-wrap">{{ $isUjian->catatan }}</p>
@@ -231,10 +231,10 @@
                             Skor Penilaian Ujian
                         </label>
                         @if($mahasiswa->kegiatan === 'PPL')
-                            <label class="block p-4 bg-gray-50 rounded-2xl border border-gray-100 focus-within:border-indigo-500 transition-all text-center">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Nilai Ujian Laporan</span>
+                            <label class="block p-4 bg-gray-50 rounded-2xl border border-gray-100 focus-within:border-primary-500 transition-all text-center">
+                                <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2 block">Nilai Ujian Laporan</span>
                                 <input type="number" name="nilai" value="{{ old('nilai', $isUjian->nilai) }}" min="0" max="100" step="0.1"
-                                    class="w-full bg-transparent border-none p-0 focus:ring-0 font-black text-3xl text-gray-800 text-center" placeholder="0">
+                                    class="w-full bg-transparent border-none p-0 focus:ring-0 font-semibold text-3xl text-gray-800 text-center" placeholder="0">
                             </label>
                         @else
                             <div class="grid grid-cols-2 gap-2">
@@ -248,10 +248,10 @@
                                     ];
                                 @endphp
                                 @foreach($kriteria_ujian as $k)
-                                <label class="block p-3 bg-gray-50 rounded-xl border border-gray-100 focus-within:border-indigo-500 transition-all @if($loop->last) col-span-2 @endif">
-                                    <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 block">{{ $k['label'] }}</span>
+                                <label class="block p-3 bg-gray-50 rounded-xl border border-gray-100 focus-within:border-primary-500 transition-all @if($loop->last) col-span-2 @endif">
+                                    <span class="text-[9px] font-semibold text-gray-400 uppercase tracking-widest mb-1 block">{{ $k['label'] }}</span>
                                     <input type="number" name="{{ $k['key'] }}" value="{{ old($k['key'], $isUjian->{$k['key']}) }}" min="0" max="100" step="0.1"
-                                        class="w-full bg-transparent border-none p-0 focus:ring-0 font-black text-lg text-gray-800" placeholder="0">
+                                        class="w-full bg-transparent border-none p-0 focus:ring-0 font-semibold text-lg text-gray-800" placeholder="0">
                                 </label>
                                 @endforeach
                             </div>
@@ -269,11 +269,11 @@
                             name="catatan"
                             rows="4"
                             placeholder="Contoh: Perbaiki bab pembahasan mengenai hasil program kerja, lengkapi lampiran dokumentasi foto, dan sesuaikan format penulisan daftar pustaka..."
-                            class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-xs font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all resize-y leading-relaxed"
+                            class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-xs font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 transition-all resize-y leading-relaxed"
                         >{{ old('catatan', $isUjian->catatan) }}</textarea>
                     </div>
 
-                    <button type="submit" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-black text-xs rounded-2xl shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] uppercase tracking-widest flex items-center justify-center gap-2">
+                    <button type="submit" class="w-full py-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold text-xs rounded-2xl shadow-lg shadow-primary-200 transition-all active:scale-[0.98] uppercase tracking-widest flex items-center justify-center gap-2">
                         <i class="fas fa-save"></i>
                         <span>Simpan Nilai & Catatan Ujian</span>
                     </button>
@@ -281,7 +281,7 @@
 
                 <!-- Luaran / File Laporan -->
                 <div class="pt-5 border-t border-gray-100">
-                    <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center">
+                    <h4 class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3 flex items-center">
                         <i class="fas fa-file-pdf mr-2 text-rose-500"></i> Berkas Laporan Akhir
                     </h4>
                     <div class="flex flex-wrap gap-2">

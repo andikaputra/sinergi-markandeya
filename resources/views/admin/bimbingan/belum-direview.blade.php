@@ -3,12 +3,12 @@
 @section('title', 'Bimbingan Belum Direview')
 
 @section('content')
-<div style="background-color: #f5f3f0; padding: 24px; border-radius: 16px;">
+<div style="background-color: #f5f6f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1200px; margin: 0 auto;">
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div>
-                <a href="{{ route('admin.bimbingan.dashboard') }}" style="color: #d4a574; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+                <a href="{{ route('admin.bimbingan.dashboard') }}" style="color: #56703f; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px;">
                     ← Kembali ke Dashboard Bimbingan
                 </a>
                 <h1 style="margin: 0; color: #1a5d4d; font-size: 2rem; font-weight: 700;">⏳ Permohonan Bimbingan Belum Direview</h1>
@@ -23,7 +23,7 @@
             @if($permohonan->count() > 0)
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr style="background-color: #f5f3f0; border-bottom: 2px solid #d4a574;">
+                        <tr style="background-color: #f5f6f0; border-bottom: 2px solid #d4a574;">
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">No.</th>
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Mahasiswa</th>
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Dosen Pembimbing</th>

@@ -181,7 +181,7 @@
     <span class="font-medium text-sm">Monitoring Bimbingan</span>
 </a>
 
-<a href="{{ route('admin.login-activity.dashboard') }}" @if(request()->routeIs('admin.login-activity.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl {{ request()->routeIs('admin.login-activity.*') ? 'bg-primary-50 text-primary-700 font-bold' : 'text-gray-600' }} hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('admin.login-activity.dashboard') }}" @if((request()->routeIs('admin.login-activity.*') && !request()->routeIs('admin.login-activity.dosen-belum-login'))) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl {{ (request()->routeIs('admin.login-activity.*') && !request()->routeIs('admin.login-activity.dosen-belum-login')) ? 'bg-primary-50 text-primary-700 font-bold' : 'text-gray-600' }} hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-user-check text-lg"></i>
     <span class="font-medium text-sm">Aktivitas Login</span>
 </a>
@@ -190,6 +190,9 @@
     <i class="fas fa-tasks text-lg"></i>
     <span class="font-medium text-sm">Program Kerja & Luaran</span>
 </a>
+
+<a href="{{ route('admin.monev.monitoring') }}" @if(request()->routeIs('admin.monev.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600"><i class="fas fa-clipboard-check" aria-hidden="true"></i><span class="font-medium text-sm">Pelaksanaan Monev</span></a>
+<a href="{{ route('admin.login-activity.dosen-belum-login') }}" @if(request()->routeIs('admin.login-activity.dosen-belum-login')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600"><i class="fas fa-user-clock" aria-hidden="true"></i><span class="font-medium text-sm">Dosen Tanpa Login</span></a>
 
 @if(Auth::guard('web')->user()?->isSuperAdmin())
 <div class="pt-4 pb-2">

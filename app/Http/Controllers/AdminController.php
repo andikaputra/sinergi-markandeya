@@ -484,7 +484,7 @@ class AdminController extends Controller
         };
 
         $query = Mahasiswa::withKegiatan($kegiatan)
-            ->with([$placementRelation, 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'dosenMonev.dosen']);
+            ->with([$placementRelation, 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa', 'activeKegiatan', 'dosenMonev.dosen']);
 
         if ($request->has('ta') && $request->ta != '') {
             $query->withKegiatanAndTA($kegiatan, $request->ta);
@@ -492,7 +492,7 @@ class AdminController extends Controller
         $tasks = $query->get();
 
         $headers = array(
-            "Content-type"        => "text/csv",
+            "Content-type"        => "text/csv; charset=UTF-8",
             "Content-Disposition" => "attachment; filename=$fileName",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
@@ -503,6 +503,7 @@ class AdminController extends Controller
 
         $callback = function() use($tasks, $columns, $kegiatan) {
             $file = fopen('php://output', 'w');
+            fwrite($file, "\xEF\xBB\xBF");
             fputcsv($file, $columns);
 
             foreach ($tasks as $task) {
@@ -515,14 +516,14 @@ class AdminController extends Controller
                 fputcsv($file, array(
                     $task->nim,
                     $task->nama,
-                    $task->prodi_full,
+                    $task->prodi_full ?? $task->prodi ?? '-',
                     $lokasi ?? '-',
                     $task->dosenPembimbing?->dosen?->nama ?? '-',
                     $task->dosenPembimbing?->nilai ?? '-',
                     $task->dosenPenguji?->dosen?->nama ?? '-',
                     $task->dosenPenguji?->nilai ?? '-',
                     $task->dosen_monev_model?->dosen?->nama ?? '-',
-                    $task->nilai_akhir,
+                    $task->nilai_akhir ?? 'Belum tersedia',
                 ));
             }
             fclose($file);
@@ -546,13 +547,14 @@ class AdminController extends Controller
             'Magang' => 'penempatanmagang.lokasimagang.dosenMonev.dosen',
         };
 
-        $query = Mahasiswa::withKegiatan($kegiatan)->with([$placementRelation, 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'dosenMonev.dosen']);
+        $query = Mahasiswa::withKegiatan($kegiatan)->with([$placementRelation, 'dosenPembimbing.dosen', 'dosenPenguji.dosen', 'pembimbingLuarMahasiswa', 'activeKegiatan', 'dosenMonev.dosen']);
         if ($request->has('ta') && $request->ta != '') {
             $query->withKegiatanAndTA($kegiatan, $request->ta);
         }
         $peserta = $query->get();
         $title = "REKAPITULASI PESERTA " . $kegiatan;
-        return view('admin.export.pdf_rekap', compact('peserta', 'title'));
+        $tahunAkademik = $request->input('ta') ?: 'Semua tahun akademik';
+        return view('admin.export.pdf_rekap', compact('peserta', 'title', 'tahunAkademik', 'kegiatan'));
     }
 
     // ==================== ADMIN MANAGEMENT (SUPERADMIN ONLY) ====================

@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.dosen')
 
 @section('title', 'Mahasiswa Bimbingan')
 
@@ -10,7 +10,7 @@
 <div class="space-y-8">
     <div class="flex items-center justify-between">
         <div>
-            <h2 class="text-3xl font-black text-gray-900">Mahasiswa Bimbingan</h2>
+            <h2 class="text-3xl font-semibold text-gray-900">Mahasiswa Bimbingan</h2>
             <p class="text-gray-500 mt-1">Total: {{ $mahasiswaBimbingan->total() }} mahasiswa</p>
         </div>
         <a href="{{ route('dosen.program-kerja.dashboard') }}" class="px-6 py-3 bg-gray-200 text-gray-800 font-bold rounded-xl hover:bg-gray-300 transition">
@@ -18,7 +18,7 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-100">
@@ -65,7 +65,7 @@
                                 @if ($totalProgramMhs > 0)
                                     <div class="flex items-center gap-1.5 flex-wrap">
                                         @if($indivCount > 0)
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-100 text-primary-800">
                                                 {{ $indivCount }} Individu
                                             </span>
                                         @endif
@@ -82,7 +82,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-sm">
-                                <a href="{{ route('dosen.program-kerja.detail', $mahasiswa) }}" class="px-3.5 py-1.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold text-xs transition inline-flex items-center gap-1.5 shadow-sm">
+                                <a href="{{ route('dosen.program-kerja.detail', $mahasiswa) }}" class="px-3.5 py-1.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-bold text-xs transition inline-flex items-center gap-1.5 shadow-sm">
                                     <i class="fas fa-eye text-[10px]"></i> Lihat Detail
                                 </a>
                             </td>
