@@ -168,12 +168,24 @@
                                 </div>
 
                                 @if($b->materi_terlampir)
-                                <div class="flex items-center justify-between p-2.5 bg-indigo-50/50 border border-indigo-100 rounded-xl text-xs">
-                                    <span class="font-medium text-gray-700 truncate max-w-xs"><i class="fas fa-paperclip text-indigo-600 mr-1.5"></i>{{ $b->materi_terlampir }}</span>
-                                    <a href="{{ asset('storage/bimbingan/' . $b->materi_terlampir) }}" download class="text-indigo-600 hover:text-indigo-800 font-bold ml-2 shrink-0">
-                                        <i class="fas fa-download mr-1"></i> Unduh
-                                    </a>
-                                </div>
+                                    @if(str_starts_with($b->materi_terlampir, 'http://') || str_starts_with($b->materi_terlampir, 'https://'))
+                                    <div class="flex items-center justify-between p-2.5 bg-emerald-50/60 border border-emerald-100 rounded-xl text-xs">
+                                        <span class="font-medium text-emerald-800 truncate max-w-xs flex items-center">
+                                            <i class="fab fa-google-drive text-emerald-600 mr-1.5 shrink-0"></i>
+                                            <span class="truncate">Google Drive: {{ $b->materi_terlampir }}</span>
+                                        </span>
+                                        <a href="{{ $b->materi_terlampir }}" target="_blank" rel="noopener noreferrer" class="text-emerald-700 hover:text-emerald-900 font-bold ml-2 shrink-0 flex items-center gap-1">
+                                            <span>Buka</span> <i class="fas fa-external-link-alt text-[10px]"></i>
+                                        </a>
+                                    </div>
+                                    @else
+                                    <div class="flex items-center justify-between p-2.5 bg-indigo-50/50 border border-indigo-100 rounded-xl text-xs">
+                                        <span class="font-medium text-gray-700 truncate max-w-xs"><i class="fas fa-paperclip text-indigo-600 mr-1.5"></i>{{ $b->materi_terlampir }}</span>
+                                        <a href="{{ asset('storage/bimbingan/' . $b->materi_terlampir) }}" download class="text-indigo-600 hover:text-indigo-800 font-bold ml-2 shrink-0">
+                                            <i class="fas fa-download mr-1"></i> Unduh
+                                        </a>
+                                    </div>
+                                    @endif
                                 @endif
 
                                 @if($b->catatan_dosen)

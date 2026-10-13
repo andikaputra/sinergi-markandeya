@@ -100,26 +100,32 @@
                 >{{ old('deskripsi') }}</textarea>
             </div>
 
-            <!-- File Upload -->
+            <!-- Link Dokumen Google Drive -->
             <div class="space-y-2">
-                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Unggah Berkas / Draft Laporan (Opsional)
+                <label for="materi_terlampir" class="block text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center justify-between">
+                    <span>Tautan Dokumen / Google Drive (Opsional)</span>
+                    <span class="text-[11px] text-emerald-600 font-bold normal-case flex items-center">
+                        <i class="fab fa-google-drive mr-1"></i> Google Drive / Cloud Docs
+                    </span>
                 </label>
-                <div class="border-2 border-dashed border-gray-200 hover:border-primary-500 rounded-2xl p-6 bg-gray-50 hover:bg-primary-50/20 text-center cursor-pointer transition-all duration-200">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-emerald-600">
+                        <i class="fab fa-google-drive text-base"></i>
+                    </div>
                     <input
-                        type="file"
+                        type="url"
                         name="materi_terlampir"
                         id="materi_terlampir"
-                        accept=".pdf,.doc,.docx,.zip,.rar"
-                        class="hidden"
+                        value="{{ old('materi_terlampir') }}"
+                        placeholder="https://drive.google.com/file/d/... atau https://drive.google.com/..."
+                        class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-600 transition-all"
                     >
-                    <label for="materi_terlampir" class="cursor-pointer block space-y-2">
-                        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary-600 text-xl mx-auto shadow-sm border border-gray-200">
-                            <i class="fas fa-file-arrow-up"></i>
-                        </div>
-                        <p class="text-xs font-bold text-gray-700" id="file_name_display">Klik di sini untuk memilih berkas draft / materi</p>
-                        <p class="text-[11px] text-gray-400">Mendukung format: PDF, DOCX, DOC, ZIP, RAR (Maks. 10MB)</p>
-                    </label>
+                </div>
+                <div class="p-3 bg-emerald-50/70 border border-emerald-200/60 rounded-xl text-xs text-emerald-800 flex items-start space-x-2">
+                    <i class="fas fa-info-circle text-emerald-600 mt-0.5 shrink-0"></i>
+                    <p class="leading-relaxed">
+                        Pastikan link Google Drive telah disetel ke <strong>"Anyone with the link / Siapa saja yang memiliki link"</strong> (Viewer/Editor) agar dosen pembimbing dapat langsung membuka berkas.
+                    </p>
                 </div>
             </div>
 
@@ -142,14 +148,4 @@
         </form>
     </div>
 </div>
-
-<script>
-    document.getElementById('materi_terlampir').addEventListener('change', function(e) {
-        if (this.files && this.files.length > 0) {
-            const fileName = this.files[0].name;
-            const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
-            document.getElementById('file_name_display').innerHTML = `<span class="text-emerald-600 font-black"><i class="fas fa-check-circle mr-1"></i> ${fileName} (${fileSize} MB)</span>`;
-        }
-    });
-</script>
 @endsection

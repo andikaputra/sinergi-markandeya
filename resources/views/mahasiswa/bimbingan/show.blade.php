@@ -117,7 +117,29 @@
         <!-- Lampiran Dokumen -->
         @if($bimbingan->materi_terlampir)
         <div class="space-y-2 pt-2 border-t border-gray-100">
-            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Berkas Terlampir</span>
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Dokumen / Lampiran Materi</span>
+            @if(str_starts_with($bimbingan->materi_terlampir, 'http://') || str_starts_with($bimbingan->materi_terlampir, 'https://'))
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-emerald-50/60 border border-emerald-100 rounded-2xl">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                        <i class="fab fa-google-drive text-lg"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-gray-800">Tautan Google Drive / Dokumen Cloud</p>
+                        <p class="text-[11px] text-emerald-700 truncate max-w-xs md:max-w-md font-mono">{{ $bimbingan->materi_terlampir }}</p>
+                    </div>
+                </div>
+                <a
+                    href="{{ $bimbingan->materi_terlampir }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center space-x-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm shrink-0"
+                >
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>Buka Dokumen</span>
+                </a>
+            </div>
+            @else
             <div class="flex items-center justify-between p-4 bg-primary-50/40 border border-primary-100 rounded-2xl">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-xl bg-primary-100 text-primary-700 flex items-center justify-center font-bold">
@@ -137,6 +159,7 @@
                     <span>Unduh Berkas</span>
                 </a>
             </div>
+            @endif
         </div>
         @endif
     </div>

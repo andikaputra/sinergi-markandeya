@@ -100,37 +100,56 @@
                 <p class="text-[11px] text-gray-400">Jelaskan secara jelas perbaikan yang sudah Anda lakukan agar dosen pembimbing mudah memverifikasi.</p>
             </div>
 
-            <!-- File Upload -->
+            <!-- Link Dokumen Google Drive -->
             <div class="space-y-2">
-                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Unggah Berkas Baru / Draft Laporan yang Sudah Direvisi
+                <label for="materi_terlampir" class="block text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center justify-between">
+                    <span>Tautan Dokumen / Google Drive Revisi</span>
+                    <span class="text-[11px] text-emerald-600 font-bold normal-case flex items-center">
+                        <i class="fab fa-google-drive mr-1"></i> Google Drive / Cloud Docs
+                    </span>
                 </label>
 
                 @if($bimbingan->materi_terlampir)
-                <div class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-600 flex items-center justify-between mb-2">
-                    <span class="flex items-center">
-                        <i class="fas fa-file-alt text-primary-600 mr-2"></i>
-                        Berkas saat ini: <strong>{{ $bimbingan->materi_terlampir }}</strong>
+                <div class="p-3 bg-emerald-50/70 border border-emerald-200/60 rounded-xl text-xs text-gray-700 flex items-center justify-between mb-2">
+                    <span class="flex items-center min-w-0 pr-2">
+                        @if(str_starts_with($bimbingan->materi_terlampir, 'http://') || str_starts_with($bimbingan->materi_terlampir, 'https://'))
+                            <i class="fab fa-google-drive text-emerald-600 mr-2 shrink-0"></i>
+                            <span class="truncate">Tautan saat ini: <strong class="text-emerald-700">{{ $bimbingan->materi_terlampir }}</strong></span>
+                        @else
+                            <i class="fas fa-file-alt text-primary-600 mr-2 shrink-0"></i>
+                            <span class="truncate">Berkas lampiran lama: <strong>{{ $bimbingan->materi_terlampir }}</strong></span>
+                        @endif
                     </span>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase">Akan digantikan bila mengunggah berkas baru</span>
+                    @if(str_starts_with($bimbingan->materi_terlampir, 'http://') || str_starts_with($bimbingan->materi_terlampir, 'https://'))
+                        <a href="{{ $bimbingan->materi_terlampir }}" target="_blank" rel="noopener noreferrer" class="shrink-0 text-emerald-600 hover:text-emerald-800 font-bold flex items-center gap-1">
+                            <span>Buka</span> <i class="fas fa-external-link-alt text-[10px]"></i>
+                        </a>
+                    @else
+                        <a href="{{ asset('storage/bimbingan/' . $bimbingan->materi_terlampir) }}" target="_blank" class="shrink-0 text-primary-600 hover:text-primary-800 font-bold flex items-center gap-1">
+                            <span>Unduh</span> <i class="fas fa-download text-[10px]"></i>
+                        </a>
+                    @endif
                 </div>
                 @endif
 
-                <div class="border-2 border-dashed border-gray-200 hover:border-primary-500 rounded-2xl p-6 bg-gray-50 hover:bg-primary-50/20 text-center cursor-pointer transition-all duration-200">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-emerald-600">
+                        <i class="fab fa-google-drive text-base"></i>
+                    </div>
                     <input
-                        type="file"
+                        type="url"
                         name="materi_terlampir"
                         id="materi_terlampir"
-                        accept=".pdf,.doc,.docx,.zip,.rar"
-                        class="hidden"
+                        value="{{ old('materi_terlampir', $bimbingan->materi_terlampir) }}"
+                        placeholder="https://drive.google.com/file/d/... atau https://drive.google.com/..."
+                        class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-600 transition-all"
                     >
-                    <label for="materi_terlampir" class="cursor-pointer block space-y-2">
-                        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary-600 text-xl mx-auto shadow-sm border border-gray-200">
-                            <i class="fas fa-file-arrow-up"></i>
-                        </div>
-                        <p class="text-xs font-bold text-gray-700" id="file_name_display">Klik di sini untuk mengunggah draf laporan revisi</p>
-                        <p class="text-[11px] text-gray-400">Format: PDF, DOCX, DOC, ZIP, RAR (Maks. 10MB)</p>
-                    </label>
+                </div>
+                <div class="p-3 bg-emerald-50/70 border border-emerald-200/60 rounded-xl text-xs text-emerald-800 flex items-start space-x-2">
+                    <i class="fas fa-info-circle text-emerald-600 mt-0.5 shrink-0"></i>
+                    <p class="leading-relaxed">
+                        Pastikan link Google Drive telah disetel ke <strong>"Anyone with the link / Siapa saja yang memiliki link"</strong> (Viewer/Editor) agar dosen pembimbing dapat langsung membuka berkas.
+                    </p>
                 </div>
             </div>
 
@@ -153,14 +172,4 @@
         </form>
     </div>
 </div>
-
-<script>
-    document.getElementById('materi_terlampir').addEventListener('change', function(e) {
-        if (this.files && this.files.length > 0) {
-            const fileName = this.files[0].name;
-            const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
-            document.getElementById('file_name_display').innerHTML = `<span class="text-emerald-600 font-black"><i class="fas fa-check-circle mr-1"></i> ${fileName} (${fileSize} MB)</span>`;
-        }
-    });
-</script>
 @endsection

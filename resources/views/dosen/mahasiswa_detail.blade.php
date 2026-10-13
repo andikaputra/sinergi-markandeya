@@ -150,19 +150,39 @@
 
                                 <!-- Materi Terlampir -->
                                 @if($b->materi_terlampir)
-                                <div class="flex items-center justify-between p-3 bg-blue-50/50 border border-blue-100 rounded-2xl">
-                                    <div class="flex items-center space-x-2.5">
-                                        <i class="fas fa-paperclip text-blue-600"></i>
-                                        <span class="text-xs font-bold text-gray-700">{{ $b->materi_terlampir }}</span>
+                                    @if(str_starts_with($b->materi_terlampir, 'http://') || str_starts_with($b->materi_terlampir, 'https://'))
+                                    <div class="flex items-center justify-between p-3 bg-emerald-50/60 border border-emerald-100 rounded-2xl">
+                                        <div class="flex items-center space-x-2.5 min-w-0 pr-2">
+                                            <i class="fab fa-google-drive text-emerald-600 text-base shrink-0"></i>
+                                            <div class="min-w-0">
+                                                <span class="text-xs font-bold text-gray-800 block">Tautan Dokumen / Google Drive</span>
+                                                <span class="text-[11px] text-emerald-700 truncate block font-mono max-w-xs md:max-w-md">{{ $b->materi_terlampir }}</span>
+                                            </div>
+                                        </div>
+                                        <a
+                                            href="{{ $b->materi_terlampir }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center shrink-0"
+                                        >
+                                            <i class="fas fa-external-link-alt mr-1.5"></i> Buka Dokumen
+                                        </a>
                                     </div>
-                                    <a
-                                        href="{{ asset('storage/bimbingan/' . $b->materi_terlampir) }}"
-                                        download
-                                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center"
-                                    >
-                                        <i class="fas fa-download mr-1.5"></i> Unduh Draft
-                                    </a>
-                                </div>
+                                    @else
+                                    <div class="flex items-center justify-between p-3 bg-blue-50/50 border border-blue-100 rounded-2xl">
+                                        <div class="flex items-center space-x-2.5">
+                                            <i class="fas fa-paperclip text-blue-600"></i>
+                                            <span class="text-xs font-bold text-gray-700">{{ $b->materi_terlampir }}</span>
+                                        </div>
+                                        <a
+                                            href="{{ asset('storage/bimbingan/' . $b->materi_terlampir) }}"
+                                            download
+                                            class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center"
+                                        >
+                                            <i class="fas fa-download mr-1.5"></i> Unduh Draft
+                                        </a>
+                                    </div>
+                                    @endif
                                 @endif
 
                                 <!-- Existing Catatan Dosen (Preview) -->

@@ -198,8 +198,16 @@
                                 <p class="font-bold text-gray-900 leading-snug">{{ $bimbingan->topik }}</p>
                                 <p class="text-xs text-gray-500 line-clamp-1">{{ $bimbingan->deskripsi }}</p>
                                 @if($bimbingan->materi_terlampir)
-                                <div class="inline-flex items-center text-[11px] text-primary-600 font-bold mt-1">
-                                    <i class="fas fa-paperclip mr-1"></i> Lampiran terunggah
+                                <div class="inline-flex items-center text-[11px] font-bold mt-1">
+                                    @if(str_starts_with($bimbingan->materi_terlampir, 'http://') || str_starts_with($bimbingan->materi_terlampir, 'https://'))
+                                        <a href="{{ $bimbingan->materi_terlampir }}" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-700 hover:underline flex items-center">
+                                            <i class="fab fa-google-drive mr-1"></i> Tautan Google Drive <i class="fas fa-external-link-alt text-[9px] ml-1"></i>
+                                        </a>
+                                    @else
+                                        <a href="{{ asset('storage/bimbingan/' . $bimbingan->materi_terlampir) }}" target="_blank" class="text-primary-600 hover:text-primary-700 hover:underline flex items-center">
+                                            <i class="fas fa-paperclip mr-1"></i> Lampiran Terunggah
+                                        </a>
+                                    @endif
                                 </div>
                                 @endif
                             </div>

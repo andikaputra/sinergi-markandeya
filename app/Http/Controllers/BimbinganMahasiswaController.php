@@ -56,29 +56,32 @@ class BimbinganMahasiswaController extends Controller
     {
         $mahasiswa = Auth::guard('mahasiswa')->user();
 
+        // Normalisasi URL jika mahasiswa tidak menyertakan protokol http/https
+        if ($request->filled('materi_terlampir')) {
+            $link = trim($request->materi_terlampir);
+            if (!preg_match('/^https?:\/\//i', $link)) {
+                $link = 'https://' . $link;
+                $request->merge(['materi_terlampir' => $link]);
+            }
+        }
+
         $validated = $request->validate([
             'topik' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'tanggal_bimbingan' => 'required|date',
-            'materi_terlampir' => 'nullable|file|mimes:pdf,doc,docx,zip,rar|max:10240',
+            'materi_terlampir' => 'nullable|url|max:2048',
         ], [
             'topik.required' => 'Topik bimbingan wajib diisi',
             'deskripsi.required' => 'Deskripsi / pokok bahasan bimbingan wajib diisi',
             'tanggal_bimbingan.required' => 'Tanggal bimbingan wajib ditentukan',
-            'materi_terlampir.max' => 'Ukuran berkas maksimal 10MB',
+            'materi_terlampir.url' => 'Format tautan berkas / Google Drive tidak valid (harus berupa link URL, misal: https://drive.google.com/...)',
+            'materi_terlampir.max' => 'Tautan materi maksimal 2048 karakter',
         ]);
 
         $dosenPembimbing = DosenPembimbing::where('nim', $mahasiswa->nim)->first();
 
         if (!$dosenPembimbing) {
             return back()->with('error', 'Dosen pembimbing tidak ditemukan.');
-        }
-
-        if ($request->hasFile('materi_terlampir')) {
-            $file = $request->file('materi_terlampir');
-            $filename = 'bimbingan_' . $mahasiswa->nim . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('bimbingan', $filename, 'public');
-            $validated['materi_terlampir'] = $filename;
         }
 
         $bimbingan = Bimbingan::create([
@@ -131,31 +134,35 @@ class BimbinganMahasiswaController extends Controller
             abort(403, 'Unauthorized');
         }
 
+        // Normalisasi URL jika mahasiswa tidak menyertakan protokol http/https
+        if ($request->filled('materi_terlampir')) {
+            $link = trim($request->materi_terlampir);
+            if (!preg_match('/^https?:\/\//i', $link)) {
+                $link = 'https://' . $link;
+                $request->merge(['materi_terlampir' => $link]);
+            }
+        }
+
         $validated = $request->validate([
             'topik' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'tanggal_bimbingan' => 'required|date',
-            'materi_terlampir' => 'nullable|file|mimes:pdf,doc,docx,zip,rar|max:10240',
+            'materi_terlampir' => 'nullable|url|max:2048',
         ], [
             'topik.required' => 'Topik bimbingan wajib diisi',
             'deskripsi.required' => 'Deskripsi / pokok bahasan perbaikan wajib diisi',
             'tanggal_bimbingan.required' => 'Tanggal bimbingan wajib ditentukan',
-            'materi_terlampir.max' => 'Ukuran berkas maksimal 10MB',
+            'materi_terlampir.url' => 'Format tautan berkas / Google Drive tidak valid (harus berupa link URL, misal: https://drive.google.com/...)',
+            'materi_terlampir.max' => 'Tautan materi maksimal 2048 karakter',
         ]);
 
         $updateData = [
             'topik' => $validated['topik'],
             'deskripsi' => $validated['deskripsi'],
             'tanggal_bimbingan' => $validated['tanggal_bimbingan'],
+            'materi_terlampir' => $validated['materi_terlampir'] ?? null,
             'status' => 'belum_direview', // Reset status agar dosen dapat me-review kembali revisi ini
         ];
-
-        if ($request->hasFile('materi_terlampir')) {
-            $file = $request->file('materi_terlampir');
-            $filename = 'bimbingan_revisi_' . $mahasiswa->nim . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('bimbingan', $filename, 'public');
-            $updateData['materi_terlampir'] = $filename;
-        }
 
         $bimbingan->update($updateData);
 
