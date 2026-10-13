@@ -1,4 +1,4 @@
-@extends('layouts.adminmhs')
+@extends('layouts.admin')
 
 @section('title', 'Detail Program Kerja - ' . $mahasiswa->nama)
 
@@ -6,7 +6,7 @@
 <div class="space-y-8">
     <div class="flex items-center justify-between">
         <div>
-            <h2 class="text-3xl font-black text-gray-900">{{ $mahasiswa->nama }}</h2>
+            <h2 class="text-3xl font-semibold text-gray-900">{{ $mahasiswa->nama }}</h2>
             <p class="text-gray-500 mt-1">NIM: {{ $mahasiswa->nim }}</p>
         </div>
         <a href="{{ route('admin.program-kerja.dashboard') }}" class="px-6 py-3 bg-gray-200 text-gray-800 font-bold rounded-xl hover:bg-gray-300 transition">
@@ -15,7 +15,7 @@
     </div>
 
     <!-- Mahasiswa Info -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
         <h3 class="text-xl font-bold text-gray-900 mb-6">Informasi Mahasiswa</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div>
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Program Kerja Section -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
         <h3 class="text-xl font-bold text-gray-900 mb-6">Program Kerja ({{ $programs->count() }})</h3>
 
         @if ($programs->count() > 0)
@@ -51,7 +51,7 @@
                                 <p class="text-gray-600 text-sm mt-1">{{ $program->deskripsi }}</p>
                             </div>
                             <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold
-                                @if($program->status === 'rencana') bg-blue-100 text-blue-800
+                                @if($program->status === 'rencana') bg-primary-100 text-primary-800
                                 @elseif($program->status === 'sedang_berjalan') bg-orange-100 text-orange-800
                                 @elseif($program->status === 'selesai') bg-green-100 text-green-800
                                 @else bg-gray-100 text-gray-800
@@ -84,14 +84,14 @@
 
                         <!-- Dosen Monev Section -->
                         @if ($monev && $monev->dosen)
-                            <div class="mt-4 pt-4 border-t border-gray-100 bg-indigo-50/40 p-4 rounded-xl border border-indigo-100">
+                            <div class="mt-4 pt-4 border-t border-gray-100 bg-primary-50/40 p-4 rounded-xl border border-primary-100">
                                 <div class="flex items-center justify-between gap-2 mb-2">
                                     <div class="flex items-center gap-2">
-                                        <i class="fas fa-search-location text-indigo-600 text-sm"></i>
+                                        <i class="fas fa-search-location text-primary-600 text-sm"></i>
                                         <span class="text-xs font-bold text-gray-900">Dosen Monev: {{ $monev->dosen->nama }} (NIDN: {{ $monev->dosen->nidn }})</span>
                                     </div>
                                     @if(!is_null($monev->nilai))
-                                        <span class="px-2.5 py-0.5 bg-indigo-600 text-white font-black text-xs rounded-lg">
+                                        <span class="px-2.5 py-0.5 bg-primary-600 text-white font-semibold text-xs rounded-lg">
                                             Nilai Monev: {{ $monev->nilai }}
                                         </span>
                                     @endif
@@ -100,8 +100,8 @@
                                     <p class="text-[11px] text-gray-500 mb-2">Tanggal Monev: <strong>{{ \Carbon\Carbon::parse($monev->tanggal_monev)->format('d M Y') }}</strong></p>
                                 @endif
                                 @if($monev->catatan)
-                                    <div class="p-3 bg-white rounded-lg border border-indigo-100 text-xs text-gray-700 leading-relaxed mb-2">
-                                        <strong class="text-indigo-900 block mb-0.5">Catatan Monev:</strong>
+                                    <div class="p-3 bg-white rounded-lg border border-primary-100 text-xs text-gray-700 leading-relaxed mb-2">
+                                        <strong class="text-primary-900 block mb-0.5">Catatan Monev:</strong>
                                         {{ $monev->catatan }}
                                     </div>
                                 @endif
@@ -125,6 +125,7 @@
                                         <div class="bg-gray-50 p-3 rounded-lg flex items-start justify-between">
                                             <div>
                                                 <p class="text-sm font-medium text-gray-900">{{ $luaran->judul }}</p>
+                                                <x-luaran-file :luaran="$luaran" />
                                                 <p class="text-xs text-gray-600">{{ $luaran->tipe }} • {{ $luaran->persentase_selesai }}% selesai</p>
                                             </div>
                                             <span class="inline-block px-2 py-1 rounded text-xs font-semibold
@@ -155,7 +156,7 @@
 
     <!-- All Luaran Section -->
     @if ($luarans->count() > 0)
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
             <h3 class="text-xl font-bold text-gray-900 mb-6">Semua Luaran ({{ $luarans->count() }})</h3>
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -171,13 +172,13 @@
                     <tbody class="divide-y divide-gray-100">
                         @foreach ($luarans as $luaran)
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $luaran->judul }}</td>
+                                <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $luaran->judul }}<br><x-luaran-file :luaran="$luaran" /></td>
                                 <td class="px-6 py-4 text-sm text-gray-600">{{ $luaran->programKerja->judul ?? '-' }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-600">{{ ucfirst($luaran->tipe) }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
                                         <div class="w-24 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-blue-600 h-2 rounded-full" style="width: {{ $luaran->persentase_selesai }}%"></div>
+                                            <div class="bg-primary-600 h-2 rounded-full" style="width: {{ $luaran->persentase_selesai }}%"></div>
                                         </div>
                                         <span class="text-xs font-bold text-gray-600">{{ $luaran->persentase_selesai }}%</span>
                                     </div>

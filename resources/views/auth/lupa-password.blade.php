@@ -19,6 +19,12 @@
 
         <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8 sm:p-10">
 
+            @if(session('success'))
+            <div class="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-emerald-700 text-sm">
+                {{ session('success') }}
+            </div>
+            @endif
+
             @if(session('error'))
             <div class="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-sm font-bold flex items-center">
                 <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}

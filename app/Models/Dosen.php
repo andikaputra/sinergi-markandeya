@@ -27,6 +27,7 @@ class Dosen extends Authenticatable
     ];
 
     protected $casts = [
+        'last_login' => 'datetime',
         'password' => 'hashed',
     ];
 

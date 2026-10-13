@@ -191,6 +191,8 @@ class PembimbingLuarController extends Controller
             'pembimbing_luar_id' => 'required|exists:pembimbing_luars,id',
         ]);
 
+        $this->authorizeManagedStudents($request->nims);
+
         foreach ($request->nims as $nim) {
             PembimbingLuarMahasiswa::create([
                 'nim' => $nim,
@@ -203,7 +205,9 @@ class PembimbingLuarController extends Controller
 
     public function assignDelete($id)
     {
-        PembimbingLuarMahasiswa::findOrFail($id)->delete();
+        $assignment = PembimbingLuarMahasiswa::findOrFail($id);
+        $this->authorizeManagedStudents([$assignment->nim]);
+        $assignment->delete();
         return redirect()->back()->with('success', 'Plotting pembimbing luar berhasil dihapus!');
     }
 
@@ -232,6 +236,7 @@ class PembimbingLuarController extends Controller
                 $pl = PembimbingLuar::where('email', $email)->first();
                 if (!$pl) { $errors[] = "Baris $row: Email $email tidak ditemukan"; continue; }
 
+                $this->authorizeManagedStudents([$nim]);
                 PembimbingLuarMahasiswa::updateOrCreate(['nim' => $nim], ['pembimbing_luar_id' => $pl->id]);
                 $count++;
             }

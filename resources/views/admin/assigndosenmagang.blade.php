@@ -23,26 +23,26 @@
     ])
 
     <!-- Assignment Form Card -->
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <form action="{{ route('assign.dosen.store') }}" method="POST" class="p-8">
             @csrf
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 <!-- Student Selection -->
                 <div class="lg:col-span-7 space-y-4">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Mahasiswa Magang</label>
-                    <div class="bg-slate-50 rounded-3xl border border-gray-100 overflow-hidden">
+                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Mahasiswa Magang</label>
+                    <div class="bg-slate-50 rounded-xl border border-gray-100 overflow-hidden">
                         <div class="max-h-[400px] overflow-y-auto sidebar-scroll p-4 space-y-2">
                             @foreach($mahasiswas as $mahasiswa)
-                                <label class="flex items-center p-4 bg-white border border-gray-100 rounded-2xl cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-all group">
+                                <label class="flex items-center p-4 bg-white border border-gray-100 rounded-2xl cursor-pointer hover:border-primary-300 hover:bg-primary-50 transition-all group">
                                     <div class="relative flex items-center justify-center">
-                                        <input type="checkbox" name="nims[]" value="{{ $mahasiswa->nim }}" class="w-5 h-5 text-blue-600 border-gray-300 rounded-lg focus:ring-blue-500">
+                                        <input type="checkbox" name="nims[]" value="{{ $mahasiswa->nim }}" class="w-5 h-5 text-primary-600 border-gray-300 rounded-lg focus:ring-primary-500">
                                     </div>
                                     <div class="ml-4 flex-1">
-                                        <p class="text-sm font-bold text-gray-800 group-hover:text-blue-700 transition-colors">{{ $mahasiswa->nama }}</p>
+                                        <p class="text-sm font-bold text-gray-800 group-hover:text-primary-700 transition-colors">{{ $mahasiswa->nama }}</p>
                                         <div class="flex items-center space-x-2 mt-0.5">
                                             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{{ $mahasiswa->nim }}</span>
                                             <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                            <span class="text-[10px] font-bold text-blue-500 uppercase tracking-tighter">
+                                            <span class="text-[10px] font-bold text-primary-500 uppercase tracking-tighter">
                                                 Magang Program
                                             </span>
                                         </div>
@@ -56,9 +56,9 @@
                 <!-- Dosen Selection & Submit -->
                 <div class="lg:col-span-5 space-y-6">
                     <div class="space-y-4">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Dosen Pembimbing</label>
+                        <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Dosen Pembimbing</label>
                         <div class="relative">
-                            <select name="nidn" required class="w-full pl-5 pr-10 py-4 bg-slate-50 border border-gray-100 rounded-2xl text-gray-700 font-bold focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 appearance-none transition-all">
+                            <select name="nidn" required class="w-full pl-5 pr-10 py-4 bg-slate-50 border border-gray-100 rounded-2xl text-gray-700 font-bold focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 appearance-none transition-all">
                                 <option value="">-- Pilih Nama Dosen --</option>
                                 @foreach($dosens as $dosen)
                                     <option value="{{ $dosen->nidn }}">{{ $dosen->nama }}</option>
@@ -71,7 +71,7 @@
                     </div>
 
                     <div class="pt-4">
-                        <button type="submit" class="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-100 transition-all flex items-center justify-center space-x-3 group">
+                        <button type="submit" class="w-full py-5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-2xl shadow-xl shadow-primary-100 transition-all flex items-center justify-center space-x-3 group">
                             <i class="fas fa-user-check group-hover:scale-110 transition-transform"></i>
                             <span class="uppercase tracking-widest text-xs">Simpan Plotting Magang</span>
                         </button>
@@ -82,17 +82,17 @@
     </div>
 
     <!-- Assignments List -->
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 flex items-center justify-between border-b border-gray-50">
-            <h3 class="text-lg font-black text-gray-800 tracking-tight uppercase tracking-widest text-xs">Data Bimbingan Magang</h3>
+            <h3 class="text-lg font-semibold text-gray-800 tracking-tight uppercase tracking-widest text-xs">Data Bimbingan Magang</h3>
         </div>
         <div class="overflow-x-auto p-8">
             <table class="w-full text-left border-separate border-spacing-0" id="assignmentsTable">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Dosen Pembimbing</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Dosen Pembimbing</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -110,7 +110,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-5">
-                            <div class="flex items-center space-x-2 text-indigo-600">
+                            <div class="flex items-center space-x-2 text-primary-600">
                                 <i class="fas fa-chalkboard-teacher text-xs"></i>
                                 <span class="text-sm font-bold">{{ $assignment->dosen->nama }}</span>
                             </div>

@@ -62,10 +62,17 @@ class DosenController extends Controller
         $sudahDinilai = $bimbinganAll->filter(fn($i) => $i->nilai !== null)->count();
         $belumDinilai = $totalBimbingan - $sudahDinilai;
 
+        $mahasiswaTerbaru = $bimbinganAll->sortByDesc('created_at')->take(5)->values();
+        $reviewQuery = Bimbingan::whereIn('dosen_pembimbing_id', $bimbinganAll->pluck('id'))
+            ->where('status', 'belum_direview');
+        $bimbinganBelumDireview = (clone $reviewQuery)->count();
+        $bimbinganTerbaru = $reviewQuery->with('mahasiswa')->oldest()->limit(3)->get();
+
         return view('dosen.beranda', compact(
             'dosen', 'activeTA', 'totalBimbingan', 'totalUjian',
             'countKKN', 'countPPL', 'countPKL', 'countMagang',
-            'sudahDinilai', 'belumDinilai'
+            'sudahDinilai', 'belumDinilai', 'mahasiswaTerbaru',
+            'bimbinganBelumDireview', 'bimbinganTerbaru'
         ));
     }
 
@@ -91,6 +98,8 @@ class DosenController extends Controller
             });
 
         $mahasiswaBimbingan = $query->get();
+
+        if ($request->boolean('cetak')) return view('reports.dosen-bimbingan', compact('mahasiswaBimbingan', 'selectedTA', 'selectedKegiatan'));
 
         return view('dosen.bimbingan', compact('mahasiswaBimbingan', 'tahunAkademiks', 'selectedTA', 'selectedKegiatan'));
     }
@@ -119,7 +128,7 @@ class DosenController extends Controller
         $dosen = Auth::guard('dosen')->user();
         $bimbingan = Bimbingan::with('dosenPembimbing')->findOrFail($id);
 
-        if ($bimbingan->dosenPembimbing?->nidn !== $dosen->nidn) {
+        if (!in_array($bimbingan->dosenPembimbing?->nidn, $dosen->getAllNidns(), true)) {
             abort(403, 'Anda tidak memiliki akses untuk me-review bimbingan ini.');
         }
 

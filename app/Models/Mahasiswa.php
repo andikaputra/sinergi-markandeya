@@ -38,6 +38,7 @@ class Mahasiswa extends Authenticatable
     ];
 
     protected $casts = [
+        'last_login' => 'datetime',
         'password' => 'hashed',
         'reset_token_expires_at' => 'datetime',
     ];

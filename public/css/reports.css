@@ -1,0 +1,42 @@
+@page { size: A4; margin: 14mm; }
+@page report-landscape { size: A4 landscape; margin: 12mm; }
+.report-body { margin: 0; background: #f1f3ec; color: #202820; font: 10pt/1.5 Arial, sans-serif; }
+.report-body * { box-sizing: border-box; }
+.report-body .report-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; position: sticky; top: 0; z-index: 10; padding: 16px 24px; background: #fffefa; border-bottom: 1px solid #dce4d2; font: 13px/1.5 Arial, sans-serif; }
+.report-body .report-toolbar p { margin: 0; color: #65725e; }
+.report-body .report-toolbar button, .report-body .report-toolbar a { border: 0; border-radius: 6px; padding: 11px 17px; background: #184c3d; color: #fff; cursor: pointer; text-decoration: none; display: inline-block; font: 600 12px Arial, sans-serif; }
+.report-body .report-page { margin: 24px auto; background: #fff; width: min(210mm, calc(100% - 32px)); padding: 15mm; border: 1px solid #dfe5d7; }
+.report-body.report-landscape .report-page { width: min(297mm, calc(100% - 32px)); }
+.report-body .report-header { display: flex; align-items: center; justify-content: center; gap: 18px; text-align: center; padding-bottom: 15px; border-bottom: 3px double #184c3d; margin-bottom: 20px; }
+.report-body .report-header img { width: 58px; height: 58px; object-fit: contain; }
+.report-body .report-header h1 { font-size: 15pt; margin: 0 0 4px; }
+.report-body .report-header p { margin: 0; font-size: 10pt; }
+.report-body .report-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 0 0 18px; font-size: 9pt; }
+.report-body .report-scroll { overflow-x: auto; position: relative; }
+.report-body .report-table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+.report-body .report-table th, .report-body .report-table td { border: 1px solid #687560; padding: 7px 6px; vertical-align: top; overflow-wrap: anywhere; }
+.report-body .report-table th { background: #edf2e5; font-size: 8pt; text-align: left; font-weight: 600; }
+.report-body .report-table small { display: block; color: #536049; font-size: 8pt; }
+.report-body .report-signatures { display: flex; justify-content: space-between; gap: 25px; margin-top: 30px; break-inside: avoid; text-align: center; }
+.report-body .report-signature { min-width: 180px; }
+.report-body .report-signature-space { height: 65px; }
+.report-body .report-note { margin-top: 15px; color: #56634d; font-size: 8pt; }
+.report-body .page, .report-body .container { box-sizing: border-box; max-width: calc(100% - 32px); }
+@media (max-width: 600px) { .report-body .report-page { padding: 22px 16px; } .report-body .report-header { gap: 12px; } .report-body .report-header h1 { font-size: 12pt; } .report-body .report-signatures { flex-wrap: wrap; } }
+@media print {
+    .report-body { background: white; margin: 0; font-size: 10pt; }
+    .report-body.report-landscape { page: report-landscape; }
+    .report-body .no-print, .report-body .report-toolbar, .report-body .no-print-bar { display: none !important; }
+    .report-body .report-page, .report-body .page, .report-body .container { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; min-height: 0 !important; }
+    .report-body .report-scroll { overflow: visible; }
+    .report-body table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+    .report-body th, .report-body td { overflow-wrap: anywhere; }
+    .report-body thead { display: table-header-group; }
+    .report-body tfoot { display: table-footer-group; }
+    .report-body tr { break-inside: avoid; page-break-inside: avoid; }
+    .report-body img { max-width: 100%; }
+    .report-body .report-header, .report-body .header { break-after: avoid; }
+    .report-body .report-signatures, .report-body .signature-section, .report-body .footer-sign, .report-body .footer { break-inside: avoid; }
+    .report-body a { color: inherit; text-decoration: none; }
+    .report-body .report-table th { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

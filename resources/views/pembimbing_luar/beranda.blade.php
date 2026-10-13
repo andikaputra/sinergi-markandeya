@@ -7,18 +7,18 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Profil Pembimbing Luar -->
         <div class="lg:col-span-1">
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden relative">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden relative">
                 <div class="h-32 bg-gradient-to-r from-emerald-600 to-emerald-700 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                 </div>
                 <div class="px-8 pb-8 text-center relative">
                     <div class="w-24 h-24 bg-white p-1 rounded-full mx-auto -mt-12 mb-4 shadow-lg">
-                        <div class="w-full h-full bg-emerald-50 rounded-full flex items-center justify-center text-3xl font-black text-emerald-600">
+                        <div class="w-full h-full bg-emerald-50 rounded-full flex items-center justify-center text-3xl font-semibold text-emerald-600">
                             {{ substr($pembimbing->nama, 0, 1) }}
                         </div>
                     </div>
 
-                    <h4 class="text-xl font-black text-gray-800 tracking-tight mb-1">{{ $pembimbing->nama }}</h4>
+                    <h4 class="text-xl font-semibold text-gray-800 tracking-tight mb-1">{{ $pembimbing->nama }}</h4>
                     <p class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">Pembimbing Luar</p>
                     <p class="text-sm text-emerald-600 font-medium mb-6">{{ $pembimbing->instansi }}</p>
 
@@ -55,7 +55,7 @@
                         <i class="fas fa-users text-2xl"></i>
                     </div>
                     <div>
-                        <h5 class="text-3xl font-black text-gray-800">{{ $totalBimbingan }}</h5>
+                        <h5 class="text-3xl font-semibold text-gray-800">{{ $totalBimbingan }}</h5>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Mahasiswa Bimbingan</p>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                         <i class="fas fa-check-circle text-2xl"></i>
                     </div>
                     <div>
-                        <h5 class="text-3xl font-black text-gray-800">{{ $sudahDinilai }}</h5>
+                        <h5 class="text-3xl font-semibold text-gray-800">{{ $sudahDinilai }}</h5>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Sudah Dinilai</p>
                     </div>
                 </div>
@@ -73,49 +73,49 @@
             <!-- Per Kegiatan -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 text-center">
-                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mx-auto mb-3">
+                    <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600 mx-auto mb-3">
                         <i class="fas fa-hands-helping"></i>
                     </div>
-                    <h5 class="text-2xl font-black text-gray-800">{{ $countKKN }}</h5>
+                    <h5 class="text-2xl font-semibold text-gray-800">{{ $countKKN }}</h5>
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">KKN</p>
                 </div>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 text-center">
                     <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mx-auto mb-3">
                         <i class="fas fa-school"></i>
                     </div>
-                    <h5 class="text-2xl font-black text-gray-800">{{ $countPPL }}</h5>
+                    <h5 class="text-2xl font-semibold text-gray-800">{{ $countPPL }}</h5>
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">PPL</p>
                 </div>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 text-center">
                     <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 mx-auto mb-3">
                         <i class="fas fa-building"></i>
                     </div>
-                    <h5 class="text-2xl font-black text-gray-800">{{ $countPKL }}</h5>
+                    <h5 class="text-2xl font-semibold text-gray-800">{{ $countPKL }}</h5>
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">PKL</p>
                 </div>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 text-center">
-                    <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 mx-auto mb-3">
+                    <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600 mx-auto mb-3">
                         <i class="fas fa-briefcase"></i>
                     </div>
-                    <h5 class="text-2xl font-black text-gray-800">{{ $countMagang }}</h5>
+                    <h5 class="text-2xl font-semibold text-gray-800">{{ $countMagang }}</h5>
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Magang</p>
                 </div>
             </div>
 
             <!-- Progress Penilaian -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
                 <h4 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
                     <i class="fas fa-chart-pie text-emerald-500 mr-3"></i>
                     Progress Penilaian Bimbingan
                 </h4>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="p-6 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
-                        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2">Sudah Dinilai</p>
-                        <h5 class="text-3xl font-black text-emerald-700">{{ $sudahDinilai }}</h5>
+                        <p class="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest mb-2">Sudah Dinilai</p>
+                        <h5 class="text-3xl font-semibold text-emerald-700">{{ $sudahDinilai }}</h5>
                     </div>
                     <div class="p-6 bg-amber-50 rounded-2xl border border-amber-100 text-center">
-                        <p class="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-2">Belum Dinilai</p>
-                        <h5 class="text-3xl font-black text-amber-700">{{ $belumDinilai }}</h5>
+                        <p class="text-[10px] font-semibold text-amber-400 uppercase tracking-widest mb-2">Belum Dinilai</p>
+                        <h5 class="text-3xl font-semibold text-amber-700">{{ $belumDinilai }}</h5>
                     </div>
                 </div>
                 @if($totalBimbingan > 0)
@@ -135,7 +135,7 @@
 
     <!-- Quick Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
-        <a href="{{ route('pembimbing_luar.bimbingan') }}" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 hover:border-emerald-200 hover:shadow-md transition-all group">
+        <a href="{{ route('pembimbing_luar.bimbingan') }}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:border-emerald-200 hover:shadow-md transition-all group">
             <div class="flex items-center space-x-6">
                 <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors flex-shrink-0">
                     <i class="fas fa-users text-2xl"></i>

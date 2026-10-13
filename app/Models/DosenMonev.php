@@ -43,6 +43,32 @@ class DosenMonev extends Model
         return $this->belongsTo(KelompokProgramKerja::class, 'program_id');
     }
 
+    public function individuProgram()
+    {
+        return $this->belongsTo(IndividuProgramKerja::class, 'program_id');
+    }
+
+    public function kelompokProgram()
+    {
+        return $this->belongsTo(KelompokProgramKerja::class, 'program_id');
+    }
+
+    public function recordedStages(): array
+    {
+        $stages = [];
+        foreach ([1, 2, 3] as $number) {
+            $stage = $this->getTahap($number);
+            $stages[$number] = $stage->exists && $stage->is_filled;
+        }
+        // Parent fields can mirror stage 2/3 too. Use legacy data only when
+        // there are no structured stages, so one submission is not counted twice.
+        if ($this->tahaps->isEmpty()) {
+            $legacy = new DosenMonevTahap($this->only(['catatan', 'nilai', 'foto_monev', 'link_monev', 'tanggal_monev']));
+            $stages[1] = $legacy->is_filled;
+        }
+        return $stages;
+    }
+
     public function lokasiKkn()
     {
         return $this->belongsTo(LokasiKkn::class, 'lokasi_id');
@@ -132,20 +158,7 @@ class DosenMonev extends Model
      */
     public function getMonevSelesaiCountAttribute(): int
     {
-        $count = 0;
-        foreach ([1, 2, 3] as $ke) {
-            $t = $this->getTahap($ke);
-            if ($t->exists && $t->is_filled) {
-                $count++;
-            }
-        }
-
-        // Fallback for legacy record if tahaps table was not yet seeded for this record
-        if ($count === 0 && (!empty($this->catatan) || !is_null($this->nilai) || !empty($this->foto_monev) || !empty($this->link_monev))) {
-            $count = 1;
-        }
-
-        return $count;
+        return count(array_filter($this->recordedStages()));
     }
 
     /**

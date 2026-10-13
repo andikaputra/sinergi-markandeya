@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use App\Models\Mahasiswa;
@@ -205,12 +206,13 @@ class AuthController extends Controller
             ->where('email', $request->email)
             ->first();
 
-        if (!$mahasiswa) {
-            return back()->withErrors(['nim' => 'NIM dan email tidak cocok. Periksa kembali data Anda.']);
+        $message = 'Jika NIM dan email sesuai dengan akun aktif, link reset akan dikirim ke email terdaftar.';
+        if (!$mahasiswa || $mahasiswa->status !== 'aktif') {
+            return back()->with('success', $message);
         }
 
-        if ($mahasiswa->status !== 'aktif') {
-            return back()->withErrors(['nim' => 'Akun ini belum aktif. Hubungi admin.']);
+        if (!app()->environment('testing') && in_array(config('mail.default'), ['log', 'array'], true)) {
+            return back()->with('error', 'Layanan email reset belum dikonfigurasi. Hubungi admin.');
         }
 
         $token = Str::random(64);
@@ -219,7 +221,15 @@ class AuthController extends Controller
             'reset_token_expires_at' => now()->addHours(2),
         ]);
 
-        return view('auth.lupa-password-token', compact('token', 'mahasiswa'));
+        try {
+            Mail::to($mahasiswa->email)->send(new \App\Mail\ResetPasswordMahasiswa($token));
+        } catch (\Throwable $e) {
+            report($e);
+            $mahasiswa->update(['reset_token' => null, 'reset_token_expires_at' => null]);
+            return back()->with('error', 'Email reset belum berhasil dikirim. Coba lagi atau hubungi admin.');
+        }
+
+        return back()->with('success', $message);
     }
 
     public function showResetPasswordForm($token)

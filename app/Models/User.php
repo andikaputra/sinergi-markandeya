@@ -43,7 +43,7 @@ class User extends Authenticatable
             return true;
         }
 
-        return is_array($this->kegiatan) && in_array($kegiatan, $this->kegiatan);
+        return in_array($kegiatan, $this->getAllowedKegiatan(), true);
     }
 
     public function getAllowedKegiatan(): array
@@ -52,6 +52,11 @@ class User extends Authenticatable
             return ['KKN', 'PPL', 'PKL', 'Magang'];
         }
 
-        return $this->kegiatan ?? [];
+        $activities = $this->kegiatan;
+        // Older seed data stored an already encoded JSON string in this array cast.
+        if (is_string($activities)) {
+            $activities = json_decode($activities, true);
+        }
+        return is_array($activities) ? array_values(array_intersect($activities, ['KKN', 'PPL', 'PKL', 'Magang'])) : [];
     }
 }

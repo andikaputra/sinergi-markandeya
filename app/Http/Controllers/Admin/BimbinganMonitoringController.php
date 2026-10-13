@@ -66,33 +66,44 @@ class BimbinganMonitoringController extends Controller
 
     public function dosenPembimbingPerforma()
     {
-        $dosenList = DosenPembimbing::with('dosen')
-            ->get()
-            ->map(function ($dosen) {
-                $totalMahasiswa = Mahasiswa::where('nim', $dosen->nim)->count();
-                $totalBimbingan = Bimbingan::where('dosen_pembimbing_id', $dosen->id)->count();
-                $disetujui = Bimbingan::where('dosen_pembimbing_id', $dosen->id)
-                    ->where('status', 'disetujui')
-                    ->count();
+        $dosenList = DosenPembimbing::with('dosen')->get()->groupBy('nidn')
+            ->map(function ($assignments) {
+                $reviews = Bimbingan::whereIn('dosen_pembimbing_id', $assignments->pluck('id'));
+                $totalBimbingan = (clone $reviews)->count();
+                $disetujui = (clone $reviews)->where('status', 'disetujui')->count();
 
                 return [
-                    'dosen' => $dosen,
-                    'total_mahasiswa' => $totalMahasiswa,
+                    'dosen' => $assignments->first(),
+                    'total_mahasiswa' => $assignments->pluck('nim')->unique()->count(),
                     'total_bimbingan' => $totalBimbingan,
                     'disetujui' => $disetujui,
                     'performa' => $totalBimbingan > 0 ? round(($disetujui / $totalBimbingan) * 100) : 0,
                 ];
-            });
+            })->values();
 
         return view('admin.bimbingan.dosen-performa', compact('dosenList'));
     }
 
-    public function laporan()
+    public function laporan(Request $request)
     {
-        $bimbingans = Bimbingan::with('mahasiswa', 'dosenPembimbing.dosen')
-            ->orderBy('tanggal_bimbingan', 'desc')
-            ->get();
-
-        return view('admin.bimbingan.laporan', compact('bimbingans'));
+        $request->validate([
+            'ta' => 'nullable|string|max:100', 'kegiatan' => 'nullable|in:KKN,PPL,PKL,Magang',
+            'status' => 'nullable|in:disetujui,perlu_revisi,belum_direview',
+            'tanggal_mulai' => 'nullable|date', 'tanggal_selesai' => ['nullable', 'date', ...($request->filled('tanggal_mulai') ? ['after_or_equal:tanggal_mulai'] : [])],
+        ]);
+        $allowed = auth('web')->user()->getAllowedKegiatan();
+        if ($request->filled('kegiatan')) abort_unless(in_array($request->kegiatan, $allowed, true), 403);
+        $query = Bimbingan::with('mahasiswa', 'dosenPembimbing.dosen')
+            ->whereHas('mahasiswa', function ($students) use ($request, $allowed) {
+                $students->withKegiatanIn($request->filled('kegiatan') ? [$request->kegiatan] : $allowed);
+                if ($request->filled('ta')) $students->withTahunAkademik($request->ta);
+            });
+        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->filled('tanggal_mulai')) $query->whereDate('tanggal_bimbingan', '>=', $request->tanggal_mulai);
+        if ($request->filled('tanggal_selesai')) $query->whereDate('tanggal_bimbingan', '<=', $request->tanggal_selesai);
+        $bimbingans = $query->orderBy('tanggal_bimbingan', 'desc')->get();
+        if ($request->boolean('cetak')) return view('reports.bimbingan', compact('bimbingans'));
+        $tahunAkademiks = \App\Models\TahunAkademik::orderByDesc('tahun')->get();
+        return view('admin.bimbingan.laporan', compact('bimbingans', 'tahunAkademiks'));
     }
 }

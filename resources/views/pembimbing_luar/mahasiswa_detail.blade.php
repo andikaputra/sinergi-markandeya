@@ -18,16 +18,16 @@
     </div>
 
     <!-- Top Profile Header -->
-    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-6">
-        <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg shadow-emerald-100 shrink-0">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-6">
+        <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl flex items-center justify-center text-2xl font-semibold shadow-lg shadow-emerald-100 shrink-0">
             {{ substr($mahasiswa->nama, 0, 1) }}
         </div>
         <div class="flex-1 text-center md:text-left">
-            <h3 class="text-xl font-black text-gray-800">{{ $mahasiswa->nama }}</h3>
+            <h3 class="text-xl font-semibold text-gray-800">{{ $mahasiswa->nama }}</h3>
             <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-2">
-                <span class="px-3 py-1 bg-gray-100 text-gray-500 text-[10px] font-black rounded-lg uppercase tracking-wider">{{ $mahasiswa->nim }}</span>
-                <span class="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-lg uppercase tracking-wider">{{ $mahasiswa->kegiatan }}</span>
-                <span class="px-3 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-lg uppercase tracking-wider italic">{{ $mahasiswa->prodi_full }}</span>
+                <span class="px-3 py-1 bg-gray-100 text-gray-500 text-[10px] font-semibold rounded-lg uppercase tracking-wider">{{ $mahasiswa->nim }}</span>
+                <span class="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-semibold rounded-lg uppercase tracking-wider">{{ $mahasiswa->kegiatan }}</span>
+                <span class="px-3 py-1 bg-amber-50 text-amber-600 text-[10px] font-semibold rounded-lg uppercase tracking-wider italic">{{ $mahasiswa->prodi_full }}</span>
             </div>
         </div>
         <div class="grid grid-cols-1 gap-2 shrink-0 w-full md:w-auto border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 text-center md:text-left">
@@ -50,13 +50,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Left Side: Journal Timeline -->
         <div class="lg:col-span-7 xl:col-span-8 order-2 lg:order-1">
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
                 <div class="p-6 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
                     <h4 class="text-lg font-bold text-gray-800 flex items-center">
                         <i class="fas fa-history text-emerald-500 mr-3"></i>
                         Jurnal Aktivitas Harian
                     </h4>
-                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black rounded-full">{{ $jurnals->count() }} Entri</span>
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-semibold rounded-full">{{ $jurnals->count() }} Entri</span>
                 </div>
 
                 <div class="p-8 flex-1">
@@ -70,11 +70,11 @@
                             @foreach ($jurnals as $jurnal)
                             <div class="relative flex items-start group" x-data="{ expanded: false }">
                                 <div class="absolute left-0 w-10 h-10 bg-white border-2 border-emerald-500 rounded-xl flex items-center justify-center text-emerald-600 z-10 transition-all group-hover:bg-emerald-600 group-hover:text-white shadow-sm">
-                                    <span class="text-[10px] font-black">{{ \Carbon\Carbon::parse($jurnal->tanggal)->format('d') }}</span>
+                                    <span class="text-[10px] font-semibold">{{ \Carbon\Carbon::parse($jurnal->tanggal)->format('d') }}</span>
                                 </div>
                                 <div class="flex-1 ml-16 bg-white p-5 rounded-2xl border border-gray-100 group-hover:border-emerald-100 group-hover:shadow-md transition-all duration-300">
                                     <div class="flex justify-between items-center mb-2">
-                                        <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+                                        <span class="text-[10px] font-semibold text-emerald-600 uppercase tracking-widest">
                                             {{ \Carbon\Carbon::parse($jurnal->tanggal)->translatedFormat('F Y') }}
                                         </span>
                                         <span class="text-[9px] text-gray-400 font-bold uppercase"><i class="far fa-clock mr-1"></i> {{ $jurnal->created_at->diffForHumans() }}</span>
@@ -84,7 +84,7 @@
                                             {{ $jurnal->kegiatan }}
                                         </p>
                                         @if(strlen($jurnal->kegiatan) > 150)
-                                        <button @click="expanded = !expanded" class="text-[10px] font-black text-emerald-600 hover:text-emerald-800 uppercase tracking-widest mt-2 focus:outline-none flex items-center gap-1">
+                                        <button @click="expanded = !expanded" class="text-[10px] font-semibold text-emerald-600 hover:text-emerald-800 uppercase tracking-widest mt-2 focus:outline-none flex items-center gap-1">
                                             <span x-text="expanded ? 'Sembunyikan' : 'Baca Selengkapnya'"></span>
                                             <i class="fas transition-transform" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                                         </button>
@@ -101,14 +101,14 @@
 
         <!-- Right Side: Action Panel -->
         <div class="lg:col-span-5 xl:col-span-4 order-1 lg:order-2 space-y-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-6">
                 <div class="flex items-center justify-between mb-6">
                     <h4 class="text-lg font-bold text-gray-800 flex items-center">
                         <i class="fas fa-star text-amber-400 mr-2"></i>
                         Penilaian Lapangan
                     </h4>
                     @if($isBimbingan->nilai !== null)
-                        <div class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Update</div>
+                        <div class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-semibold rounded-full uppercase">Update</div>
                     @endif
                 </div>
 
@@ -117,7 +117,7 @@
                     <span class="text-[10px] font-bold text-emerald-100 uppercase tracking-widest opacity-80">
                         Skor Akhir Lapangan
                     </span>
-                    <p class="text-4xl font-black text-white mt-1">{{ $isBimbingan->nilai }}</p>
+                    <p class="text-4xl font-semibold text-white mt-1">{{ $isBimbingan->nilai }}</p>
                 </div>
                 @endif
 
@@ -149,14 +149,14 @@
                         <div class="grid grid-cols-2 gap-2">
                             @foreach($kriteria as $k)
                             <label class="block p-3 bg-gray-50 rounded-xl border border-gray-100 focus-within:border-emerald-500 transition-all">
-                                <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 block">{{ $k['label'] }}</span>
+                                <span class="text-[9px] font-semibold text-gray-400 uppercase tracking-widest mb-1 block">{{ $k['label'] }}</span>
                                 <input type="number" name="{{ $k['key'] }}" value="{{ $isBimbingan->{$k['key']} }}" min="0" max="100" step="0.1"
-                                    class="w-full bg-transparent border-none p-0 focus:ring-0 font-black text-lg text-gray-800" placeholder="0">
+                                    class="w-full bg-transparent border-none p-0 focus:ring-0 font-semibold text-lg text-gray-800" placeholder="0">
                             </label>
                             @endforeach
                         </div>
 
-                        <button type="submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-emerald-100 transition-all active:scale-[0.98] uppercase tracking-widest mt-2">
+                        <button type="submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-2xl shadow-xl shadow-emerald-100 transition-all active:scale-[0.98] uppercase tracking-widest mt-2">
                             <i class="fas fa-save mr-2 text-xs"></i> Update Nilai
                         </button>
                     </div>
@@ -164,12 +164,12 @@
 
                 <!-- Link Luaran (Compact) -->
                 <div class="mt-6 pt-6 border-t border-gray-100">
-                    <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center">
+                    <h4 class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3 flex items-center">
                         <i class="fas fa-link mr-2 text-emerald-500"></i> Luaran
                     </h4>
                     <div class="flex flex-wrap gap-2">
                         @forelse($mahasiswa->publikasis as $pub)
-                            <a href="{{ $pub->link }}" target="_blank" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-black hover:bg-emerald-600 hover:text-white transition-all">
+                            <a href="{{ $pub->link }}" target="_blank" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-semibold hover:bg-emerald-600 hover:text-white transition-all">
                                 <i class="fas fa-file-alt mr-1"></i> {{ Str::limit($pub->judul ?? 'Link', 10) }}
                             </a>
                         @empty

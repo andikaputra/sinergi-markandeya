@@ -1,11 +1,11 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Dosen Tidak Aktif')
 
 @section('content')
-<div style="background-color: #f5f3f0; min-height: 100vh; padding: 40px 20px;">
+<div style="background-color: #f5f6f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1200px; margin: 0 auto;">
-        <a href="{{ route('admin.login-activity.dashboard') }}" style="color: #d4a574; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px;">
+        <a href="{{ route('admin.login-activity.dashboard') }}" style="color: #56703f; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px;">
             ← Kembali
         </a>
 
@@ -21,7 +21,7 @@
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr style="background-color: #f5f3f0; border-bottom: 2px solid #ff9800;">
+                        <tr style="background-color: #f5f6f0; border-bottom: 2px solid #ff9800;">
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">No.</th>
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">NIDN</th>
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Nama</th>
@@ -51,11 +51,11 @@
                             <td style="padding: 12px; text-align: center;">
                                 @if($d->last_login)
                                     <span style="background-color: #fff3e0; color: #e65100; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
-                                        {{ now()->diffInDays($d->last_login) }} hari
+                                        {{ (int) $d->last_login->diffInDays(now()) }} hari
                                     </span>
                                 @else
                                     <span style="background-color: #ffcdd2; color: #b71c1c; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
-                                        Tidak pernah
+                                        Belum tercatat
                                     </span>
                                 @endif
                             </td>

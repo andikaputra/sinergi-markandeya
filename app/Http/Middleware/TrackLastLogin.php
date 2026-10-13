@@ -10,20 +10,15 @@ class TrackLastLogin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Track mahasiswa login
-        if (auth()->guard('mahasiswa')->check()) {
-            $mahasiswa = auth()->guard('mahasiswa')->user();
-            $mahasiswa->update(['last_login' => now()]);
-        }
-
-        // Track dosen login
-        if (auth()->guard('web')->check()) {
-            $user = auth()->guard('web')->user();
-            if ($user && method_exists($user, 'update')) {
-                $user->update(['last_login' => now()]);
+        $response = $next($request);
+        // Also record authenticated access from an existing session, including
+        // sessions created before login tracking was corrected.
+        if ($response->getStatusCode() < 400) {
+            foreach (['mahasiswa', 'dosen'] as $guard) {
+                app(\App\Services\LoginActivityRecorder::class)->record(auth()->guard($guard)->user());
             }
         }
 
-        return $next($request);
+        return $response;
     }
 }

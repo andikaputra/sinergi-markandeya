@@ -30,8 +30,9 @@
             .no-print { display: none; }
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/reports.css') }}">
 </head>
-<body>
+<body class="report-body">
     <div class="no-print" style="background: #f4f4f4; padding: 15px; text-align: center; border-bottom: 1px solid #ddd;">
         <button onclick="window.print()" style="padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
             Cetak Jurnal (PDF)
@@ -43,7 +44,7 @@
         <div class="header">
             <h1>Laporan Jurnal Harian Mahasiswa</h1>
             <h1>Universitas Markandeya</h1>
-            <p>Program: {{ $mahasiswa->kegiatan }} | Tahun Akademik {{ date('Y') }}</p>
+            <p>Program: {{ $mahasiswa->kegiatan }} | Tahun Akademik {{ $mahasiswa->tahun_akademik ?? 'Belum diatur' }}</p>
         </div>
 
         <table class="info-table">

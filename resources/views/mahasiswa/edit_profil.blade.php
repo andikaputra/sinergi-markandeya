@@ -6,7 +6,7 @@
 <div class="max-w-2xl mx-auto space-y-6">
 
     <div>
-        <h2 class="text-2xl font-black text-gray-800">Edit Profil</h2>
+        <h2 class="text-2xl font-semibold text-gray-800">Edit Profil</h2>
         <p class="text-sm text-gray-400 mt-1">Perbarui informasi data diri Anda. NIM tidak dapat diubah.</p>
     </div>
 
@@ -27,13 +27,13 @@
     </div>
     @endif
 
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-8 py-6 bg-slate-50 border-b border-gray-100 flex items-center gap-4">
-            <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center text-2xl font-black text-blue-600">
+            <div class="w-14 h-14 bg-primary-100 rounded-2xl flex items-center justify-center text-2xl font-semibold text-primary-600">
                 {{ substr($mahasiswa->nama, 0, 1) }}
             </div>
             <div>
-                <p class="font-black text-gray-800">{{ $mahasiswa->nama }}</p>
+                <p class="font-semibold text-gray-800">{{ $mahasiswa->nama }}</p>
                 <p class="text-sm text-gray-400">NIM: <strong class="text-gray-600">{{ $mahasiswa->nim }}</strong></p>
             </div>
         </div>
@@ -43,13 +43,13 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
+                    <label class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
                     <input type="text" name="nama" value="{{ old('nama', $mahasiswa->nama) }}" required
-                        class="block w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all font-bold">
+                        class="block w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-600 focus:bg-white transition-all font-bold">
                     @error('nama')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">NIM</label>
+                    <label class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest ml-1">NIM</label>
                     <input type="text" value="{{ $mahasiswa->nim }}" disabled
                         class="block w-full px-5 py-4 bg-gray-100 border border-gray-100 rounded-2xl text-gray-400 font-bold cursor-not-allowed">
                     <p class="text-[10px] text-gray-400 ml-1">NIM tidak dapat diubah</p>
@@ -57,24 +57,24 @@
             </div>
 
             <div class="space-y-2">
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Aktif</label>
+                <label class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Email Aktif</label>
                 <input type="email" name="email" value="{{ old('email', $mahasiswa->email) }}" required
-                    class="block w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all font-bold">
+                    class="block w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-600 focus:bg-white transition-all font-bold">
                 @error('email')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Kampus</label>
-                    <select name="kampus" required class="block w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all font-bold appearance-none">
+                    <label class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Kampus</label>
+                    <select name="kampus" required class="block w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-600 focus:bg-white transition-all font-bold appearance-none">
                         @foreach(['Universitas Markandeya' => 'Universitas Markandeya (Pusat)', 'PKMB Tabanan' => 'PKMB Tabanan', 'PKMB Widyagiri Petang' => 'PKMB Widyagiri Petang', 'PKBM Abiansemal' => 'PKBM Abiansemal'] as $val => $label)
                         <option value="{{ $val }}" {{ old('kampus', $mahasiswa->kampus) === $val ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Program Studi</label>
-                    <select name="prodi" required class="block w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all font-bold appearance-none">
+                    <label class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Program Studi</label>
+                    <select name="prodi" required class="block w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-600 focus:bg-white transition-all font-bold appearance-none">
                         @foreach(['PGSD' => 'S1 Pendidikan Guru Sekolah Dasar', 'PBSI' => 'S1 Pendidikan Bahasa dan Sastra Indonesia', 'PBI' => 'S1 Pendidikan Bahasa Inggris', 'SI' => 'S1 Sistem Informasi', 'ME' => 'S1 Manajemen Ekonomi', 'PARBUD' => 'S1 Pariwisata Budaya Dan Keagamaan', 'HUKUM' => 'S1 Hukum Adat'] as $val => $label)
                         <option value="{{ $val }}" {{ old('prodi', $mahasiswa->prodi) === $val ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
@@ -83,36 +83,36 @@
             </div>
 
             <div class="space-y-2">
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Lokasi Kecamatan</label>
-                <select name="kecamatan" required class="block w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:bg-white transition-all font-bold appearance-none">
+                <label class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Lokasi Kecamatan</label>
+                <select name="kecamatan" required class="block w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-600 focus:bg-white transition-all font-bold appearance-none">
                     @foreach(['Bangli','Kintamani','Susut','Gianyar','Tegalalang','Ubud','Karangasem','Klungkung','Petang','Abiansemal','Penebel'] as $kec)
                     <option value="{{ $kec }}" {{ old('kecamatan', $mahasiswa->kecamatan) === $kec ? 'selected' : '' }}>{{ $kec }}</option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="p-6 bg-blue-50/50 rounded-3xl space-y-4 border border-blue-100">
-                <h4 class="text-xs font-black text-blue-600 uppercase tracking-widest flex items-center">
+            <div class="p-6 bg-primary-50/50 rounded-xl space-y-4 border border-primary-100">
+                <h4 class="text-xs font-semibold text-primary-600 uppercase tracking-widest flex items-center">
                     <i class="fas fa-file-alt mr-2"></i> Tautan Dokumen Pendukung
                 </h4>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Link Bukti Pembayaran KRS</label>
+                    <label class="text-[10px] font-semibold text-primary-400 uppercase tracking-widest">Link Bukti Pembayaran KRS</label>
                     <input type="text" name="pembayaranKRS" value="{{ old('pembayaranKRS', $mahasiswa->pembayaranKRS) }}" required
                         placeholder="https://drive.google.com/..."
-                        class="block w-full px-5 py-4 bg-white border border-blue-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all font-medium">
+                        class="block w-full px-5 py-4 bg-white border border-primary-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-600 transition-all font-medium">
                     @error('pembayaranKRS')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Link Dokumen KRS</label>
+                    <label class="text-[10px] font-semibold text-primary-400 uppercase tracking-widest">Link Dokumen KRS</label>
                     <input type="text" name="KRS" value="{{ old('KRS', $mahasiswa->KRS) }}" required
                         placeholder="https://drive.google.com/..."
-                        class="block w-full px-5 py-4 bg-white border border-blue-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all font-medium">
+                        class="block w-full px-5 py-4 bg-white border border-primary-100 rounded-2xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-600 transition-all font-medium">
                     @error('KRS')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>
 
             <div class="flex gap-4 pt-2">
-                <button type="submit" class="flex-1 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-100 transition-all uppercase tracking-widest text-xs">
+                <button type="submit" class="flex-1 py-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-2xl shadow-xl shadow-primary-100 transition-all uppercase tracking-widest text-xs">
                     <i class="fas fa-save mr-2"></i> Simpan Perubahan
                 </button>
                 <a href="{{ route('dashboard') }}" class="px-8 py-4 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold rounded-2xl transition-all text-sm">

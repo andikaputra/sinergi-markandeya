@@ -1,4 +1,4 @@
-<a href="{{ route('dosen.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('dosen.dashboard') }}" @if(request()->routeIs('dosen.dashboard')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-home text-lg"></i>
     <span class="font-medium text-sm">Beranda</span>
 </a>
@@ -7,7 +7,7 @@
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Bimbingan</p>
 </div>
 
-<a href="{{ route('dosen.bimbingan') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('dosen.bimbingan') }}" @if(request()->routeIs('dosen.bimbingan', 'dosen.mahasiswa.*', 'dosen.bimbingan.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-users text-lg"></i>
     <span class="font-medium text-sm">Mahasiswa Bimbingan</span>
 </a>
@@ -16,7 +16,7 @@
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Pengujian</p>
 </div>
 
-<a href="{{ route('dosen.ujian.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('dosen.ujian.index') }}" @if(request()->routeIs('dosen.ujian.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-gavel text-lg"></i>
     <span class="font-medium text-sm">Mahasiswa Ujian</span>
 </a>
@@ -25,7 +25,7 @@
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Publikasi & Diseminasi</p>
 </div>
 
-<a href="{{ route('dosen.publikasi.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('dosen.publikasi.index') }}" @if(request()->routeIs('dosen.publikasi.*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-book-reader text-lg"></i>
     <span class="font-medium text-sm">Penilaian Publikasi</span>
 </a>
@@ -34,7 +34,7 @@
     <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Program Kerja & Monev</p>
 </div>
 
-<a href="{{ route('dosen.program-kerja.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('dosen.program-kerja.dashboard') }}" @if(request()->routeIs('dosen.program-kerja.*') && !request()->routeIs('dosen.program-kerja.monev*')) aria-current="page" @endif class="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <i class="fas fa-tasks text-lg"></i>
     <span class="font-medium text-sm">Program Kerja Bimbingan</span>
 </a>
@@ -48,7 +48,7 @@
     }
 @endphp
 
-<a href="{{ route('dosen.program-kerja.monev-dashboard') }}" class="flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+<a href="{{ route('dosen.program-kerja.monev-dashboard') }}" @if(request()->routeIs('dosen.program-kerja.monev*')) aria-current="page" @endif class="flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
     <div class="flex items-center space-x-3">
         <i class="fas fa-clipboard-check text-lg text-indigo-600"></i>
         <span class="font-medium text-sm">Monev Program Kerja</span>

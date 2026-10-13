@@ -24,7 +24,7 @@
     ])
 
     <!-- Filter Kegiatan -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <form method="GET" action="{{ route('assign.dosenpenilai') }}" class="flex flex-wrap items-end gap-4">
             <div class="flex-1 min-w-[180px]">
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Filter Kegiatan</label>
@@ -47,17 +47,17 @@
     </div>
 
     <!-- Assignment Form Card -->
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <form action="{{ route('assign.dosenpenilai.store') }}" method="POST" class="p-8">
             @csrf
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 <!-- Student Selection -->
                 <div class="lg:col-span-7 space-y-4">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">
                         Mahasiswa (Belum Ada Penilai Publikasi)
                         <span class="text-purple-500 ml-1">{{ $mahasiswas->count() }} orang</span>
                     </label>
-                    <div class="bg-slate-50 rounded-3xl border border-gray-100 overflow-hidden">
+                    <div class="bg-slate-50 rounded-xl border border-gray-100 overflow-hidden">
                         @if($mahasiswas->isNotEmpty())
                         <div class="max-h-[400px] overflow-y-auto sidebar-scroll p-4 space-y-2">
                             @foreach($mahasiswas as $mahasiswa)
@@ -90,7 +90,7 @@
                 <!-- Dosen Selection & Submit -->
                 <div class="lg:col-span-5 space-y-6">
                     <div class="space-y-4">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Dosen Penilai Publikasi</label>
+                        <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Dosen Penilai Publikasi</label>
                         <div class="relative">
                             <select name="nidn" required class="w-full pl-5 pr-10 py-4 bg-slate-50 border border-gray-100 rounded-2xl text-gray-700 font-bold focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 appearance-none transition-all">
                                 <option value="">-- Pilih Nama Dosen --</option>
@@ -105,7 +105,7 @@
                     </div>
 
                     <div class="pt-4">
-                        <button type="submit" class="w-full py-5 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-2xl shadow-xl shadow-purple-100 transition-all flex items-center justify-center space-x-3 group">
+                        <button type="submit" class="w-full py-5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-2xl shadow-xl shadow-purple-100 transition-all flex items-center justify-center space-x-3 group">
                             <i class="fas fa-book-reader group-hover:scale-110 transition-transform"></i>
                             <span class="uppercase tracking-widest text-xs">Simpan Plotting Penilai</span>
                         </button>
@@ -116,19 +116,19 @@
     </div>
 
     <!-- Assignments List -->
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 flex items-center justify-between border-b border-gray-50">
-            <span class="text-xs font-black uppercase tracking-widest text-gray-400">Daftar Mahasiswa & Penilai Publikasi</span>
+            <span class="text-xs font-semibold uppercase tracking-widest text-gray-400">Daftar Mahasiswa & Penilai Publikasi</span>
             <span class="px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-xs font-bold border border-purple-100">{{ $assignments->count() }} plotting</span>
         </div>
         <div class="overflow-x-auto p-8">
             <table class="w-full text-left border-separate border-spacing-0" id="assignmentsTable">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Kegiatan</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Dosen Penilai</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Kegiatan</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Dosen Penilai</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -146,7 +146,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-5">
-                            <span class="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                            <span class="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-semibold uppercase tracking-wider">
                                 {{ $assignment->mahasiswa->kegiatan }}
                             </span>
                         </td>

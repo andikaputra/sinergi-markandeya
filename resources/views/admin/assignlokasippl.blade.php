@@ -5,9 +5,9 @@
 @section('content')
 <div class="space-y-8">
     <!-- Assignment Form Card -->
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 border-b border-gray-50 bg-slate-50/50">
-            <h2 class="text-xl font-black text-gray-800 tracking-tight">Formulir Penempatan PPL</h2>
+            <h2 class="text-xl font-semibold text-gray-800 tracking-tight">Formulir Penempatan PPL</h2>
             <p class="text-sm text-gray-500 font-medium">Hubungkan mahasiswa dengan mitra sekolah tujuan.</p>
         </div>
         
@@ -16,8 +16,8 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 <!-- Student Selection -->
                 <div class="lg:col-span-7 space-y-4">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Mahasiswa Calon Peserta</label>
-                    <div class="bg-slate-50 rounded-3xl border border-gray-100 overflow-hidden">
+                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Mahasiswa Calon Peserta</label>
+                    <div class="bg-slate-50 rounded-xl border border-gray-100 overflow-hidden">
                         <div class="max-h-[400px] overflow-y-auto sidebar-scroll p-4 space-y-2">
                             @foreach($mahasiswas as $mahasiswa)
                                 <label class="flex items-center p-4 bg-white border border-gray-100 rounded-2xl cursor-pointer hover:border-emerald-300 hover:bg-emerald-50 transition-all group">
@@ -41,7 +41,7 @@
                 <!-- School Selection & Submit -->
                 <div class="lg:col-span-5 space-y-6">
                     <div class="space-y-4">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Sekolah Mitra</label>
+                        <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Pilih Sekolah Mitra</label>
                         <div class="relative">
                             <select name="sekolah" required class="w-full pl-5 pr-10 py-4 bg-slate-50 border border-gray-100 rounded-2xl text-gray-700 font-bold focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 appearance-none transition-all">
                                 <option value="">-- Pilih Nama Sekolah --</option>
@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="pt-4">
-                        <button type="submit" class="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl shadow-xl shadow-emerald-100 transition-all flex items-center justify-center space-x-3 group">
+                        <button type="submit" class="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-2xl shadow-xl shadow-emerald-100 transition-all flex items-center justify-center space-x-3 group">
                             <i class="fas fa-check-circle group-hover:scale-110 transition-transform"></i>
                             <span class="uppercase tracking-widest text-xs">Konfirmasi Penempatan</span>
                         </button>
@@ -67,18 +67,18 @@
     </div>
 
     <!-- Assignments List -->
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 flex items-center justify-between border-b border-gray-50">
-            <h3 class="text-lg font-black text-gray-800 tracking-tight uppercase tracking-widest text-xs">Data Penempatan PPL</h3>
+            <h3 class="text-lg font-semibold text-gray-800 tracking-tight uppercase tracking-widest text-xs">Data Penempatan PPL</h3>
         </div>
         <div class="overflow-x-auto p-8">
             <table class="w-full text-left border-separate border-spacing-0" id="assignmentsTable">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Sekolah Penempatan</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-center">Peran / Jabatan</th>
-                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 rounded-tl-2xl">Mahasiswa</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100">Sekolah Penempatan</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-center">Peran / Jabatan</th>
+                        <th class="px-6 py-4 bg-slate-50/50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right rounded-tr-2xl">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -100,14 +100,14 @@
                             </div>
                         </td>
                         <td class="px-6 py-5">
-                            <div class="flex items-center space-x-2 text-blue-600">
+                            <div class="flex items-center space-x-2 text-primary-600">
                                 <i class="fas fa-university text-xs"></i>
                                 <span class="text-sm font-bold">{{ $assignment->lokasippl->Sekolah ?? '-' }}</span>
                             </div>
                         </td>
                         <td class="px-6 py-5 text-center">
                             @if($assignment->is_ketua)
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-300 shadow-sm">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-300 shadow-sm">
                                     <i class="fas fa-crown text-amber-600 text-[11px]"></i>
                                     <span>Ketua Kelompok</span>
                                 </span>

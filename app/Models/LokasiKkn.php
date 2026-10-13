@@ -12,17 +12,18 @@ class LokasiKkn extends Model
     protected $table = 'lokasi_kkn';
     protected $fillable = ['desa', 'alamat', 'kecamatan', 'kabupaten', 'provinsi', 'maks_peserta'];
 
-    public function jumlahPendaftar(): int
+    public function jumlahPendaftar(?string $tahunAkademik = null): int
     {
         return \App\Models\MahasiswaKegiatan::where('kegiatan', 'KKN')
             ->where('preferensi_lokasi_id', $this->id)
             ->where('status_kegiatan', 'aktif')
+            ->when($tahunAkademik !== null, fn ($query) => $query->where('tahun_akademik', $tahunAkademik))
             ->count();
     }
 
-    public function isFull(): bool
+    public function isFull(?string $tahunAkademik = null): bool
     {
-        return $this->maks_peserta !== null && $this->jumlahPendaftar() >= $this->maks_peserta;
+        return $this->maks_peserta !== null && $this->jumlahPendaftar($tahunAkademik) >= $this->maks_peserta;
     }
 
 

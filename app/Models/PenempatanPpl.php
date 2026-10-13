@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class PenempatanPpl extends Model
 {
+    use \App\Models\Concerns\HasPlacementPeriod;
+
     //
 
     protected $table = 'Penempatan_ppl';
-    protected $fillable = ['nim', 'sekolah_id', 'is_ketua'];
+    protected $fillable = ['nim', 'tahun_akademik', 'sekolah_id', 'is_ketua'];
 
     protected $casts = [
         'is_ketua' => 'boolean',

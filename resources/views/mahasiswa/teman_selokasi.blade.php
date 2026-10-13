@@ -6,12 +6,12 @@
             'judul'       => 'Teman Se-Desa',
             'label'       => 'Desa',
             'icon'        => 'fa-home',
-            'headerBg'    => 'bg-blue-600 shadow-blue-200',
-            'badgeBg'     => 'bg-blue-50 text-blue-600 border-blue-100',
-            'lokasiBold'  => 'text-blue-600',
-            'avatarBg'    => 'bg-blue-100 text-blue-600',
-            'rowHover'    => 'hover:bg-blue-50/30',
-            'emptyIcon'   => 'bg-blue-50 text-blue-300',
+            'headerBg'    => 'bg-primary-600 shadow-primary-200',
+            'badgeBg'     => 'bg-primary-50 text-primary-600 border-primary-100',
+            'lokasiBold'  => 'text-primary-600',
+            'avatarBg'    => 'bg-primary-100 text-primary-600',
+            'rowHover'    => 'hover:bg-primary-50/30',
+            'emptyIcon'   => 'bg-primary-50 text-primary-300',
         ],
         'PPL'    => [
             'judul'       => 'Teman Se-Lokasi',
@@ -39,23 +39,23 @@
             'judul'       => 'Teman Se-Lokasi Magang',
             'label'       => 'Instansi Magang',
             'icon'        => 'fa-briefcase',
-            'headerBg'    => 'bg-indigo-600 shadow-indigo-200',
-            'badgeBg'     => 'bg-indigo-50 text-indigo-600 border-indigo-100',
-            'lokasiBold'  => 'text-indigo-600',
-            'avatarBg'    => 'bg-indigo-100 text-indigo-600',
-            'rowHover'    => 'hover:bg-indigo-50/30',
-            'emptyIcon'   => 'bg-indigo-50 text-indigo-300',
+            'headerBg'    => 'bg-primary-600 shadow-primary-200',
+            'badgeBg'     => 'bg-primary-50 text-primary-600 border-primary-100',
+            'lokasiBold'  => 'text-primary-600',
+            'avatarBg'    => 'bg-primary-100 text-primary-600',
+            'rowHover'    => 'hover:bg-primary-50/30',
+            'emptyIcon'   => 'bg-primary-50 text-primary-300',
         ],
         default  => [
             'judul'       => 'Teman Se-Lokasi',
             'label'       => 'Lokasi',
             'icon'        => 'fa-map-marker-alt',
-            'headerBg'    => 'bg-blue-600 shadow-blue-200',
-            'badgeBg'     => 'bg-blue-50 text-blue-600 border-blue-100',
-            'lokasiBold'  => 'text-blue-600',
-            'avatarBg'    => 'bg-blue-100 text-blue-600',
-            'rowHover'    => 'hover:bg-blue-50/30',
-            'emptyIcon'   => 'bg-blue-50 text-blue-300',
+            'headerBg'    => 'bg-primary-600 shadow-primary-200',
+            'badgeBg'     => 'bg-primary-50 text-primary-600 border-primary-100',
+            'lokasiBold'  => 'text-primary-600',
+            'avatarBg'    => 'bg-primary-100 text-primary-600',
+            'rowHover'    => 'hover:bg-primary-50/30',
+            'emptyIcon'   => 'bg-primary-50 text-primary-300',
         ],
     };
 @endphp
@@ -65,7 +65,7 @@
 @section('content')
 <div class="space-y-8">
     <!-- Header -->
-    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
+    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
         <div class="flex items-center space-x-6">
             <div class="{{ $config['headerBg'] }} p-5 rounded-2xl shadow-lg">
                 <i class="fas {{ $config['icon'] }} text-white text-3xl"></i>
@@ -80,7 +80,7 @@
             </div>
         </div>
         @if($temanSeLokasi->isNotEmpty())
-        <span class="px-4 py-2 rounded-xl text-sm font-black border {{ $config['badgeBg'] }}">
+        <span class="px-4 py-2 rounded-xl text-sm font-semibold border {{ $config['badgeBg'] }}">
             {{ $temanSeLokasi->count() }} orang
         </span>
         @endif
@@ -88,7 +88,7 @@
 
     @if($namaLokasi)
         @if($temanSeLokasi->isNotEmpty())
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-8 border-b border-gray-50">
                 <h4 class="text-lg font-bold text-gray-800">
                     Daftar {{ $config['judul'] }} di {{ $namaLokasi }}
@@ -132,7 +132,7 @@
             </div>
         </div>
         @else
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-16 text-center">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-16 text-center">
             <div class="w-20 h-20 {{ $config['emptyIcon'] }} rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
                 <i class="fas fa-user-friends"></i>
             </div>
@@ -141,7 +141,7 @@
         </div>
         @endif
     @else
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-16 text-center">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-16 text-center">
         <div class="w-20 h-20 bg-amber-50 text-amber-300 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
             <i class="fas fa-map-marker-alt"></i>
         </div>

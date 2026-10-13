@@ -9,17 +9,18 @@ class LokasiPpl extends Model
     protected $table = 'lokasi_ppl';
     protected $fillable = ['Sekolah', 'alamat', 'maks_peserta'];
 
-    public function jumlahPendaftar(): int
+    public function jumlahPendaftar(?string $tahunAkademik = null): int
     {
         return \App\Models\MahasiswaKegiatan::where('kegiatan', 'PPL')
             ->where('preferensi_lokasi_id', $this->id)
             ->where('status_kegiatan', 'aktif')
+            ->when($tahunAkademik !== null, fn ($query) => $query->where('tahun_akademik', $tahunAkademik))
             ->count();
     }
 
-    public function isFull(): bool
+    public function isFull(?string $tahunAkademik = null): bool
     {
-        return $this->maks_peserta !== null && $this->jumlahPendaftar() >= $this->maks_peserta;
+        return $this->maks_peserta !== null && $this->jumlahPendaftar($tahunAkademik) >= $this->maks_peserta;
     }
 
 

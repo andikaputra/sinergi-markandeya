@@ -1,14 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Bimbingan Perlu Revisi')
 
 @section('content')
-<div style="background-color: #f5f3f0; min-height: 100vh; padding: 40px 20px;">
+<div style="background-color: #f5f6f0; padding: 24px; border-radius: 16px;">
     <div style="max-width: 1200px; margin: 0 auto;">
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div>
-                <a href="{{ route('admin.bimbingan.dashboard') }}" style="color: #d4a574; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+                <a href="{{ route('admin.bimbingan.dashboard') }}" style="color: #56703f; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px;">
                     ← Kembali ke Dashboard Bimbingan
                 </a>
                 <h1 style="margin: 0; color: #1a5d4d; font-size: 2rem; font-weight: 700;">⚠️ Permohonan Bimbingan Perlu Revisi</h1>
@@ -23,7 +23,7 @@
             @if($permohonan->count() > 0)
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr style="background-color: #f5f3f0; border-bottom: 2px solid #d4a574;">
+                        <tr style="background-color: #f5f6f0; border-bottom: 2px solid #d4a574;">
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">No.</th>
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Mahasiswa</th>
                             <th style="padding: 12px; text-align: left; color: #1a5d4d; font-weight: 700;">Dosen Pembimbing</th>
@@ -43,7 +43,7 @@
                                 {{ $bimbingan->dosenPembimbing?->dosen?->nama ?? '-' }}
                             </td>
                             <td style="padding: 16px 12px; color: #444; max-width: 400px;">
-                                <div style="font-weight: 600; color: #c62828;">{{ $bimbingan->topik_bimbingan ?? 'Bimbingan #' . $bimbingan->sesi_ke }}</div>
+                                <div style="font-weight: 600; color: #c62828;">{{ $bimbingan->topik ?? '-' }}</div>
                                 <div style="color: #555; font-size: 0.85rem; margin-top: 4px; background: #fff8e1; padding: 6px 10px; border-radius: 6px; border-left: 3px solid #ffa000;">
                                     {{ $bimbingan->catatan_dosen ?: 'Belum ada catatan detail' }}
                                 </div>

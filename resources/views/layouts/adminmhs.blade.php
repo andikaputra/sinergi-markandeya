@@ -1,4 +1,6 @@
-@extends('layouts.main')
+@extends('layouts.panel')
+
+@section('panel_guard', 'mahasiswa')
 
 @section('user_type', 'Mahasiswa')
 

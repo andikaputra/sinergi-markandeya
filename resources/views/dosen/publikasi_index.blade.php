@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-8">
     <!-- Header -->
-    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
+    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
         <div class="flex items-center space-x-6">
             <div class="bg-purple-600 p-5 rounded-2xl shadow-lg shadow-purple-200">
                 <i class="fas fa-book-reader text-white text-3xl"></i>
@@ -16,14 +16,14 @@
             </div>
         </div>
         @if($selectedTA)
-        <span class="px-4 py-2 bg-purple-50 text-purple-600 rounded-xl text-xs font-black border border-purple-100">
+        <span class="px-4 py-2 bg-purple-50 text-purple-600 rounded-xl text-xs font-semibold border border-purple-100">
             {{ $selectedTA }}
         </span>
         @endif
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <form method="GET" action="{{ route('dosen.publikasi.index') }}" class="flex flex-wrap items-end gap-4">
             <div class="flex-1 min-w-[180px]">
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Tahun Akademik</label>
@@ -57,7 +57,7 @@
     </div>
 
     <!-- Student List -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-8 border-b border-gray-50 flex items-center justify-between">
             <h4 class="text-lg font-bold text-gray-800">Daftar Mahasiswa Publikasi & Diseminasi</h4>
             <span class="px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-xs font-bold border border-purple-100">{{ $mahasiswaPublikasi->count() }} mahasiswa</span>
@@ -93,7 +93,7 @@
                         </td>
                         <td class="px-8 py-5">
                             <div class="space-y-1">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-tighter bg-gray-100 px-2 py-0.5 rounded">
+                                <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-tighter bg-gray-100 px-2 py-0.5 rounded">
                                     {{ $item->mahasiswa->kegiatan }}
                                 </span>
                                 <p class="text-xs font-bold text-slate-600">
@@ -119,7 +119,7 @@
                             @endif
                         </td>
                         <td class="px-8 py-5 text-center">
-                            <span class="px-4 py-1.5 bg-purple-50 text-purple-700 rounded-xl text-sm font-black border border-purple-100">
+                            <span class="px-4 py-1.5 bg-purple-50 text-purple-700 rounded-xl text-sm font-semibold border border-purple-100">
                                 {{ $item->nilai ?? '-' }}
                             </span>
                         </td>

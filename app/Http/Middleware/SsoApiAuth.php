@@ -24,6 +24,12 @@ class SsoApiAuth
         }
 
         $token->touchLastUsed();
+        $request->attributes->set('audit_actor', [
+            'actor_type'=>$token->user_type === 'admin' ? 'admin' : $token->user_type,
+            'actor_id'=>$token->user_id,
+            'actor_name'=>$token->user_data['nama'] ?? $token->user_data['name'] ?? 'Pengguna API',
+            'actor_identifier'=>$token->user_data['nim'] ?? $token->user_data['nidn'] ?? null,
+        ]);
         $request->merge([
             'sso_token'     => $token,
             'sso_user_type' => $token->user_type,

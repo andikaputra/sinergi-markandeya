@@ -26,13 +26,12 @@ WORKDIR /var/www
 COPY . .
 
 # Install dependencies
-RUN composer install --optimize-autoloader --no-dev
-RUN npm install && npm run build
-RUN php artisan optimize
+RUN composer install --optimize-autoloader --no-dev --no-interaction --prefer-dist
+RUN PUPPETEER_SKIP_DOWNLOAD=true npm ci --include=dev && npm run build
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www/storage
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Pastikan folder config nginx & supervisor ada di repo kamu
 COPY docker/nginx.conf /etc/nginx/nginx.conf
@@ -42,5 +41,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose port sesuai keinginanmu
 EXPOSE 8001
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=5 \
+    CMD curl --fail --silent --show-error http://127.0.0.1:8001/up || exit 1
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

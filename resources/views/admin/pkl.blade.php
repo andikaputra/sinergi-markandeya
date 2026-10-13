@@ -6,7 +6,7 @@
 <div class="space-y-6">
     @include('admin._import_mahasiswa')
 
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <div class="flex-1">
             <form action="{{ route('admin.peserta.pkl') }}" method="GET" class="mt-2 flex items-center space-x-2">
                 <select name="ta" onchange="this.form.submit()" class="text-xs font-bold bg-slate-50 border-none rounded-lg focus:ring-amber-500">
@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-6 overflow-x-auto">
             <table class="w-full text-left border-separate border-spacing-0" id="pklTable">
                 <thead>
@@ -55,7 +55,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach ($pesertaPKL as $index => $mahasiswa)
-                    <tr class="hover:bg-blue-50/30 transition-colors group">
+                    <tr class="hover:bg-primary-50/30 transition-colors group">
                         <td class="px-6 py-5 text-sm text-gray-400 font-medium italic">{{ $index + 1 }}</td>
                         <td class="px-6 py-5">
                             <div class="flex items-center space-x-3">
@@ -95,7 +95,7 @@
                             @endif
                         </td>
                         <td class="px-6 py-5 text-center">
-                            <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-black border border-indigo-100">
+                            <span class="px-3 py-1 bg-primary-50 text-primary-700 rounded-lg text-sm font-semibold border border-primary-100">
                                 {{ $mahasiswa->nilai_akhir }}
                             </span>
                         </td>
@@ -106,7 +106,7 @@
                                 @csrf
                                 <select name="status_kegiatan" onchange="this.form.submit()"
                                     class="text-xs font-bold rounded-xl border px-2 py-1.5 focus:outline-none cursor-pointer
-                                    {{ $mk->status_kegiatan === 'selesai' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($mk->status_kegiatan === 'dibatalkan' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200') }}">
+                                    {{ $mk->status_kegiatan === 'selesai' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($mk->status_kegiatan === 'dibatalkan' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-primary-50 text-primary-700 border-primary-200') }}">
                                     <option value="aktif"      {{ $mk->status_kegiatan === 'aktif'      ? 'selected' : '' }}>Berlangsung</option>
                                     <option value="selesai"    {{ $mk->status_kegiatan === 'selesai'    ? 'selected' : '' }}>Selesai</option>
                                     <option value="dibatalkan" {{ $mk->status_kegiatan === 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
@@ -119,14 +119,14 @@
                                                 <td class="px-6 py-5 text-center">
                             @if($mk && ($mk->link_dokumen_1 || $mk->link_dokumen_2 || $mk->link_dokumen_3))
                             <div class="relative inline-block" x-data="{ open: false }">
-                                <button @click="open = !open" class="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors">
+                                <button @click="open = !open" class="px-3 py-1.5 bg-primary-50 text-primary-600 rounded-lg text-xs font-bold hover:bg-primary-100 transition-colors">
                                     <i class="fas fa-file-alt mr-1"></i>Dok
                                 </button>
                                 <div x-show="open" @click.away="open = false" x-cloak
                                     class="absolute right-0 mt-1 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 p-3 space-y-2">
                                     @foreach([['Transkip', $mk->link_dokumen_1],['Surat', $mk->link_dokumen_2],['CV/Ket.', $mk->link_dokumen_3]] as [$lbl, $lnk])
                                     @if($lnk)
-                                    <a href="{{ $lnk }}" target="_blank" class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-xl text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                                    <a href="{{ $lnk }}" target="_blank" class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-xl text-xs font-bold text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition-colors">
                                         <span>{{ $lbl }}</span><i class="fas fa-external-link-alt text-[9px]"></i>
                                     </a>
                                     @endif

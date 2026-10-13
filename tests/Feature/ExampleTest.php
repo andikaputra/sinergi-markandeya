@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\Support\WorkflowTestCase;
 
-class ExampleTest extends TestCase
+class ExampleTest extends WorkflowTestCase
 {
     /**
      * A basic test example.
