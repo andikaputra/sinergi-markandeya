@@ -69,13 +69,13 @@ class BimbinganMahasiswaController extends Controller
             'topik' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'tanggal_bimbingan' => 'required|date',
-            'materi_terlampir' => 'nullable|url|max:2048',
+            'materi_terlampir' => 'nullable|url|max:255',
         ], [
             'topik.required' => 'Topik bimbingan wajib diisi',
             'deskripsi.required' => 'Deskripsi / pokok bahasan bimbingan wajib diisi',
             'tanggal_bimbingan.required' => 'Tanggal bimbingan wajib ditentukan',
             'materi_terlampir.url' => 'Format tautan berkas / Google Drive tidak valid (harus berupa link URL, misal: https://drive.google.com/...)',
-            'materi_terlampir.max' => 'Tautan materi maksimal 2048 karakter',
+            'materi_terlampir.max' => 'Tautan materi maksimal 255 karakter',
         ]);
 
         $dosenPembimbing = DosenPembimbing::where('nim', $mahasiswa->nim)->first();
@@ -84,18 +84,6 @@ class BimbinganMahasiswaController extends Controller
             return back()->with('error', 'Dosen pembimbing tidak ditemukan.');
         }
 
-<<<<<<< HEAD
-=======
-        if ($request->hasFile('materi_terlampir')) {
-            $file = $request->file('materi_terlampir');
-            $filename = 'bimbingan_' . $mahasiswa->nim . '_' . \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
-            if (!$file->storeAs('bimbingan', $filename, 'public')) {
-                throw \Illuminate\Validation\ValidationException::withMessages(['materi_terlampir' => 'Berkas gagal disimpan. Coba unggah ulang.']);
-            }
-            $validated['materi_terlampir'] = $filename;
-        }
-
->>>>>>> 9a1b3ead0e4d4efab1cf193a68a5355861bd80f3
         $bimbingan = Bimbingan::create([
             'nim' => $mahasiswa->nim,
             'dosen_pembimbing_id' => $dosenPembimbing->id,
@@ -159,13 +147,13 @@ class BimbinganMahasiswaController extends Controller
             'topik' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'tanggal_bimbingan' => 'required|date',
-            'materi_terlampir' => 'nullable|url|max:2048',
+            'materi_terlampir' => 'nullable|url|max:255',
         ], [
             'topik.required' => 'Topik bimbingan wajib diisi',
             'deskripsi.required' => 'Deskripsi / pokok bahasan perbaikan wajib diisi',
             'tanggal_bimbingan.required' => 'Tanggal bimbingan wajib ditentukan',
             'materi_terlampir.url' => 'Format tautan berkas / Google Drive tidak valid (harus berupa link URL, misal: https://drive.google.com/...)',
-            'materi_terlampir.max' => 'Tautan materi maksimal 2048 karakter',
+            'materi_terlampir.max' => 'Tautan materi maksimal 255 karakter',
         ]);
 
         $updateData = [
@@ -176,18 +164,6 @@ class BimbinganMahasiswaController extends Controller
             'status' => 'belum_direview', // Reset status agar dosen dapat me-review kembali revisi ini
         ];
 
-<<<<<<< HEAD
-=======
-        if ($request->hasFile('materi_terlampir')) {
-            $file = $request->file('materi_terlampir');
-            $filename = 'bimbingan_revisi_' . $mahasiswa->nim . '_' . \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
-            if (!$file->storeAs('bimbingan', $filename, 'public')) {
-                throw \Illuminate\Validation\ValidationException::withMessages(['materi_terlampir' => 'Berkas gagal disimpan. Coba unggah ulang.']);
-            }
-            $updateData['materi_terlampir'] = $filename;
-        }
-
->>>>>>> 9a1b3ead0e4d4efab1cf193a68a5355861bd80f3
         $bimbingan->update($updateData);
 
         return redirect()->route('bimbingan.show', $bimbingan->id)->with('success', 'Perbaikan bimbingan berhasil dikirimkan! Status kembali menjadi Menunggu Review Dosen.');
